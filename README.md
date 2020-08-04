@@ -19,16 +19,29 @@ This project consist on two crates:
 
 ## Setup
 
-Obtain ONNX Runtime or build it yourself:
+Obtain ONNX Runtime or build it yourself.
+
+### Building ONNX Runtime
+
+While ONNX requires cmake to build, bindgen (used to automatically build the bindings) requires
+llvm:
+
+```sh
+brew install llvm cmake
+
+# bindgen needs this to find llvm/clang
+export LLVM_CONFIG_PATH=/usr/local/opt/llvm/bin/llvm-config
+```
 
 ```sh
 ❯ git clone https://github.com/microsoft/onnxruntime.git onnxruntime.git
 ❯ cd onnxruntime.git
 ❯ git checkout v1.3.1
-❯ export CMAKE_INSTALL_PREFIX=target/onnxruntime
 # Debug build with install directory inside our own 'target' directory
 # Takes ~1/2 hour on a macbook pro 2.9 GHz 16 GB
 ❯ ./build.sh --config Debug --build_shared_lib --parallel --cmake_extra_defines="CMAKE_INSTALL_PREFIX=../../../../target/onnxruntime"
+❯ cd build/Linux/Debug
+❯ make install
 ```
 
 ---
@@ -61,6 +74,10 @@ dyld: Library not loaded: @rpath/libonnxruntime.1.3.1.dylib
 You _might_ need to use `DYLD_LIBRARY_PATH` (on macOS) to point to the directory where
 `libonnxruntime.dylib` is located to execute a binary (or debug it). Note that this is not
 the proper way as it messes _System Integrity Protection_.
+
+Commit 4315b5a381faa11330fe554c69392f59 set the path in
+[`.cargo/config`](.cargo/config) (for macOS) and should allow running the
+binaries without setting an environment variable.
 
 ---
 
