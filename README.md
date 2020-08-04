@@ -27,7 +27,8 @@ Obtain ONNX Runtime or build it yourself:
 ❯ git checkout v1.3.1
 ❯ export CMAKE_INSTALL_PREFIX=target/onnxruntime
 # Debug build with install directory inside our own 'target' directory
-❯ ./build.sh --config Debug --build_shared_lib --parallel --cmake_extra_defines="CMAKE_INSTALL_PREFIX=../target/onnxruntime"
+# Takes ~1/2 hour on a macbook pro 2.9 GHz 16 GB
+❯ ./build.sh --config Debug --build_shared_lib --parallel --cmake_extra_defines="CMAKE_INSTALL_PREFIX=../../../../target/onnxruntime"
 ```
 
 ---
