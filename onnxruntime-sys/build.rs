@@ -4,7 +4,7 @@ fn main() {
     // Tell cargo to tell rustc to link the system onnxruntime
     // shared library.
     println!("cargo:rustc-link-lib=onnxruntime");
-    println!("cargo:rustc-link-search=onnxruntime.git/build/Linux/Debug");
+    println!("cargo:rustc-link-search=target/onnxruntime/lib");
 
     // Tell cargo to invalidate the built crate whenever the wrapper changes
     println!("cargo:rerun-if-changed=wrapper.h");
@@ -16,7 +16,8 @@ fn main() {
         // The input header we would like to generate
         // bindings for.
         .header("wrapper.h")
-        .clang_args(&["-Ionnxruntime.git/include/onnxruntime/core/session/"])
+        // The current working directory is 'onnxruntime-sys'
+        .clang_arg("-I../target/onnxruntime/include/onnxruntime/core/session")
         // Tell cargo to invalidate the built crate whenever any of the
         // included header files changed.
         .parse_callbacks(Box::new(bindgen::CargoCallbacks))
