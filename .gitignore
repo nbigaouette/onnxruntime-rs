@@ -3,3 +3,4 @@
 **/*.onnx
 **/*.dSYM
 onnxruntime.git
+Cargo.lock
