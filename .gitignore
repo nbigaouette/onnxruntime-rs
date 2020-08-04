@@ -1,3 +1,5 @@
 **/target
 **/*.venv
 **/*.onnx
+**/*.dSYM
+onnxruntime.git
