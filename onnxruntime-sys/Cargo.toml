@@ -1,0 +1,11 @@
+[package]
+authors = ["Nicolas Bigaouette <nbigaouette@elementai.com>"]
+edition = "2018"
+name = "onnxruntime-sys"
+version = "0.1.0"
+
+
+[dependencies]
+
+[build-dependencies]
+bindgen = "0.54"
