@@ -6,7 +6,6 @@ use onnxruntime_sys::*;
 
 fn main() {
     let g_ort = unsafe { OrtGetApiBase().as_ref().unwrap().GetApi.unwrap()(ORT_API_VERSION) };
-    println!("g_ort: {:?}", g_ort);
     assert_ne!(g_ort, std::ptr::null_mut());
 
     //*************************************************************************
