@@ -246,7 +246,6 @@ fn main() {
 
     // score model & input tensor, get back output tensor
 
-    // FIXME: This leaks!
     let input_node_names_cstring: Vec<std::ffi::CString> = input_node_names
         .into_iter()
         .map(|n| std::ffi::CString::new(n).unwrap())
@@ -257,7 +256,6 @@ fn main() {
         .collect();
     let input_node_names_ptr_ptr: *const *const i8 = input_node_names_ptr.as_ptr();
 
-    // FIXME: This leaks!
     let output_node_names_cstring: Vec<std::ffi::CString> = output_node_names
         .into_iter()
         .map(|n| std::ffi::CString::new(n.clone()).unwrap())
