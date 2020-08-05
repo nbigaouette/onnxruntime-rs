@@ -12,10 +12,11 @@ fn main() {
     // initialize  enviroment...one enviroment per process
     // enviroment maintains thread pools and other state info
     let mut env_ptr: *mut OrtEnv = std::ptr::null_mut();
+    let env_name = std::ffi::CString::new("test").unwrap();
     let status = unsafe {
         g_ort.as_ref().unwrap().CreateEnv.unwrap()(
             OrtLoggingLevel_ORT_LOGGING_LEVEL_VERBOSE,
-            std::ffi::CString::new("test").unwrap().into_raw(), // FIXME: Memory leak, see https://doc.rust-lang.org/std/ffi/struct.CString.html#method.into_raw
+            env_name.as_ptr(),
             &mut env_ptr,
         )
     };
@@ -47,7 +48,7 @@ fn main() {
     // create session and load model into memory
     // using squeezenet version 1.3
     // https://github.com/onnx/models/raw/master/vision/classification/squeezenet/model/squeezenet1.1-7.onnx
-    const MODEL_PATH: &str = "squeezenet.onnx";
+    let model_path = std::ffi::CString::new("squeezenet.onnx").unwrap();
 
     let mut session_ptr: *mut OrtSession = std::ptr::null_mut();
 
@@ -55,7 +56,7 @@ fn main() {
     let status = unsafe {
         g_ort.as_ref().unwrap().CreateSession.unwrap()(
             env_ptr,
-            std::ffi::CString::new(MODEL_PATH).unwrap().into_raw(),
+            model_path.as_ptr(),
             session_options_ptr,
             &mut session_ptr,
         )
@@ -245,7 +246,6 @@ fn main() {
 
     // score model & input tensor, get back output tensor
 
-    // FIXME: This leaks!
     let input_node_names_cstring: Vec<std::ffi::CString> = input_node_names
         .into_iter()
         .map(|n| std::ffi::CString::new(n).unwrap())
@@ -256,14 +256,13 @@ fn main() {
         .collect();
     let input_node_names_ptr_ptr: *const *const i8 = input_node_names_ptr.as_ptr();
 
-    // FIXME: This leaks!
     let output_node_names_cstring: Vec<std::ffi::CString> = output_node_names
         .into_iter()
         .map(|n| std::ffi::CString::new(n.clone()).unwrap())
         .collect();
     let output_node_names_ptr: Vec<*const i8> = output_node_names_cstring
-        .into_iter()
-        .map(|n| n.into_raw() as *const i8)
+        .iter()
+        .map(|n| n.as_ptr() as *const i8)
         .collect();
     let output_node_names_ptr_ptr: *const *const i8 = output_node_names_ptr.as_ptr();
 
@@ -307,10 +306,13 @@ fn main() {
     assert!((unsafe { *floatarr.offset(0) } - 0.000045).abs() < 1e-6);
 
     // score the model, and print scores for first 5 classes
+    // NOTE: The C ONNX Runtime allocated the array, we shouldn't drop the vec
+    //       but let C de-allocate instead.
     let floatarr_vec: Vec<f32> = unsafe { Vec::from_raw_parts(floatarr, 5, 5) };
     for i in 0..5 {
         println!("Score for class [{}] =  {}", i, floatarr_vec[i]);
     }
+    std::mem::forget(floatarr_vec);
 
     // Results should be as below...
     // Score for class[0] = 0.000045
