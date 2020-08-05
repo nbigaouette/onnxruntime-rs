@@ -12,10 +12,11 @@ fn main() {
     // initialize  enviroment...one enviroment per process
     // enviroment maintains thread pools and other state info
     let mut env_ptr: *mut OrtEnv = std::ptr::null_mut();
+    let env_name = std::ffi::CString::new("test").unwrap();
     let status = unsafe {
         g_ort.as_ref().unwrap().CreateEnv.unwrap()(
             OrtLoggingLevel_ORT_LOGGING_LEVEL_VERBOSE,
-            std::ffi::CString::new("test").unwrap().into_raw(), // FIXME: Memory leak, see https://doc.rust-lang.org/std/ffi/struct.CString.html#method.into_raw
+            env_name.as_ptr(),
             &mut env_ptr,
         )
     };
@@ -47,7 +48,7 @@ fn main() {
     // create session and load model into memory
     // using squeezenet version 1.3
     // https://github.com/onnx/models/raw/master/vision/classification/squeezenet/model/squeezenet1.1-7.onnx
-    const MODEL_PATH: &str = "squeezenet.onnx";
+    let model_path = std::ffi::CString::new("squeezenet.onnx").unwrap();
 
     let mut session_ptr: *mut OrtSession = std::ptr::null_mut();
 
@@ -55,7 +56,7 @@ fn main() {
     let status = unsafe {
         g_ort.as_ref().unwrap().CreateSession.unwrap()(
             env_ptr,
-            std::ffi::CString::new(MODEL_PATH).unwrap().into_raw(),
+            model_path.as_ptr(),
             session_options_ptr,
             &mut session_ptr,
         )
