@@ -204,57 +204,6 @@ fn main() {
     CheckStatus(g_ort, status).unwrap();
     assert_ne!(memory_info_ptr, std::ptr::null_mut());
 
-    /*
-    // bindings.rs
-    fn CreateTensorWithDataAsOrtValue(
-        info: *const OrtMemoryInfo,
-        p_data: *mut c_void,
-        p_data_len: size_t,
-        shape: *const i64,
-        shape_len: size_t,
-        type_: ONNXTensorElementDataType,
-        out: *mut *mut OrtValue
-    ) -> OrtStatusPtr
-
-    // onnxruntime_c_api.h:448
-    ORT_API2_STATUS(
-        CreateTensorWithDataAsOrtValue,
-        _In_ const OrtMemoryInfo* info,
-        _Inout_ void* p_data,
-        size_t p_data_len,
-        _In_ const int64_t* shape,
-        size_t shape_len,
-        ONNXTensorElementDataType type,
-        _Outptr_ OrtValue** out
-    );
-
-    // onnxruntime_c_api.cc:195
-    ORT_API_STATUS_IMPL(
-        OrtApis::CreateTensorWithDataAsOrtValue,
-        _In_ const OrtMemoryInfo* info,
-        _Inout_ void* p_data,
-        size_t p_data_len,
-        _In_ const int64_t* shape,
-        size_t shape_len,
-        ONNXTensorElementDataType type,
-        _Outptr_ OrtValue** out
-    ) { ... }
-
-    // c_api_sample.cpp
-    std::vector<float> input_tensor_values(input_tensor_size);
-    OrtValue *input_tensor = NULL;
-    status = g_ort->CreateTensorWithDataAsOrtValue(
-        memory_info,
-        input_tensor_values.data(),
-        input_tensor_size * sizeof(float),
-        input_node_dims.data(),
-        4,
-        ONNX_TENSOR_ELEMENT_DATA_TYPE_FLOAT,
-        &input_tensor
-    );
-    CheckStatus(status);
-    */
-
     // FIXME: Check me!
     let mut input_tensor_ptr: *mut OrtValue = std::ptr::null_mut();
     let input_tensor_ptr_ptr: *mut *mut OrtValue = &mut input_tensor_ptr;
@@ -262,7 +211,6 @@ fn main() {
         input_tensor_values.as_mut_ptr() as *mut std::ffi::c_void;
     assert_ne!(input_tensor_values_ptr, std::ptr::null_mut());
 
-    println!("input_node_dims: {:?}", input_node_dims);
     let shape: *const i64 = input_node_dims.as_ptr();
     assert_ne!(shape, std::ptr::null_mut());
 
@@ -272,13 +220,13 @@ fn main() {
             .unwrap()
             .CreateTensorWithDataAsOrtValue
             .unwrap()(
-            memory_info_ptr,                                               // info
-            input_tensor_values_ptr,                                       // p_data
-            (input_tensor_size * std::mem::size_of::<f64>()) as u64,       // p_data_len
-            shape,                                                         // shape
-            4,                                                             // shape_len
-            ONNXTensorElementDataType_ONNX_TENSOR_ELEMENT_DATA_TYPE_FLOAT, // type_
-            input_tensor_ptr_ptr,                                          // out
+            memory_info_ptr,
+            input_tensor_values_ptr,
+            (input_tensor_size * std::mem::size_of::<f64>()) as u64,
+            shape,
+            4,
+            ONNXTensorElementDataType_ONNX_TENSOR_ELEMENT_DATA_TYPE_FLOAT,
+            input_tensor_ptr_ptr,
         )
     };
     CheckStatus(g_ort, status).unwrap();
@@ -321,71 +269,24 @@ fn main() {
 
     let input_node_names_cstring =
         unsafe { std::ffi::CString::from_raw(input_node_names_ptr[0] as *mut i8) };
-    println!("input_node_names[0]:  {:?}", input_node_names_cstring);
-    std::mem::forget(input_node_names_cstring);
-    let output_node_names_cstring =
-        unsafe { std::ffi::CString::from_raw(output_node_names_ptr[0] as *mut i8) };
-    println!("output_node_names[0]: {:?}", output_node_names_cstring);
-    std::mem::forget(output_node_names_cstring);
     let run_options_ptr: *const OrtRunOptions = std::ptr::null();
     let mut output_tensor_ptr: *mut OrtValue = std::ptr::null_mut();
     let mut output_tensor_ptr_ptr: *mut *mut OrtValue = &mut output_tensor_ptr;
 
-    /*
-    // bindings.rs
-    fn Run(
-        sess: *mut OrtSession,
-        run_options: *const OrtRunOptions,
-        input_names: *const *const ::std::os::raw::c_char,
-        input: *const *const OrtValue,
-        input_len: size_t,
-        output_names1: *const *const ::std::os::raw::c_char,
-        output_names_len: size_t,
-        output: *mut *mut OrtValue,
-    ) -> OrtStatusPtr
-
-    // onnxruntime_c_api.h
-    ORT_API2_STATUS(
-        Run,
-        _Inout_ OrtSession* sess,
-        _In_opt_ const OrtRunOptions* run_options,
-        _In_reads_(input_len) const char* const* input_names,
-        _In_reads_(input_len) const OrtValue* const* input,
-        size_t input_len,
-        _In_reads_(output_names_len) const char* const* output_names1,
-        size_t output_names_len,
-        _Inout_updates_all_(output_names_len) OrtValue** output
-    );
-
-    // onnxruntime_c_api.cc
-    ORT_API_STATUS_IMPL(
-        OrtApis::Run,
-        _Inout_ OrtSession* sess,
-        _In_opt_ const OrtRunOptions* run_options,
-        _In_reads_(input_len) const char* const* input_names,
-        _In_reads_(input_len) const OrtValue* const* input,
-        size_t input_len,
-        _In_reads_(output_names_len) const char* const* output_names1,
-        size_t output_names_len,
-        _Inout_updates_all_(output_names_len) OrtValue** output
-    ) { ... }
-    */
-
     let status = unsafe {
         g_ort.as_ref().unwrap().Run.unwrap()(
-            session_ptr,               // Ok!
-            run_options_ptr,           // Ok!
-            input_node_names_ptr_ptr,  // Looks fine
-            input_tensor_ptr3,         // ?
-            1,                         // Ok!
-            output_node_names_ptr_ptr, // Looks fine
-            1,                         // Ok!
-            output_tensor_ptr_ptr,     // Ok!
+            session_ptr,
+            run_options_ptr,
+            input_node_names_ptr_ptr,
+            input_tensor_ptr3,
+            1,
+            output_node_names_ptr_ptr,
+            1,
+            output_tensor_ptr_ptr,
         )
     };
     CheckStatus(g_ort, status).unwrap();
     assert_ne!(output_tensor_ptr, std::ptr::null_mut());
-    // println!("input_tensor: {:?}", input_tensor);
 
     let mut is_tensor = 0;
     let status =
@@ -394,12 +295,6 @@ fn main() {
     assert_eq!(is_tensor, 1);
 
     // Get pointer to output tensor float values
-    // float *floatarr;
-    // CheckStatus(g_ort->GetTensorMutableData(output_tensor, (void**)&floatarr));
-    // fn GetTensorMutableData(
-    //     value: *mut OrtValue,
-    //     out: *mut *mut ::std::os::raw::c_void,
-    // ) -> OrtStatusPtr
     let mut floatarr: *mut f64 = std::ptr::null_mut();
     let floatarr_ptr: *mut *mut f64 = &mut floatarr;
     let floatarr_ptr_void: *mut *mut std::ffi::c_void = floatarr_ptr as *mut *mut std::ffi::c_void;
