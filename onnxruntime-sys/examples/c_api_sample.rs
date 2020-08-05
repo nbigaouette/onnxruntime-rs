@@ -188,8 +188,8 @@ fn main() {
     let output_node_names = &["softmaxout_1"];
 
     // initialize input data with values in [0.0, 1.0]
-    let mut input_tensor_values: Vec<f64> = (0..input_tensor_size)
-        .map(|i| (i as f64) / ((input_tensor_size + 1) as f64))
+    let mut input_tensor_values: Vec<f32> = (0..input_tensor_size)
+        .map(|i| (i as f32) / ((input_tensor_size + 1) as f32))
         .collect();
 
     // create input tensor object from data values
@@ -222,7 +222,7 @@ fn main() {
             .unwrap()(
             memory_info_ptr,
             input_tensor_values_ptr,
-            (input_tensor_size * std::mem::size_of::<f64>()) as u64,
+            (input_tensor_size * std::mem::size_of::<f32>()) as u64,
             shape,
             4,
             ONNXTensorElementDataType_ONNX_TENSOR_ELEMENT_DATA_TYPE_FLOAT,
@@ -295,8 +295,8 @@ fn main() {
     assert_eq!(is_tensor, 1);
 
     // Get pointer to output tensor float values
-    let mut floatarr: *mut f64 = std::ptr::null_mut();
-    let floatarr_ptr: *mut *mut f64 = &mut floatarr;
+    let mut floatarr: *mut f32 = std::ptr::null_mut();
+    let floatarr_ptr: *mut *mut f32 = &mut floatarr;
     let floatarr_ptr_void: *mut *mut std::ffi::c_void = floatarr_ptr as *mut *mut std::ffi::c_void;
     let status = unsafe {
         g_ort.as_ref().unwrap().GetTensorMutableData.unwrap()(output_tensor_ptr, floatarr_ptr_void)
@@ -307,7 +307,7 @@ fn main() {
     assert!((unsafe { *floatarr.offset(0) } - 0.000045).abs() < 1e-6);
 
     // score the model, and print scores for first 5 classes
-    let floatarr_vec: Vec<f64> = unsafe { Vec::from_raw_parts(floatarr, 5, 5) };
+    let floatarr_vec: Vec<f32> = unsafe { Vec::from_raw_parts(floatarr, 5, 5) };
     for i in 0..5 {
         println!("Score for class [{}] =  {}", i, floatarr_vec[i]);
     }
