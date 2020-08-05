@@ -307,10 +307,13 @@ fn main() {
     assert!((unsafe { *floatarr.offset(0) } - 0.000045).abs() < 1e-6);
 
     // score the model, and print scores for first 5 classes
+    // NOTE: The C ONNX Runtime allocated the array, we shouldn't drop the vec
+    //       but let C de-allocate instead.
     let floatarr_vec: Vec<f32> = unsafe { Vec::from_raw_parts(floatarr, 5, 5) };
     for i in 0..5 {
         println!("Score for class [{}] =  {}", i, floatarr_vec[i]);
     }
+    std::mem::forget(floatarr_vec);
 
     // Results should be as below...
     // Score for class[0] = 0.000045
