@@ -263,8 +263,8 @@ fn main() {
         .map(|n| std::ffi::CString::new(n.clone()).unwrap())
         .collect();
     let output_node_names_ptr: Vec<*const i8> = output_node_names_cstring
-        .into_iter()
-        .map(|n| n.into_raw() as *const i8)
+        .iter()
+        .map(|n| n.as_ptr() as *const i8)
         .collect();
     let output_node_names_ptr_ptr: *const *const i8 = output_node_names_ptr.as_ptr();
 
