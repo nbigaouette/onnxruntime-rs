@@ -7,16 +7,16 @@
         {
             "type": "lldb",
             "request": "launch",
-            "name": "Unit tests (ommx-sys)",
+            "name": "Unit tests (onnxruntime-sys)",
             "cargo": {
                 "args": [
                     "test",
                     "--no-run",
                     "--lib",
-                    "--package=ommx-sys"
+                    "--package=onnxruntime-sys"
                 ],
                 "filter": {
-                    "name": "ommx-sys",
+                    "name": "onnxruntime-sys",
                     "kind": "lib"
                 }
             },
@@ -34,7 +34,7 @@
                 "args": [
                     "build",
                     "--example=c_api_sample",
-                    "--package=ommx-sys"
+                    "--package=onnxruntime-sys"
                 ],
                 "filter": {
                     "name": "c_api_sample",
@@ -56,7 +56,7 @@
                     "test",
                     "--no-run",
                     "--example=c_api_sample",
-                    "--package=ommx-sys"
+                    "--package=onnxruntime-sys"
                 ],
                 "filter": {
                     "name": "c_api_sample",
