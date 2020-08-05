@@ -15,7 +15,7 @@ fn main() {
     let status = unsafe {
         g_ort.as_ref().unwrap().CreateEnv.unwrap()(
             OrtLoggingLevel_ORT_LOGGING_LEVEL_VERBOSE,
-            std::ffi::CString::new("test").unwrap().into_raw(),
+            std::ffi::CString::new("test").unwrap().into_raw(), // FIXME: Memory leak, see https://doc.rust-lang.org/std/ffi/struct.CString.html#method.into_raw
             &mut env_ptr,
         )
     };
