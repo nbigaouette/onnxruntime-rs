@@ -409,7 +409,7 @@ fn main() {
     CheckStatus(g_ort, status).unwrap();
     assert_ne!(floatarr, std::ptr::null_mut());
 
-    assert!((unsafe { *floatarr } - 0.000045).abs() < 1e-6);
+    assert!((unsafe { *floatarr.offset(0) } - 0.000045).abs() < 1e-6);
 
     // score the model, and print scores for first 5 classes
     let floatarr_vec: Vec<f64> = unsafe { Vec::from_raw_parts(floatarr, 5, 5) };
