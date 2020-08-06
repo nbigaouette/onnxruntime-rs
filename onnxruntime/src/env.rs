@@ -14,7 +14,8 @@ use onnxruntime_sys as sys;
 use crate::{
     error::{status_to_result, OrtError, Result},
     g_ort,
-    session::{GraphOptimizationLevel, SessionBuilder},
+    session::SessionBuilder,
+    GraphOptimizationLevel, LoggingLevel,
 };
 
 lazy_static! {
@@ -46,23 +47,36 @@ pub struct NamedEnv {
     pub(crate) name: CString,
 }
 
-#[derive(Debug)]
-pub struct Env {
-    inner: Arc<Mutex<NamedEnv>>,
+pub struct EnvBuilder {
+    name: String,
+    log_level: LoggingLevel,
 }
 
-impl Env {
-    pub fn new<S>(name: S) -> Result<Env>
-    where
-        S: AsRef<str>,
-    {
-        Env::from_str(name.as_ref())
+impl EnvBuilder {
+    pub fn new() -> EnvBuilder {
+        EnvBuilder {
+            name: "default".into(),
+            log_level: LoggingLevel::Warning,
+        }
     }
 
-    pub fn from_str(name: &str) -> Result<Env> {
+    pub fn with_name<S>(mut self, name: S) -> EnvBuilder
+    where
+        S: Into<String>,
+    {
+        self.name = name.into();
+        self
+    }
+
+    pub fn with_log_level(mut self, log_level: LoggingLevel) -> EnvBuilder {
+        self.log_level = log_level;
+        self
+    }
+
+    pub fn build(self) -> Result<Env> {
         let mut g_named_env = G_NAMED_ENV.lock().unwrap();
 
-        let name = CString::new(name)?;
+        let name = CString::new(self.name)?;
 
         if *g_named_env.env_ptr.0.get_mut() == std::ptr::null_mut() {
             println!(
@@ -108,7 +122,14 @@ impl Env {
             })
         }
     }
+}
 
+#[derive(Debug)]
+pub struct Env {
+    inner: Arc<Mutex<NamedEnv>>,
+}
+
+impl Env {
     pub fn load_model<P>(&self, filename: P) -> SessionBuilder
     where
         P: Into<PathBuf>,
@@ -132,7 +153,7 @@ mod tests {
 
     #[test]
     fn singleton_env() {
-        let env1 = Env::new("test1").unwrap();
+        let env1 = EnvBuilder::new().with_name("test1").build().unwrap();
 
         assert_eq!(
             G_NAMED_ENV.lock().unwrap().name,
@@ -147,7 +168,7 @@ mod tests {
             *env1.inner.lock().unwrap().env_ptr.0.get_mut() as usize
         );
 
-        let env2 = Env::new("test2").unwrap();
+        let env2 = EnvBuilder::new().with_name("test2").build().unwrap();
 
         assert_eq!(
             G_NAMED_ENV.lock().unwrap().name,
@@ -160,7 +181,7 @@ mod tests {
             "Environment should contain information from first creation"
         );
 
-        let env3 = Env::new("test3").unwrap();
+        let env3 = EnvBuilder::new().with_name("test3").build().unwrap();
 
         assert_eq!(
             G_NAMED_ENV.lock().unwrap().name,

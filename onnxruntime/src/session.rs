@@ -12,7 +12,7 @@ use onnxruntime_sys as sys;
 use crate::{
     env::{Env, NamedEnv},
     error::{status_to_result, OrtError, Result},
-    g_ort,
+    g_ort, GraphOptimizationLevel,
 };
 
 // FIXME: Create a high-level wrapper
@@ -22,14 +22,6 @@ pub struct SessionOptions {
 
 pub struct Session {
     ptr: *mut sys::OrtSession,
-}
-
-#[repr(u32)]
-pub enum GraphOptimizationLevel {
-    DisableAll = sys::GraphOptimizationLevel_ORT_DISABLE_ALL,
-    Basic = sys::GraphOptimizationLevel_ORT_ENABLE_BASIC,
-    Extended = sys::GraphOptimizationLevel_ORT_ENABLE_EXTENDED,
-    All = sys::GraphOptimizationLevel_ORT_ENABLE_ALL,
 }
 
 pub struct SessionBuilder {

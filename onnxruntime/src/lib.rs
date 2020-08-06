@@ -25,8 +25,24 @@ mod error;
 mod session;
 
 // Re-export
-pub use env::Env;
-pub use session::GraphOptimizationLevel;
+pub use env::EnvBuilder;
+
+#[repr(u32)]
+pub enum LoggingLevel {
+    Verbose = sys::OrtLoggingLevel_ORT_LOGGING_LEVEL_VERBOSE,
+    Info = sys::OrtLoggingLevel_ORT_LOGGING_LEVEL_INFO,
+    Warning = sys::OrtLoggingLevel_ORT_LOGGING_LEVEL_WARNING,
+    Error = sys::OrtLoggingLevel_ORT_LOGGING_LEVEL_ERROR,
+    Fatal = sys::OrtLoggingLevel_ORT_LOGGING_LEVEL_FATAL,
+}
+
+#[repr(u32)]
+pub enum GraphOptimizationLevel {
+    DisableAll = sys::GraphOptimizationLevel_ORT_DISABLE_ALL,
+    Basic = sys::GraphOptimizationLevel_ORT_ENABLE_BASIC,
+    Extended = sys::GraphOptimizationLevel_ORT_ENABLE_EXTENDED,
+    All = sys::GraphOptimizationLevel_ORT_ENABLE_ALL,
+}
 
 #[cfg(test)]
 mod tests {
