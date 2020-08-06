@@ -12,8 +12,16 @@ const ORT_VERSION: &'static str = "1.3.0";
 const ORT_RELEASE_BASE_URL: &'static str =
     "https://github.com/microsoft/onnxruntime/releases/download";
 
+/// Environment variable selecting which strategy to use for finding the library
+/// Possibilities:
+/// * "download": Download a pre-built library from upstream. This is the default if `ORT_STRATEGY` is not set.
+/// * "system": Use installed library. Use `ORT_LIB_LOCATION` to point to proper location.
+/// * "compile": Download source and compile (TODO).
+const ORT_ENV_STRATEGY: &'static str = "ORT_STRATEGY";
+
 /// Name of environment variable that, if present, contains the location of a pre-built library.
-const ORT_ENV_LIB_LOCATION: &'static str = "ORT_LIB_LOCATION";
+/// Only used if `ORT_STRATEGY=system`.
+const ORT_ENV_SYSTEM_LIB_LOCATION: &'static str = "ORT_LIB_LOCATION";
 /// Name of environment variable that, if present, controls wether to use CUDA or not.
 const ORT_ENV_GPU: &'static str = "ORT_USE_CUDA";
 
@@ -22,7 +30,6 @@ const ORT_PREBUILT_EXTRACT_DIR: &'static str = "onnxruntime";
 
 fn main() {
     let libort_install_dir = prepare_libort_dir();
-    println!("libort_install_dir: {:?}", libort_install_dir);
 
     let include_dir = libort_install_dir.join("include");
     let clang_arg = format!("-I{}", include_dir.display());
@@ -36,6 +43,10 @@ fn main() {
 
     // Tell cargo to invalidate the built crate whenever the wrapper changes
     println!("cargo:rerun-if-changed=wrapper.h");
+
+    println!("cargo:rerun-if-env-changed={}", ORT_ENV_STRATEGY);
+    println!("cargo:rerun-if-env-changed={}", ORT_ENV_GPU);
+    println!("cargo:rerun-if-env-changed={}", ORT_ENV_SYSTEM_LIB_LOCATION);
 
     // The bindgen::Builder is the main entry point
     // to bindgen, and lets you build up options for
@@ -130,8 +141,6 @@ fn extract_zip(filename: &Path, outpath: &Path) {
 fn prebuilt_archive_url() -> (PathBuf, String) {
     let os = env::var("CARGO_CFG_TARGET_OS").expect("Unable to get TARGET_OS");
 
-    println!("CARGO_CFG_TARGET_OS={}", os);
-
     let gpu_str = match env::var(ORT_ENV_GPU) {
         Ok(cuda_env) => {
             match cuda_env.as_str() {
@@ -209,9 +218,20 @@ fn prepare_libort_dir_prebuilt() -> PathBuf {
 }
 
 fn prepare_libort_dir() -> PathBuf {
-    if let Ok(lib_location) = env::var(ORT_ENV_LIB_LOCATION) {
-        PathBuf::from(lib_location)
-    } else {
-        prepare_libort_dir_prebuilt()
+    let strategy = env::var(ORT_ENV_STRATEGY);
+    println!("strategy: {:?}", strategy);
+    match strategy.as_ref().map(String::as_str) {
+        Ok("download") | Err(_) => prepare_libort_dir_prebuilt(),
+        Ok("system") => PathBuf::from(match env::var(ORT_ENV_SYSTEM_LIB_LOCATION) {
+            Ok(p) => p,
+            Err(e) => {
+                panic!(
+                    "Could not get value of environment variable {:?}: {:?}",
+                    ORT_ENV_SYSTEM_LIB_LOCATION, e
+                );
+            }
+        }),
+        Ok("compile") => unimplemented!(),
+        _ => panic!("Unknown value for {:?}", ORT_ENV_STRATEGY),
     }
 }
