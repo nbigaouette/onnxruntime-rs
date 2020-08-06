@@ -53,6 +53,7 @@ pub enum GraphOptimizationLevel {
     All = sys::GraphOptimizationLevel_ORT_ENABLE_ALL,
 }
 
+// FIXME: Use https://docs.rs/bindgen/0.54.1/bindgen/struct.Builder.html#method.rustified_enum
 #[derive(Debug)]
 #[repr(u32)]
 pub enum TensorElementDataType {
@@ -73,6 +74,24 @@ pub enum TensorElementDataType {
     Complex64 = sys::ONNXTensorElementDataType_ONNX_TENSOR_ELEMENT_DATA_TYPE_COMPLEX64,
     Complex128 = sys::ONNXTensorElementDataType_ONNX_TENSOR_ELEMENT_DATA_TYPE_COMPLEX128,
     Bfloat16 = sys::ONNXTensorElementDataType_ONNX_TENSOR_ELEMENT_DATA_TYPE_BFLOAT16,
+}
+
+#[derive(Debug)]
+#[repr(i32)]
+pub enum AllocatorType {
+    Invalid = sys::OrtAllocatorType_Invalid,
+    Device = sys::OrtAllocatorType_OrtDeviceAllocator,
+    Arena = sys::OrtAllocatorType_OrtArenaAllocator,
+}
+
+#[derive(Debug)]
+#[repr(i32)]
+pub enum MemType {
+    // FIXME: C API's `OrtMemType_OrtMemTypeCPU` defines it equal to `OrtMemType_OrtMemTypeCPUOutput`. How to handle this??
+    // CPUInput = sys::OrtMemType_OrtMemTypeCPUInput,
+    // CPUOutput = sys::OrtMemType_OrtMemTypeCPUOutput,
+    // CPU = sys::OrtMemType_OrtMemTypeCPU,
+    Default = sys::OrtMemType_OrtMemTypeDefault,
 }
 
 #[cfg(test)]

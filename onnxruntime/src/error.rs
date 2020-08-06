@@ -12,32 +12,42 @@ pub type Result<T> = std::result::Result<T, OrtError>;
 pub enum OrtError {
     #[error("Failed to construct String")]
     StringConversion(OrtApiError),
-    #[error("Failed to create environment")]
+    // FIXME: Move these to another enum (they are C API calls errors)
+    #[error("Failed to create environment: {0}")]
     Environment(OrtApiError),
-    #[error("Failed to create session options")]
+    #[error("Failed to create session options: {0}")]
     SessionOptions(OrtApiError),
-    #[error("Failed to create session")]
+    #[error("Failed to create session: {0}")]
     Session(OrtApiError),
-    #[error("Failed to get allocator")]
+    #[error("Failed to get allocator: {0}")]
     Allocator(OrtApiError),
-    #[error("Failed to get input name")]
+    #[error("Failed to get input name: {0}")]
     InputName(OrtApiError),
+    #[error("Failed to get input type info: {0}")]
+    GetInputTypeInfo(OrtApiError),
+    #[error("Failed to cast type info to tensor info: {0}")]
+    CastTypeInfoToTensorInfo(OrtApiError),
+    #[error("Failed to get tensor element type: {0}")]
+    TensorElementType(OrtApiError),
+    #[error("Failed to get dimensions count: {0}")]
+    GetDimensionsCount(OrtApiError),
+    #[error("Failed to get dimensions: {0}")]
+    GetDimensions(OrtApiError),
+    #[error("Failed to get dimensions: {0}")]
+    CreateCpuMemoryInfo(OrtApiError),
+    #[error("Failed to create tensor with data: {0}")]
+    CreateTensorWithData(OrtApiError),
+    #[error("Failed to check if tensor: {0}")]
+    IsTensor(OrtApiError),
+
+    #[error("Dimensions do not match")]
+    NonMatchingDimensions,
     #[error("File {filename:?} does not exists")]
     FileDoesNotExists { filename: PathBuf },
     #[error("Path {path:?} cannot be converted to UTF-8")]
     NonUtf8Path { path: PathBuf },
     #[error("Failed to build CString when original contains null: {0}")]
     CStringNulError(#[from] std::ffi::NulError),
-    // #[error("Failed to acquire lock")]
-    // Lock(std::sync::LockResult),
-    // #[error("data store disconnected")]
-    // Disconnect(#[from] io::Error),
-    // #[error("the data for key `{0}` is not available")]
-    // Redaction(String),
-    // #[error("invalid header (expected {expected:?}, found {found:?})")]
-    // InvalidHeader { expected: String, found: String },
-    // #[error("unknown data store error")]
-    // Unknown,
 }
 
 #[derive(Error, Debug)]

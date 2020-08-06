@@ -17,5 +17,14 @@ fn main() -> Result<(), Error> {
     let inputs = session.read_inputs()?;
     println!("inputs: {:#?}", inputs);
 
+    let input_tensor_size: u32 = inputs[0].dimensions.iter().product();
+
+    let output_node_names = &["softmaxout_1"];
+
+    // initialize input data with values in [0.0, 1.0]
+    let mut input_tensor_values: Vec<f32> = (0..input_tensor_size)
+        .map(|i| (i as f32) / ((input_tensor_size + 1) as f32))
+        .collect();
+
     Ok(())
 }

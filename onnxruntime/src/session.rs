@@ -13,7 +13,7 @@ use crate::{
     char_p_to_string,
     env::{Env, NamedEnv},
     error::{status_to_result, OrtError, Result},
-    g_ort, GraphOptimizationLevel, TensorElementDataType,
+    g_ort, AllocatorType, GraphOptimizationLevel, MemType, TensorElementDataType,
 };
 
 // FIXME: Create a high-level wrapper
@@ -169,21 +169,21 @@ impl Session {
                 &mut typeinfo_ptr,
             )
         };
-        status_to_result(status).map_err(OrtError::InputName)?;
+        status_to_result(status).map_err(OrtError::GetInputTypeInfo)?;
         assert_ne!(typeinfo_ptr, std::ptr::null_mut());
 
         let mut tensor_info_ptr: *const sys::OrtTensorTypeAndShapeInfo = std::ptr::null_mut();
         let status = unsafe {
             (*g_ort()).CastTypeInfoToTensorInfo.unwrap()(typeinfo_ptr, &mut tensor_info_ptr)
         };
-        status_to_result(status).map_err(OrtError::InputName)?;
+        status_to_result(status).map_err(OrtError::CastTypeInfoToTensorInfo)?;
         assert_ne!(tensor_info_ptr, std::ptr::null_mut());
 
         let mut input_type_sys: sys::ONNXTensorElementDataType = 0;
         let status = unsafe {
             (*g_ort()).GetTensorElementType.unwrap()(tensor_info_ptr, &mut input_type_sys)
         };
-        status_to_result(status).map_err(OrtError::InputName)?;
+        status_to_result(status).map_err(OrtError::TensorElementType)?;
         assert_ne!(input_type_sys, 0);
         // This transmute should be safe since its value is read from GetTensorElementType which we must trust.
         let input_type: TensorElementDataType = unsafe { std::mem::transmute(input_type_sys) };
@@ -194,7 +194,7 @@ impl Session {
         let mut num_dims = 0;
         let status =
             unsafe { (*g_ort()).GetDimensionsCount.unwrap()(tensor_info_ptr, &mut num_dims) };
-        status_to_result(status).map_err(OrtError::InputName)?;
+        status_to_result(status).map_err(OrtError::GetDimensionsCount)?;
         assert_ne!(num_dims, 0);
 
         // println!("Input {} : num_dims={}", i, num_dims);
@@ -206,7 +206,7 @@ impl Session {
                 num_dims,
             )
         };
-        status_to_result(status).map_err(OrtError::InputName)?;
+        status_to_result(status).map_err(OrtError::GetDimensions)?;
 
         // for j in 0..num_dims {
         //     println!("Input {} : dim {}={}", i, j, input_node_dims[j as usize]);
@@ -228,11 +228,67 @@ impl Session {
             .map(|i| self.read_input(i))
             .collect::<Result<Vec<Input>>>()
     }
+
+    // FIXME: Use ndarray instead of flatten 1D vector
+    pub fn set_inputs_float(
+        &mut self,
+        mut flatten_array: Vec<f32>,
+        input_node_dims: &[u32],
+    ) -> Result<()> {
+        if flatten_array.len() != input_node_dims.iter().map(|d| *d as usize).product() {
+            return Err(OrtError::NonMatchingDimensions);
+        }
+
+        // create input tensor object from data values
+        let mut memory_info_ptr: *mut sys::OrtMemoryInfo = std::ptr::null_mut();
+        let status = unsafe {
+            (*g_ort()).CreateCpuMemoryInfo.unwrap()(
+                AllocatorType::Arena as i32, // FIXME: Pass as argument
+                MemType::Default as i32,     // FIXME: Pass as argument
+                &mut memory_info_ptr,
+            )
+        };
+        status_to_result(status).map_err(OrtError::CreateCpuMemoryInfo)?;
+        assert_ne!(memory_info_ptr, std::ptr::null_mut());
+
+        let mut input_tensor_ptr: *mut sys::OrtValue = std::ptr::null_mut();
+        let input_tensor_ptr_ptr: *mut *mut sys::OrtValue = &mut input_tensor_ptr;
+        let input_tensor_values_ptr: *mut std::ffi::c_void =
+            flatten_array.as_mut_ptr() as *mut std::ffi::c_void;
+        assert_ne!(input_tensor_values_ptr, std::ptr::null_mut());
+
+        // For API calls, we need i64, not u32. We use u32 in the safe API to prevent negative values.
+        let input_node_dims_i64: Vec<i64> = input_node_dims.iter().map(|d| *d as i64).collect();
+        let shape: *const i64 = input_node_dims_i64.as_ptr();
+        assert_ne!(shape, std::ptr::null_mut());
+
+        let status = unsafe {
+            (*g_ort()).CreateTensorWithDataAsOrtValue.unwrap()(
+                memory_info_ptr,
+                input_tensor_values_ptr,
+                (flatten_array.len() * std::mem::size_of::<f32>()) as u64,
+                shape,
+                4,
+                TensorElementDataType::Float as u32,
+                input_tensor_ptr_ptr,
+            )
+        };
+        status_to_result(status).map_err(OrtError::CreateTensorWithData)?;
+        assert_ne!(input_tensor_ptr, std::ptr::null_mut());
+
+        let mut is_tensor = 0;
+        let status = unsafe { (*g_ort()).IsTensor.unwrap()(input_tensor_ptr, &mut is_tensor) };
+        status_to_result(status).map_err(OrtError::IsTensor)?;
+        assert_eq!(is_tensor, 1);
+
+        Ok(())
+    }
 }
 
 #[derive(Debug)]
 pub struct Input {
-    name: String,
-    input_type: TensorElementDataType,
-    dimensions: Vec<u32>,
+    pub name: String,
+    pub input_type: TensorElementDataType,
+    /// C API uses a i64 for the dimensions. We use an unsigned of the same range of the positive values.
+    pub dimensions: Vec<u32>,
 }
