@@ -1,4 +1,4 @@
-use onnxruntime::*;
+use onnxruntime::{EnvBuilder, GraphOptimizationLevel, LoggingLevel};
 
 type Error = Box<dyn std::error::Error>;
 
@@ -13,6 +13,9 @@ fn main() -> Result<(), Error> {
         .with_optimization_level(GraphOptimizationLevel::Basic)
         .with_number_threads(1)
         .build()?;
+
+    let inputs = session.read_inputs()?;
+    println!("inputs: {:#?}", inputs);
 
     Ok(())
 }

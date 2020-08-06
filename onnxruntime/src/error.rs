@@ -10,12 +10,18 @@ pub type Result<T> = std::result::Result<T, OrtError>;
 
 #[derive(Error, Debug)]
 pub enum OrtError {
+    #[error("Failed to construct String")]
+    StringConversion(OrtApiError),
     #[error("Failed to create environment")]
     Environment(OrtApiError),
     #[error("Failed to create session options")]
     SessionOptions(OrtApiError),
     #[error("Failed to create session")]
     Session(OrtApiError),
+    #[error("Failed to get allocator")]
+    Allocator(OrtApiError),
+    #[error("Failed to get input name")]
+    InputName(OrtApiError),
     #[error("File {filename:?} does not exists")]
     FileDoesNotExists { filename: PathBuf },
     #[error("Path {path:?} cannot be converted to UTF-8")]
@@ -58,7 +64,13 @@ impl From<OrtStatusWrapper> for std::result::Result<(), OrtApiError> {
             let raw: *const i8 = unsafe { (*g_ort()).GetErrorMessage.unwrap()(status.0) };
             match char_p_to_string(raw) {
                 Ok(msg) => Err(OrtApiError::Msg(msg)),
-                Err(e) => Err(OrtApiError::IntoStringError(e)),
+                Err(err) => match err {
+                    OrtError::StringConversion(e) => match e {
+                        OrtApiError::IntoStringError(e) => Err(OrtApiError::IntoStringError(e)),
+                        _ => unreachable!(),
+                    },
+                    _ => unreachable!(),
+                },
             }
         }
     }
