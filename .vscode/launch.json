@@ -29,7 +29,7 @@
         {
             "type": "lldb",
             "request": "launch",
-            "name": "Example: c_api_sample",
+            "name": "Example: c_api_sample (onnxruntime-sys)",
             "cargo": {
                 "args": [
                     "build",
@@ -38,6 +38,27 @@
                 ],
                 "filter": {
                     "name": "c_api_sample",
+                    "kind": "example"
+                }
+            },
+            "args": [],
+            "cwd": "${workspaceFolder}",
+            "env": {
+                "DYLD_LIBRARY_PATH": "target/onnxruntime/lib"
+            }
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Example: sample (onnxruntime)",
+            "cargo": {
+                "args": [
+                    "build",
+                    "--example=sample",
+                    "--package=onnxruntime"
+                ],
+                "filter": {
+                    "name": "sample",
                     "kind": "example"
                 }
             },
