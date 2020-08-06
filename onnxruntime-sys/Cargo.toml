@@ -18,3 +18,11 @@ keywords = ["neuralnetworks", "onnx", "bindings"]
 
 [build-dependencies]
 bindgen = "0.54"
+ureq = "1.3"
+
+[target.'cfg(windows)'.build-dependencies]
+zip = "0.5"
+
+[target.'cfg(unix)'.build-dependencies]
+flate2 = "1.0"
+tar = "0.4"
