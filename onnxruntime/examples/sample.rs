@@ -8,7 +8,7 @@ fn main() -> Result<(), Error> {
         .with_log_level(LoggingLevel::Verbose)
         .build()?;
 
-    let session = env
+    let mut session = env
         .load_model("squeezenet.onnx")
         .with_optimization_level(GraphOptimizationLevel::Basic)
         .with_number_threads(1)
@@ -22,9 +22,11 @@ fn main() -> Result<(), Error> {
     let output_node_names = &["softmaxout_1"];
 
     // initialize input data with values in [0.0, 1.0]
-    let mut input_tensor_values: Vec<f32> = (0..input_tensor_size)
+    let mut data_1d: Vec<f32> = (0..input_tensor_size)
         .map(|i| (i as f32) / ((input_tensor_size + 1) as f32))
         .collect();
+
+    session.set_inputs(data_1d, &inputs[0].dimensions)?;
 
     Ok(())
 }

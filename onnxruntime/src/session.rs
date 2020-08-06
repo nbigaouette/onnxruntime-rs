@@ -14,6 +14,7 @@ use crate::{
     env::{Env, NamedEnv},
     error::{status_to_result, OrtError, Result},
     g_ort, AllocatorType, GraphOptimizationLevel, MemType, TensorElementDataType,
+    TypeToTensorElementDataType,
 };
 
 // FIXME: Create a high-level wrapper
@@ -230,11 +231,14 @@ impl Session {
     }
 
     // FIXME: Use ndarray instead of flatten 1D vector
-    pub fn set_inputs_float(
+    pub fn set_inputs<T>(
         &mut self,
-        mut flatten_array: Vec<f32>,
+        mut flatten_array: Vec<T>,
         input_node_dims: &[u32],
-    ) -> Result<()> {
+    ) -> Result<()>
+    where
+        T: TypeToTensorElementDataType,
+    {
         if flatten_array.len() != input_node_dims.iter().map(|d| *d as usize).product() {
             return Err(OrtError::NonMatchingDimensions);
         }
@@ -269,7 +273,7 @@ impl Session {
                 (flatten_array.len() * std::mem::size_of::<f32>()) as u64,
                 shape,
                 4,
-                TensorElementDataType::Float as u32,
+                T::tensor_element_data_type() as u32,
                 input_tensor_ptr_ptr,
             )
         };

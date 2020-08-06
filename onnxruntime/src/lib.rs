@@ -76,6 +76,37 @@ pub enum TensorElementDataType {
     Bfloat16 = sys::ONNXTensorElementDataType_ONNX_TENSOR_ELEMENT_DATA_TYPE_BFLOAT16,
 }
 
+pub trait TypeToTensorElementDataType {
+    fn tensor_element_data_type() -> TensorElementDataType;
+}
+
+macro_rules! impl_type_trait {
+    ($type_:ty, $variant:ident) => {
+        impl TypeToTensorElementDataType for $type_ {
+            fn tensor_element_data_type() -> TensorElementDataType {
+                TensorElementDataType::$variant
+            }
+        }
+    };
+}
+
+impl_type_trait!(f32, Float);
+impl_type_trait!(u8, Uint8);
+impl_type_trait!(i8, Int8);
+impl_type_trait!(u16, Uint16);
+impl_type_trait!(i16, Int16);
+impl_type_trait!(i32, Int32);
+impl_type_trait!(i64, Int64);
+impl_type_trait!(String, String);
+impl_type_trait!(bool, Bool);
+// impl_type_trait!(f16, Float16);
+impl_type_trait!(f64, Double);
+impl_type_trait!(u32, Uint32);
+impl_type_trait!(u64, Uint64);
+// impl_type_trait!(, Complex64);
+// impl_type_trait!(, Complex128);
+// impl_type_trait!(, Bfloat16);
+
 #[derive(Debug)]
 #[repr(i32)]
 pub enum AllocatorType {
