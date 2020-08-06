@@ -33,6 +33,16 @@ brew install llvm cmake
 export LLVM_CONFIG_PATH=/usr/local/opt/llvm/bin/llvm-config
 ```
 
+The `build.rs` script uses the `ONNXRUNTIME_INSTALL_DIR` environment variable to
+find the built library and its headers. Make sure to point to the proper location:
+
+```sh
+❯ export ONNXRUNTIME_INSTALL_DIR=/full/path/to/onnxruntime
+```
+
+**NOTE**: The [`.cargo/config`](.cargo/config) file assumes the library is installed
+          in the `target/onnxruntime` directory.
+
 ```sh
 ❯ git clone https://github.com/microsoft/onnxruntime.git onnxruntime.git
 ❯ cd onnxruntime.git
