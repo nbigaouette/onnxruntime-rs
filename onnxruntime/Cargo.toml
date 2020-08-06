@@ -2,9 +2,17 @@
 authors = ["Nicolas Bigaouette <nbigaouette@gmail.com>"]
 edition = "2018"
 name = "onnxruntime"
-version = "0.1.0"
+version = "0.0.1"
 
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+description = "Wrapper around Microsoft's ONNX Runtime"
+documentation = "https://docs.rs/onnxruntime"
+homepage = "https://github.com/nbigaouette/onnxruntime-rs"
+license = "MIT OR Apache-2.0"
+readme = "../README.md"
+repository = "https://github.com/nbigaouette/onnxruntime-rs"
+
+categories = ["Science"]
+keywords = ["neuralnetworks", "onnx", "bindings"]
 
 [dependencies]
 lazy_static = "1.4"
