@@ -285,6 +285,8 @@ impl Session {
         status_to_result(status).map_err(OrtError::IsTensor)?;
         assert_eq!(is_tensor, 1);
 
+        unsafe { (*g_ort()).ReleaseMemoryInfo.unwrap()(memory_info_ptr) };
+
         Ok(())
     }
 }
