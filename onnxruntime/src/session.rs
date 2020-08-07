@@ -262,6 +262,7 @@ impl Session {
             let shape: *const i64 = input_node_dims_i64.as_ptr();
             assert_ne!(shape, std::ptr::null_mut());
 
+            // FIXME: This leaks
             let status = unsafe {
                 (*g_ort()).CreateTensorWithDataAsOrtValue.unwrap()(
                     self.memory_info_ptr,
@@ -298,6 +299,7 @@ impl Session {
 
             // FIXME: Why would we Run() once per input? Should there be only one Run() for all inputs?
             //        Or is this what the '1's mean (number of inputs and outputs)?
+            // FIXME: This leaks
             let status = unsafe {
                 (*g_ort()).Run.unwrap()(
                     self.session_ptr,
@@ -341,6 +343,22 @@ impl Session {
             let output: Vec<T> = unsafe { Vec::from_raw_parts(output_array_ptr, n, n) };
             outputs.push(output);
         }
+
+        let _: Vec<CString> = input_names_ptr
+            .into_iter()
+            .map(|p| {
+                assert_ne!(p, std::ptr::null());
+                unsafe { CString::from_raw(p as *mut i8) }
+            })
+            .collect();
+
+        let _: Vec<CString> = output_names_ptr
+            .into_iter()
+            .map(|p| {
+                assert_ne!(p, std::ptr::null());
+                unsafe { CString::from_raw(p as *mut i8) }
+            })
+            .collect();
 
         Ok(outputs)
     }

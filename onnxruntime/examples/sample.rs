@@ -26,7 +26,9 @@ fn main() -> Result<(), Error> {
     }
 
     // FIXME: Use a newtype with custom Drop impl to forget
-    std::mem::forget(outputs);
+    outputs
+        .into_iter()
+        .for_each(|output| std::mem::forget(output));
 
     Ok(())
 }
