@@ -352,14 +352,6 @@ impl Session {
             })
             .collect();
 
-        let _: Vec<CString> = output_names_ptr
-            .into_iter()
-            .map(|p| {
-                assert_ne!(p, std::ptr::null());
-                unsafe { CString::from_raw(p as *mut i8) }
-            })
-            .collect();
-
         Ok(outputs)
     }
 }
