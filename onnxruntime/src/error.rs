@@ -41,6 +41,10 @@ pub enum OrtError {
     CreateTensorWithData(OrtApiError),
     #[error("Failed to check if tensor: {0}")]
     IsTensor(OrtApiError),
+    #[error("Failed to run: {0}")]
+    Run(OrtApiError),
+    #[error("Failed to get tensor data: {0}")]
+    GetTensorMutableData(OrtApiError),
 
     #[error("Dimensions do not match")]
     NonMatchingDimensions,

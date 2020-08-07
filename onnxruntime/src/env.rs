@@ -128,23 +128,6 @@ impl Env {
     pub fn new_session_builder(&self) -> Result<SessionBuilder> {
         SessionBuilder::new(self.inner.clone())
     }
-    /*
-    pub fn load_model<P>(&self, filename: P) -> SessionBuilder
-    where
-        P: Into<PathBuf>,
-    {
-        SessionBuilder {
-            inner: self.inner.clone(),
-
-            name: "default".into(),
-            num_threads: 1,
-            options: None,
-            opt_level: GraphOptimizationLevel::DisableAll,
-            model_filename: filename.into(),
-            use_cuda: false,
-        }
-    }
-    */
 }
 
 #[cfg(test)]
