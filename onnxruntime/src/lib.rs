@@ -107,7 +107,7 @@ impl_type_trait!(u64, Uint64);
 // impl_type_trait!(, Complex128);
 // impl_type_trait!(, Bfloat16);
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 #[repr(i32)]
 pub enum AllocatorType {
     Invalid = sys::OrtAllocatorType_Invalid,
@@ -115,7 +115,7 @@ pub enum AllocatorType {
     Arena = sys::OrtAllocatorType_OrtArenaAllocator,
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 #[repr(i32)]
 pub enum MemType {
     // FIXME: C API's `OrtMemType_OrtMemTypeCPU` defines it equal to `OrtMemType_OrtMemTypeCPUOutput`. How to handle this??

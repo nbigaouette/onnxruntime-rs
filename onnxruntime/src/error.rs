@@ -21,10 +21,12 @@ pub enum OrtError {
     Session(OrtApiError),
     #[error("Failed to get allocator: {0}")]
     Allocator(OrtApiError),
+    #[error("Failed to get input or output count: {0}")]
+    InOutCount(OrtApiError),
     #[error("Failed to get input name: {0}")]
     InputName(OrtApiError),
-    #[error("Failed to get input type info: {0}")]
-    GetInputTypeInfo(OrtApiError),
+    #[error("Failed to get type info: {0}")]
+    GetTypeInfo(OrtApiError),
     #[error("Failed to cast type info to tensor info: {0}")]
     CastTypeInfoToTensorInfo(OrtApiError),
     #[error("Failed to get tensor element type: {0}")]

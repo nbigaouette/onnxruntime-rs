@@ -1,6 +1,5 @@
 use std::{
     ffi::CString,
-    path::PathBuf,
     sync::{
         atomic::{AtomicPtr, Ordering},
         Arc, Mutex,
@@ -15,7 +14,7 @@ use crate::{
     error::{status_to_result, OrtError, Result},
     g_ort,
     session::SessionBuilder,
-    GraphOptimizationLevel, LoggingLevel,
+    LoggingLevel,
 };
 
 lazy_static! {
@@ -87,11 +86,7 @@ impl EnvBuilder {
 
             // FIXME: Pass log level to function
             let status = unsafe {
-                (*g_ort()).CreateEnv.unwrap()(
-                    sys::OrtLoggingLevel_ORT_LOGGING_LEVEL_VERBOSE,
-                    name.as_ptr(),
-                    &mut env_ptr,
-                )
+                (*g_ort()).CreateEnv.unwrap()(self.log_level as u32, name.as_ptr(), &mut env_ptr)
             };
 
             status_to_result(status).map_err(OrtError::Environment)?;
@@ -130,6 +125,10 @@ pub struct Env {
 }
 
 impl Env {
+    pub fn new_session_builder(&self) -> Result<SessionBuilder> {
+        SessionBuilder::new(self.inner.clone())
+    }
+    /*
     pub fn load_model<P>(&self, filename: P) -> SessionBuilder
     where
         P: Into<PathBuf>,
@@ -145,6 +144,7 @@ impl Env {
             use_cuda: false,
         }
     }
+    */
 }
 
 #[cfg(test)]
