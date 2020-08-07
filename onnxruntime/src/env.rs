@@ -30,7 +30,7 @@ pub(crate) struct EnvPointer(pub(crate) AtomicPtr<sys::OrtEnv>);
 
 impl Drop for EnvPointer {
     fn drop(&mut self) {
-        println!("Dropping InnerEnv!");
+        println!("Dropping the environment.");
         if *self.0.get_mut() == std::ptr::null_mut() {
             eprintln!("ERROR: InnerEnv pointer already null, cannot double-free!");
         } else {

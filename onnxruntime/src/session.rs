@@ -155,7 +155,7 @@ impl SessionBuilder {
 
 impl Drop for SessionBuilder {
     fn drop(&mut self) {
-        println!("Droping the session options.");
+        println!("Dropping the session options.");
         unsafe { (*g_ort()).ReleaseSessionOptions.unwrap()(self.session_options_ptr) };
     }
 }
@@ -186,8 +186,10 @@ pub struct Output {
 
 impl Drop for Session {
     fn drop(&mut self) {
+        println!("Dropping the session.");
         unsafe { (*g_ort()).ReleaseSession.unwrap()(self.session_ptr) };
         // FIXME: There is no C function to release the allocator?
+        println!("Dropping the memory information.");
         unsafe { (*g_ort()).ReleaseMemoryInfo.unwrap()(self.memory_info_ptr) };
 
         self.session_ptr = std::ptr::null_mut();
