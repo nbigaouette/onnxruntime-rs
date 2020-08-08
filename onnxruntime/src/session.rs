@@ -23,6 +23,13 @@ pub struct SessionBuilder {
     memory_type: MemType,
 }
 
+impl Drop for SessionBuilder {
+    fn drop(&mut self) {
+        println!("Dropping the session options.");
+        unsafe { (*g_ort()).ReleaseSessionOptions.unwrap()(self.session_options_ptr) };
+    }
+}
+
 impl SessionBuilder {
     pub(crate) fn new(env: Arc<Mutex<NamedEnv>>) -> Result<SessionBuilder> {
         let mut session_options_ptr: *mut sys::OrtSessionOptions = std::ptr::null_mut();
@@ -151,13 +158,6 @@ impl SessionBuilder {
 
     // TODO: Add all functions changing the options.
     //       See all OrtApi methods taking a `options: *mut OrtSessionOptions`.
-}
-
-impl Drop for SessionBuilder {
-    fn drop(&mut self) {
-        println!("Dropping the session options.");
-        unsafe { (*g_ort()).ReleaseSessionOptions.unwrap()(self.session_options_ptr) };
-    }
 }
 
 pub struct Session {
