@@ -6,6 +6,7 @@ use onnxruntime_sys as sys;
 
 mod env;
 mod error;
+mod memory;
 mod session;
 
 pub use error::{OrtApiError, OrtError, Result};

@@ -10,7 +10,9 @@ use crate::{
     char_p_to_string,
     env::NamedEnv,
     error::{status_to_result, OrtError, Result},
-    g_ort, AllocatorType, GraphOptimizationLevel, MemType, TensorElementDataType,
+    g_ort,
+    memory::MemoryInfo,
+    AllocatorType, GraphOptimizationLevel, MemType, TensorElementDataType,
     TypeToTensorElementDataType,
 };
 
@@ -90,16 +92,7 @@ impl SessionBuilder {
         assert_eq!(status, std::ptr::null_mut());
         assert_ne!(allocator_ptr, std::ptr::null_mut());
 
-        let mut memory_info_ptr: *mut sys::OrtMemoryInfo = std::ptr::null_mut();
-        let status = unsafe {
-            (*g_ort()).CreateCpuMemoryInfo.unwrap()(
-                self.allocator.clone() as i32,
-                self.memory_type.clone() as i32,
-                &mut memory_info_ptr,
-            )
-        };
-        status_to_result(status).map_err(OrtError::CreateCpuMemoryInfo)?;
-        assert_ne!(memory_info_ptr, std::ptr::null_mut());
+        let memory_info = MemoryInfo::new(AllocatorType::Arena, MemType::Default)?;
 
         // Extract input and output properties
         let num_input_nodes = dangerous::extract_inputs_count(session_ptr)?;
@@ -114,7 +107,7 @@ impl SessionBuilder {
         Ok(Session {
             session_ptr,
             allocator_ptr,
-            memory_info_ptr,
+            memory_info,
             inputs,
             outputs,
         })
@@ -163,7 +156,7 @@ impl SessionBuilder {
 pub struct Session {
     session_ptr: *mut sys::OrtSession,
     allocator_ptr: *mut sys::OrtAllocator,
-    memory_info_ptr: *mut sys::OrtMemoryInfo,
+    memory_info: MemoryInfo,
     pub inputs: Vec<Input>,
     pub outputs: Vec<Output>,
 }
@@ -189,12 +182,9 @@ impl Drop for Session {
         println!("Dropping the session.");
         unsafe { (*g_ort()).ReleaseSession.unwrap()(self.session_ptr) };
         // FIXME: There is no C function to release the allocator?
-        println!("Dropping the memory information.");
-        unsafe { (*g_ort()).ReleaseMemoryInfo.unwrap()(self.memory_info_ptr) };
 
         self.session_ptr = std::ptr::null_mut();
         self.allocator_ptr = std::ptr::null_mut();
-        self.memory_info_ptr = std::ptr::null_mut();
     }
 }
 
@@ -265,7 +255,7 @@ impl Session {
             // FIXME: This leaks
             let status = unsafe {
                 (*g_ort()).CreateTensorWithDataAsOrtValue.unwrap()(
-                    self.memory_info_ptr,
+                    self.memory_info.ptr,
                     input_tensor_values_ptr,
                     (input_flatten_array.len() * std::mem::size_of::<T>()) as u64,
                     shape,
