@@ -46,8 +46,11 @@ pub enum OrtError {
     #[error("Failed to get tensor data: {0}")]
     GetTensorMutableData(OrtApiError),
 
-    #[error("Dimensions do not match")]
-    NonMatchingDimensions,
+    #[error("Dimensions do not match: {input:?} for the input but model expects {model:?}")]
+    NonMatchingDimensions {
+        input: Vec<usize>,
+        model: Vec<usize>,
+    },
     #[error("File {filename:?} does not exists")]
     FileDoesNotExists { filename: PathBuf },
     #[error("Path {path:?} cannot be converted to UTF-8")]

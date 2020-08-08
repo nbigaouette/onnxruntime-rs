@@ -1,8 +1,17 @@
+use ndarray::Array;
+
 use onnxruntime::{EnvBuilder, GraphOptimizationLevel, LoggingLevel};
 
 type Error = Box<dyn std::error::Error>;
 
-fn main() -> Result<(), Error> {
+fn main() {
+    if let Err(e) = run() {
+        eprintln!("Error: {}", e);
+        std::process::exit(1);
+    }
+}
+
+fn run() -> Result<(), Error> {
     let env = EnvBuilder::new()
         .with_name("test")
         .with_log_level(LoggingLevel::Verbose)
@@ -15,9 +24,11 @@ fn main() -> Result<(), Error> {
         .load_model_from_file("squeezenet.onnx")?;
 
     // initialize input data with values in [0.0, 1.0]
-    let n = session.inputs[0].dimensions.iter().product();
-    let input_tensor_values: Vec<Vec<f32>> =
-        vec![(0..n).map(|i| (i as f32) / ((n + 1) as f32)).collect()];
+    let n: u32 = session.inputs[0].dimensions.iter().product();
+    let array = Array::linspace(0.0_f32, 1.0, n as usize)
+        .into_shape((1, 3, 224, 224))
+        .unwrap();
+    let input_tensor_values = vec![array];
 
     let outputs = session.run(input_tensor_values)?;
 

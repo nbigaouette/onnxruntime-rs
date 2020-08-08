@@ -4,6 +4,8 @@ use std::{
     sync::{Arc, Mutex},
 };
 
+use ndarray::Array;
+
 use onnxruntime_sys as sys;
 
 use crate::{
@@ -12,6 +14,7 @@ use crate::{
     error::{status_to_result, OrtError, Result},
     g_ort,
     memory::MemoryInfo,
+    tensor::Tensor,
     AllocatorType, GraphOptimizationLevel, MemType, TensorElementDataType,
     TypeToTensorElementDataType,
 };
@@ -190,24 +193,26 @@ impl Drop for Session {
 
 impl Session {
     // FIXME: Use ndarray instead of flatten 1D vector
-    pub fn run<T>(&mut self, mut flatten_array: Vec<Vec<T>>) -> Result<Vec<Vec<T>>>
+    pub fn run<T, D>(&mut self, input_arrays: Vec<Array<T, D>>) -> Result<Vec<Vec<T>>>
     where
         T: TypeToTensorElementDataType,
+        D: ndarray::Dimension,
     {
         // Make sure all dimensions match
-        for (input_idx, input_flatten_array) in flatten_array.iter().enumerate() {
-            if input_flatten_array.len()
-                != self.inputs[input_idx]
-                    .dimensions
-                    .iter()
-                    .map(|d| *d as usize)
-                    .product()
-            {
-                return Err(OrtError::NonMatchingDimensions);
+        for (input_idx, input_array) in input_arrays.iter().enumerate() {
+            let inputs_shape_as_usize: Vec<usize> = self.inputs[input_idx]
+                .dimensions
+                .iter()
+                .map(|d| *d as usize)
+                .collect();
+
+            if input_array.shape() != inputs_shape_as_usize.as_slice() {
+                return Err(OrtError::NonMatchingDimensions {
+                    input: input_array.shape().to_vec(),
+                    model: inputs_shape_as_usize,
+                });
             }
         }
-
-        let mut outputs = Vec::with_capacity(flatten_array.len());
 
         let input_names: Vec<String> = self.inputs.iter().map(|input| input.name.clone()).collect();
         let input_names_cstring: Vec<CString> = input_names
@@ -236,43 +241,13 @@ impl Session {
             .collect();
         let output_names_ptr_ptr: *const *const i8 = output_names_ptr.as_ptr();
 
-        for (input_idx, input_flatten_array) in flatten_array.iter_mut().enumerate() {
-            let mut input_tensor_ptr: *mut sys::OrtValue = std::ptr::null_mut();
-            let input_tensor_ptr_ptr: *mut *mut sys::OrtValue = &mut input_tensor_ptr;
-            let input_tensor_values_ptr: *mut std::ffi::c_void =
-                input_flatten_array.as_mut_ptr() as *mut std::ffi::c_void;
-            assert_ne!(input_tensor_values_ptr, std::ptr::null_mut());
+        let mut outputs = Vec::with_capacity(input_arrays.len());
 
-            // For API calls, we need i64, not u32. We use u32 in the safe API to prevent negative values.
-            let input_node_dims_i64: Vec<i64> = self.inputs[input_idx]
-                .dimensions
-                .iter()
-                .map(|d| *d as i64)
-                .collect();
-            let shape: *const i64 = input_node_dims_i64.as_ptr();
-            assert_ne!(shape, std::ptr::null_mut());
+        for (input_idx, mut input_array) in input_arrays.into_iter().enumerate() {
+            let input_tensor = Tensor::from_array(&self.memory_info, input_array)?;
 
-            // FIXME: This leaks
-            let status = unsafe {
-                (*g_ort()).CreateTensorWithDataAsOrtValue.unwrap()(
-                    self.memory_info.ptr,
-                    input_tensor_values_ptr,
-                    (input_flatten_array.len() * std::mem::size_of::<T>()) as u64,
-                    shape,
-                    self.inputs[input_idx].dimensions.len() as u64,
-                    T::tensor_element_data_type() as u32,
-                    input_tensor_ptr_ptr,
-                )
-            };
-            status_to_result(status).map_err(OrtError::CreateTensorWithData)?;
-            assert_ne!(input_tensor_ptr, std::ptr::null_mut());
-
-            let mut is_tensor = 0;
-            let status = unsafe { (*g_ort()).IsTensor.unwrap()(input_tensor_ptr, &mut is_tensor) };
-            status_to_result(status).map_err(OrtError::IsTensor)?;
-            assert_eq!(is_tensor, 1);
-
-            let input_tensor_ptr2: *const sys::OrtValue = input_tensor_ptr as *const sys::OrtValue;
+            let input_tensor_ptr2: *const sys::OrtValue =
+                input_tensor.c_ptr as *const sys::OrtValue;
             let input_tensor_ptr3: *const *const sys::OrtValue = &input_tensor_ptr2;
 
             // score model & input tensor, get back output tensor

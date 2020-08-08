@@ -15,7 +15,7 @@ where
     T: TypeToTensorElementDataType,
     D: ndarray::Dimension,
 {
-    c_ptr: *mut sys::OrtValue,
+    pub(crate) c_ptr: *mut sys::OrtValue,
     array: Array<T, D>,
     memory_info: &'a MemoryInfo,
 }
@@ -87,7 +87,7 @@ where
 {
     fn drop(&mut self) {
         // We need to let the C part free
-        println!("Dropping Tensor...");
+        println!("Dropping Tensor.");
         unsafe { (*g_ort()).ReleaseValue.unwrap()(self.c_ptr) }
 
         self.c_ptr = std::ptr::null_mut();
