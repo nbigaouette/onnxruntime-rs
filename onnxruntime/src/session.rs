@@ -282,8 +282,6 @@ impl Session {
             status_to_result(status).map_err(OrtError::IsTensor)?;
             assert_eq!(is_tensor, 1);
 
-            // unsafe { (*g_ort()).ReleaseMemoryInfo.unwrap()(memory_info_ptr) };
-
             let input_tensor_ptr2: *const sys::OrtValue = input_tensor_ptr as *const sys::OrtValue;
             let input_tensor_ptr3: *const *const sys::OrtValue = &input_tensor_ptr2;
 
