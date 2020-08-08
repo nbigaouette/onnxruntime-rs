@@ -31,15 +31,16 @@ const ORT_PREBUILT_EXTRACT_DIR: &'static str = "onnxruntime";
 fn main() {
     let libort_install_dir = prepare_libort_dir();
 
+    let lib_dir = libort_install_dir.join("lib");
     let include_dir = libort_install_dir.join("include");
     let clang_arg = format!("-I{}", include_dir.display());
 
+    println!("Include directory: {:?}", include_dir);
+    println!("Lib directory: {:?}", lib_dir);
+
     // Tell cargo to tell rustc to link onnxruntime shared library.
     println!("cargo:rustc-link-lib=onnxruntime");
-    println!(
-        "cargo:rustc-link-search=native={}",
-        libort_install_dir.join("lib").display()
-    );
+    println!("cargo:rustc-link-search=native={}", lib_dir.display());
 
     // Tell cargo to invalidate the built crate whenever the wrapper changes
     println!("cargo:rerun-if-changed=wrapper.h");
@@ -219,7 +220,13 @@ fn prepare_libort_dir_prebuilt() -> PathBuf {
 
 fn prepare_libort_dir() -> PathBuf {
     let strategy = env::var(ORT_ENV_STRATEGY);
-    println!("strategy: {:?}", strategy);
+    println!(
+        "strategy: {:?}",
+        strategy
+            .as_ref()
+            .map(String::as_str)
+            .unwrap_or_else(|_| "unknown")
+    );
     match strategy.as_ref().map(String::as_str) {
         Ok("download") | Err(_) => prepare_libort_dir_prebuilt(),
         Ok("system") => PathBuf::from(match env::var(ORT_ENV_SYSTEM_LIB_LOCATION) {
