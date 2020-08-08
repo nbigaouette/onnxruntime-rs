@@ -8,6 +8,7 @@ mod env;
 mod error;
 mod memory;
 mod session;
+mod tensor;
 
 pub use error::{OrtApiError, OrtError, Result};
 
