@@ -43,10 +43,5 @@ fn run() -> Result<(), Error> {
         println!("Score for class [{}] =  {}", i, outputs[0][[0, i, 0, 0]]);
     }
 
-    // FIXME: Use a newtype with custom Drop impl to forget
-    outputs
-        .into_iter()
-        .for_each(|output| std::mem::forget(output));
-
     Ok(())
 }
