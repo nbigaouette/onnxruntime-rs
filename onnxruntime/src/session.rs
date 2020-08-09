@@ -192,7 +192,6 @@ impl Drop for Session {
 }
 
 impl Session {
-    // FIXME: Use ndarray instead of flatten 1D vector
     pub fn run<T, D>(&mut self, input_arrays: Vec<Array<T, D>>) -> Result<Vec<Vec<T>>>
     where
         T: TypeToTensorElementDataType,
