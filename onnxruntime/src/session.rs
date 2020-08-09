@@ -181,6 +181,18 @@ pub struct Output {
     pub dimensions: Vec<u32>,
 }
 
+impl Input {
+    pub fn dimensions(&self) -> impl Iterator<Item = usize> + '_ {
+        self.dimensions.iter().map(|d| *d as usize)
+    }
+}
+
+impl Output {
+    pub fn dimensions(&self) -> impl Iterator<Item = usize> + '_ {
+        self.dimensions.iter().map(|d| *d as usize)
+    }
+}
+
 impl Drop for Session {
     fn drop(&mut self) {
         println!("Dropping the session.");
