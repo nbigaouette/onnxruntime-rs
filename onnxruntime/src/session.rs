@@ -1,5 +1,6 @@
 use std::{
     ffi::CString,
+    fmt::Debug,
     path::Path,
     sync::{Arc, Mutex},
 };
@@ -14,7 +15,7 @@ use crate::{
     error::{status_to_result, OrtError, Result},
     g_ort,
     memory::MemoryInfo,
-    tensor::Tensor,
+    tensor::{Tensor, TensorFromOrt, TensorFromOrtExtractor},
     AllocatorType, GraphOptimizationLevel, MemType, TensorElementDataType,
     TypeToTensorElementDataType,
 };
@@ -192,10 +193,15 @@ impl Drop for Session {
 }
 
 impl Session {
-    pub fn run<T, D>(&mut self, input_arrays: Vec<Array<T, D>>) -> Result<Vec<Vec<T>>>
+    pub fn run<'s, 't, 'm, T, D>(
+        &'s mut self,
+        input_arrays: Vec<Array<T, D>>,
+    ) -> Result<Vec<TensorFromOrt<'t, 'm, T, ndarray::IxDyn>>>
     where
-        T: TypeToTensorElementDataType,
+        T: TypeToTensorElementDataType + Debug,
         D: ndarray::Dimension,
+        'm: 't, // 'm outlives 't (memory info outlives tensor)
+        's: 'm, // 's outlives 'm (session outlives memory info)
     {
         // Make sure all dimensions match
         for (input_idx, input_array) in input_arrays.iter().enumerate() {
@@ -240,9 +246,10 @@ impl Session {
             .collect();
         let output_names_ptr_ptr: *const *const i8 = output_names_ptr.as_ptr();
 
-        let mut outputs = Vec::with_capacity(input_arrays.len());
+        let mut outputs: Vec<TensorFromOrt<T, ndarray::Dim<ndarray::IxDynImpl>>> =
+            Vec::with_capacity(input_arrays.len());
 
-        for (input_idx, mut input_array) in input_arrays.into_iter().enumerate() {
+        for (input_idx, input_array) in input_arrays.into_iter().enumerate() {
             let input_tensor = Tensor::from_array(&self.memory_info, input_array)?;
 
             let input_tensor_ptr2: *const sys::OrtValue =
@@ -255,55 +262,42 @@ impl Session {
             // let input_node_names_cstring =
             //     unsafe { std::ffi::CString::from_raw(input_node_names_ptr[0] as *mut i8) };
 
+            let output_shape = self.outputs[input_idx]
+                .dimensions
+                .iter()
+                .map(|d| *d as usize)
+                .collect::<Vec<usize>>();
+            let mut output_tensor_extractor =
+                TensorFromOrtExtractor::new(&self.memory_info, ndarray::IxDyn(&output_shape));
+
             let run_options_ptr: *const sys::OrtRunOptions = std::ptr::null();
-            let mut output_tensor_ptr: *mut sys::OrtValue = std::ptr::null_mut();
-            let mut output_tensor_ptr_ptr: *mut *mut sys::OrtValue = &mut output_tensor_ptr;
 
             // FIXME: Why would we Run() once per input? Should there be only one Run() for all inputs?
             //        Or is this what the '1's mean (number of inputs and outputs)?
-            // FIXME: This leaks
+            // FIXME: This leaks. output_tensor_ptr_ptr Gets allocated inside C code
+            //        BUT, it checks if its null (onnxruntime_c_api.cc, line 493) so
+            //        maybe we can pass our own pointer, allocated from Rust?
+            //        Note that 'output[i]' (line 493) dereference 'output_tensor_ptr_ptr'
+            //        which thus points to 'output_tensor_ptr', which itself is NULL.
+            //        Line 515 allocates using 'new OrtValue' if initially null.
             let status = unsafe {
                 (*g_ort()).Run.unwrap()(
                     self.session_ptr,
                     run_options_ptr,
                     input_names_ptr_ptr,
                     input_tensor_ptr3,
-                    1,
+                    1, // FIXME: This should be the lengths of the input vector, not just 1
                     output_names_ptr_ptr,
-                    1,
-                    output_tensor_ptr_ptr,
+                    1, // FIXME: This should be the lengths of the output vector, not just 1
+                    &mut output_tensor_extractor.tensor_ptr,
                 )
             };
             status_to_result(status).map_err(OrtError::Run)?;
-            assert_ne!(output_tensor_ptr, std::ptr::null_mut());
 
-            let mut is_tensor = 0;
-            let status = unsafe { (*g_ort()).IsTensor.unwrap()(output_tensor_ptr, &mut is_tensor) };
-            status_to_result(status).map_err(OrtError::IsTensor)?;
-            assert_eq!(is_tensor, 1);
+            let output_tensor: TensorFromOrt<T, ndarray::Dim<ndarray::IxDynImpl>> =
+                output_tensor_extractor.extract::<T>()?;
 
-            // Get pointer to output tensor float values
-            let mut output_array_ptr: *mut T = std::ptr::null_mut();
-            let output_array_ptr_ptr: *mut *mut T = &mut output_array_ptr;
-            let output_array_ptr_ptr_void: *mut *mut std::ffi::c_void =
-                output_array_ptr_ptr as *mut *mut std::ffi::c_void;
-            let status = unsafe {
-                (*g_ort()).GetTensorMutableData.unwrap()(
-                    output_tensor_ptr,
-                    output_array_ptr_ptr_void,
-                )
-            };
-            status_to_result(status).map_err(OrtError::IsTensor)?;
-            assert_ne!(output_array_ptr, std::ptr::null_mut());
-
-            // FIXME: That looks like UB... Replace with newtype with custom drop impl.
-            let n = self.outputs[input_idx]
-                .dimensions
-                .iter()
-                .map(|d| *d as usize)
-                .product();
-            let output: Vec<T> = unsafe { Vec::from_raw_parts(output_array_ptr, n, n) };
-            outputs.push(output);
+            outputs.push(output_tensor);
         }
 
         let _: Vec<CString> = input_names_ptr
@@ -316,6 +310,13 @@ impl Session {
 
         Ok(outputs)
     }
+
+    // pub fn tensor_from_array<'a, 'b, T, D>(&'a self, array: Array<T, D>) -> Tensor<'b, T, D>
+    // where
+    //     'a: 'b, // 'a outlives 'b
+    // {
+    //     Tensor::from_array(self, array)
+    // }
 }
 
 /// This module contains dangerous functions working on raw pointers.

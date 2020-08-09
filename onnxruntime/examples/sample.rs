@@ -32,8 +32,9 @@ fn run() -> Result<(), Error> {
 
     let outputs = session.run(input_tensor_values)?;
 
+    assert_eq!(outputs[0].shape(), [1, 1000, 1, 1]);
     for i in 0..5 {
-        println!("Score for class [{}] =  {}", i, outputs[0][i]);
+        println!("Score for class [{}] =  {}", i, outputs[0][[0, i, 0, 0]]);
     }
 
     // FIXME: Use a newtype with custom Drop impl to forget

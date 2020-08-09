@@ -1,6 +1,6 @@
-use std::ops::Deref;
+use std::{fmt::Debug, ops::Deref};
 
-use ndarray::Array;
+use ndarray::{Array, ArrayView};
 
 use onnxruntime_sys as sys;
 
@@ -9,10 +9,10 @@ use crate::{
     TypeToTensorElementDataType,
 };
 
-// https://docs.rs/ndarray/0.13.1/ndarray/type.ArrayView.html#method.from_shape_ptr
+#[derive(Debug)]
 pub struct Tensor<'t, T, D>
 where
-    T: TypeToTensorElementDataType,
+    T: TypeToTensorElementDataType + Debug,
     D: ndarray::Dimension,
 {
     pub(crate) c_ptr: *mut sys::OrtValue,
@@ -22,7 +22,7 @@ where
 
 impl<'t, T, D> Tensor<'t, T, D>
 where
-    T: TypeToTensorElementDataType,
+    T: TypeToTensorElementDataType + Debug,
     D: ndarray::Dimension,
 {
     pub(crate) fn from_array<'m>(
@@ -70,7 +70,7 @@ where
 
 impl<'t, T, D> Deref for Tensor<'t, T, D>
 where
-    T: TypeToTensorElementDataType,
+    T: TypeToTensorElementDataType + Debug,
     D: ndarray::Dimension,
 {
     type Target = Array<T, D>;
@@ -82,7 +82,7 @@ where
 
 impl<'t, T, D> Drop for Tensor<'t, T, D>
 where
-    T: TypeToTensorElementDataType,
+    T: TypeToTensorElementDataType + Debug,
     D: ndarray::Dimension,
 {
     fn drop(&mut self) {
@@ -91,6 +91,101 @@ where
         unsafe { (*g_ort()).ReleaseValue.unwrap()(self.c_ptr) }
 
         self.c_ptr = std::ptr::null_mut();
+    }
+}
+
+#[derive(Debug)]
+pub struct TensorFromOrt<'t, 'm, T, D>
+where
+    T: TypeToTensorElementDataType + Debug,
+    D: ndarray::Dimension,
+    'm: 't, // 'm outlives 't
+{
+    pub(crate) tensor_ptr: *mut sys::OrtValue,
+    array_view: ArrayView<'t, T, D>,
+    memory_info: &'m MemoryInfo,
+}
+
+impl<'t, 'm, T, D> Deref for TensorFromOrt<'t, 'm, T, D>
+where
+    T: TypeToTensorElementDataType + Debug,
+    D: ndarray::Dimension,
+{
+    type Target = ArrayView<'t, T, D>;
+
+    fn deref(&self) -> &Self::Target {
+        &self.array_view
+    }
+}
+
+#[derive(Debug)]
+pub struct TensorFromOrtExtractor<'m, D>
+where
+    D: ndarray::Dimension,
+{
+    pub(crate) tensor_ptr: *mut sys::OrtValue,
+    memory_info: &'m MemoryInfo,
+    shape: D,
+}
+
+impl<'m, D> TensorFromOrtExtractor<'m, D>
+where
+    D: ndarray::Dimension,
+{
+    pub(crate) fn new(memory_info: &'m MemoryInfo, shape: D) -> TensorFromOrtExtractor<'m, D> {
+        TensorFromOrtExtractor {
+            tensor_ptr: std::ptr::null_mut(),
+            memory_info,
+            shape,
+        }
+    }
+
+    pub(crate) fn extract<'t, T>(self) -> Result<TensorFromOrt<'t, 'm, T, D>>
+    where
+        T: TypeToTensorElementDataType + Debug,
+    {
+        // Note: Both tensor and array will point to the same data, nothing is copied.
+        // As such, there is no need too free the pointer used to create the ArrayView.
+
+        assert_ne!(self.tensor_ptr, std::ptr::null_mut());
+
+        let mut is_tensor = 0;
+        let status = unsafe { (*g_ort()).IsTensor.unwrap()(self.tensor_ptr, &mut is_tensor) };
+        status_to_result(status).map_err(OrtError::IsTensor)?;
+        assert_eq!(is_tensor, 1);
+
+        // Get pointer to output tensor float values
+        let mut output_array_ptr: *mut T = std::ptr::null_mut();
+        let output_array_ptr_ptr: *mut *mut T = &mut output_array_ptr;
+        let output_array_ptr_ptr_void: *mut *mut std::ffi::c_void =
+            output_array_ptr_ptr as *mut *mut std::ffi::c_void;
+        let status = unsafe {
+            (*g_ort()).GetTensorMutableData.unwrap()(self.tensor_ptr, output_array_ptr_ptr_void)
+        };
+        status_to_result(status).map_err(OrtError::IsTensor)?;
+        assert_ne!(output_array_ptr, std::ptr::null_mut());
+
+        let array_view = unsafe { ArrayView::from_shape_ptr(self.shape, output_array_ptr) };
+
+        Ok(TensorFromOrt {
+            tensor_ptr: self.tensor_ptr,
+            array_view,
+            memory_info: self.memory_info,
+        })
+    }
+}
+
+impl<'t, 'm, T, D> Drop for TensorFromOrt<'t, 'm, T, D>
+where
+    T: TypeToTensorElementDataType + Debug,
+    D: ndarray::Dimension,
+    'm: 't, // 'm outlives 't
+{
+    fn drop(&mut self) {
+        println!("Dropping TensorFromOrt.");
+        unsafe { (*g_ort()).ReleaseValue.unwrap()(self.tensor_ptr) }
+
+        self.tensor_ptr = std::ptr::null_mut();
     }
 }
 
