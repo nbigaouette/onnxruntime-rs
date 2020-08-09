@@ -10,27 +10,27 @@ use crate::{
 };
 
 // https://docs.rs/ndarray/0.13.1/ndarray/type.ArrayView.html#method.from_shape_ptr
-pub struct Tensor<'a, T, D>
+pub struct Tensor<'t, T, D>
 where
     T: TypeToTensorElementDataType,
     D: ndarray::Dimension,
 {
     pub(crate) c_ptr: *mut sys::OrtValue,
     array: Array<T, D>,
-    memory_info: &'a MemoryInfo,
+    memory_info: &'t MemoryInfo,
 }
 
-impl<'b, T, D> Tensor<'b, T, D>
+impl<'t, T, D> Tensor<'t, T, D>
 where
     T: TypeToTensorElementDataType,
     D: ndarray::Dimension,
 {
-    pub(crate) fn from_array<'a>(
-        memory_info: &'a MemoryInfo,
+    pub(crate) fn from_array<'m>(
+        memory_info: &'m MemoryInfo,
         mut array: Array<T, D>,
-    ) -> Result<Tensor<'b, T, D>>
+    ) -> Result<Tensor<'t, T, D>>
     where
-        'a: 'b, // 'a outlives 'b
+        'm: 't, // 'm outlives 't
     {
         let mut tensor_ptr: *mut sys::OrtValue = std::ptr::null_mut();
         let tensor_ptr_ptr: *mut *mut sys::OrtValue = &mut tensor_ptr;
@@ -68,7 +68,7 @@ where
     }
 }
 
-impl<'a, T, D> Deref for Tensor<'a, T, D>
+impl<'t, T, D> Deref for Tensor<'t, T, D>
 where
     T: TypeToTensorElementDataType,
     D: ndarray::Dimension,
@@ -80,7 +80,7 @@ where
     }
 }
 
-impl<'a, T, D> Drop for Tensor<'a, T, D>
+impl<'t, T, D> Drop for Tensor<'t, T, D>
 where
     T: TypeToTensorElementDataType,
     D: ndarray::Dimension,
