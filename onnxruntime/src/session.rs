@@ -317,7 +317,7 @@ impl Session {
             .collect();
         let output_names_cstring: Vec<CString> = output_names
             .into_iter()
-            .map(|n| CString::new(n.clone()).unwrap())
+            .map(|n| CString::new(n).unwrap())
             .collect();
         let output_names_ptr: Vec<*const i8> = output_names_cstring
             .iter()
