@@ -16,6 +16,7 @@
 //!
 //! ```no_run
 //! # use std::error::Error;
+//! # use onnxruntime::{env::EnvBuilder, LoggingLevel};
 //! # fn main() -> Result<(), Box<dyn Error>> {
 //! let env = EnvBuilder::new()
 //!     .with_name("test")
