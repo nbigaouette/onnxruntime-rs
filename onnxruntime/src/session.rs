@@ -1,3 +1,5 @@
+//! Module containing session types
+
 use std::{
     ffi::CString,
     fmt::Debug,
@@ -20,6 +22,34 @@ use crate::{
     TypeToTensorElementDataType,
 };
 
+/// Type used to create a session using the _builder pattern_
+///
+/// A `SessionBuilder` is created by calling the
+/// [`Env::new_session_builder()`](../env/struct.Env.html#method.new_session_builder)
+/// method on the environment.
+///
+/// Once created, use the different methods to configure the session.
+///
+/// Once configured, use the [`SessionBuilder::load_model_from_file()`](../session/struct.SessionBuilder.html#method.load_model_from_file)
+/// method to "commit" the builder configuration into a [`Session`](../session/struct.Session.html).
+///
+/// # Example
+///
+/// ```no_run
+/// # use std::error::Error;
+/// # fn main() -> Result<(), Box<dyn Error>> {
+/// let env = EnvBuilder::new()
+///     .with_name("test")
+///     .with_log_level(LoggingLevel::Verbose)
+///     .build()?;
+/// let mut session = env
+///     .new_session_builder()?
+///     .with_optimization_level(GraphOptimizationLevel::Basic)?
+///     .with_number_threads(1)?
+///     .load_model_from_file("squeezenet.onnx")?;
+/// # Ok(())
+/// # }
+/// ```
 pub struct SessionBuilder {
     env: Arc<Mutex<NamedEnv>>,
 
@@ -52,6 +82,54 @@ impl SessionBuilder {
         })
     }
 
+    /// Configure the session to use a number of threads
+    pub fn with_number_threads(self, num_threads: i16) -> Result<SessionBuilder> {
+        // We use a u16 in the builder to cover the 16-bits positive values of a i32.
+        let num_threads = num_threads as i32;
+        let status = unsafe {
+            (*g_ort()).SetIntraOpNumThreads.unwrap()(self.session_options_ptr, num_threads)
+        };
+        status_to_result(status).map_err(OrtError::SessionOptions)?;
+        assert_eq!(status, std::ptr::null_mut());
+        Ok(self)
+    }
+
+    /// Set the session's optimization level
+    pub fn with_optimization_level(
+        self,
+        opt_level: GraphOptimizationLevel,
+    ) -> Result<SessionBuilder> {
+        // Sets graph optimization level
+        let opt_level = opt_level as u32;
+        unsafe {
+            (*g_ort()).SetSessionGraphOptimizationLevel.unwrap()(
+                self.session_options_ptr,
+                opt_level,
+            )
+        };
+        Ok(self)
+    }
+
+    /// Set the session's allocator
+    ///
+    /// Defaults to [`AllocatorType::Arena`](../enum.AllocatorType.html#variant.Arena)
+    pub fn with_allocator(mut self, allocator: AllocatorType) -> Result<SessionBuilder> {
+        self.allocator = allocator;
+        Ok(self)
+    }
+
+    /// Set the session's memory type
+    ///
+    /// Defaults to [`MemType::Default`](../enum.MemType.html#variant.Default)
+    pub fn with_memory_type(mut self, memory_type: MemType) -> Result<SessionBuilder> {
+        self.memory_type = memory_type;
+        Ok(self)
+    }
+
+    // TODO: Add all functions changing the options.
+    //       See all OrtApi methods taking a `options: *mut OrtSessionOptions`.
+
+    /// Load an ONNX graph from a file and commit the session
     pub fn load_model_from_file<P>(self, model_filepath: P) -> Result<Session>
     where
         P: AsRef<Path>,
@@ -116,78 +194,62 @@ impl SessionBuilder {
             outputs,
         })
     }
-
-    pub fn with_number_threads(self, num_threads: i16) -> Result<SessionBuilder> {
-        // We use a u16 in the builder to cover the 16-bits positive values of a i32.
-        let num_threads = num_threads as i32;
-        let status = unsafe {
-            (*g_ort()).SetIntraOpNumThreads.unwrap()(self.session_options_ptr, num_threads)
-        };
-        status_to_result(status).map_err(OrtError::SessionOptions)?;
-        assert_eq!(status, std::ptr::null_mut());
-        Ok(self)
-    }
-
-    pub fn with_optimization_level(
-        self,
-        opt_level: GraphOptimizationLevel,
-    ) -> Result<SessionBuilder> {
-        // Sets graph optimization level
-        let opt_level = opt_level as u32;
-        unsafe {
-            (*g_ort()).SetSessionGraphOptimizationLevel.unwrap()(
-                self.session_options_ptr,
-                opt_level,
-            )
-        };
-        Ok(self)
-    }
-
-    pub fn with_allocator(mut self, allocator: AllocatorType) -> Result<SessionBuilder> {
-        self.allocator = allocator;
-        Ok(self)
-    }
-
-    pub fn with_memory_type(mut self, memory_type: MemType) -> Result<SessionBuilder> {
-        self.memory_type = memory_type;
-        Ok(self)
-    }
-
-    // TODO: Add all functions changing the options.
-    //       See all OrtApi methods taking a `options: *mut OrtSessionOptions`.
 }
 
+/// Type storing the session information, built from an [`Env`](env/struct.Env.html)
 pub struct Session {
     session_ptr: *mut sys::OrtSession,
     allocator_ptr: *mut sys::OrtAllocator,
     memory_info: MemoryInfo,
+    /// Information about the ONNX's inputs as stored in loaded file
     pub inputs: Vec<Input>,
+    /// Information about the ONNX's outputs as stored in loaded file
     pub outputs: Vec<Output>,
 }
 
+/// Information about an ONNX's input as stored in loaded file
 #[derive(Debug)]
 pub struct Input {
+    /// Name of the input layer
     pub name: String,
+    /// Type of the input layer's elements
     pub input_type: TensorElementDataType,
+    /// Shape of the input layer
+    ///
     /// C API uses a i64 for the dimensions. We use an unsigned of the same range of the positive values.
     pub dimensions: Vec<u32>,
 }
 
+/// Information about an ONNX's output as stored in loaded file
 #[derive(Debug)]
 pub struct Output {
+    /// Name of the output layer
     pub name: String,
+    /// Type of the output layer's elements
     pub output_type: TensorElementDataType,
+    /// Shape of the output layer
+    ///
     /// C API uses a i64 for the dimensions. We use an unsigned of the same range of the positive values.
     pub dimensions: Vec<u32>,
 }
 
 impl Input {
+    /// Return an iterator over the shape elements of the input layer
+    ///
+    /// Note: The member [`Input::dimensions`](struct.Input.html#structfield.dimensions)
+    /// stores `u32` (since ONNX uses `i64` but which cannot be negative) so the
+    /// iterator converts to `usize`.
     pub fn dimensions(&self) -> impl Iterator<Item = usize> + '_ {
         self.dimensions.iter().map(|d| *d as usize)
     }
 }
 
 impl Output {
+    /// Return an iterator over the shape elements of the output layer
+    ///
+    /// Note: The member [`Output::dimensions`](struct.Output.html#structfield.dimensions)
+    /// stores `u32` (since ONNX uses `i64` but which cannot be negative) so the
+    /// iterator converts to `usize`.
     pub fn dimensions(&self) -> impl Iterator<Item = usize> + '_ {
         self.dimensions.iter().map(|d| *d as usize)
     }
@@ -205,6 +267,10 @@ impl Drop for Session {
 }
 
 impl Session {
+    /// Run the input data through the ONNX graph, performing inference.
+    ///
+    /// Note that ONNX models can have multiple inputs; a `Vec<_>` is thus
+    /// used for the input data here.
     pub fn run<'s, 't, 'm, T, D>(
         &'s mut self,
         input_arrays: Vec<Array<T, D>>,

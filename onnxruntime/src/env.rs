@@ -1,3 +1,30 @@
+//! Module containing environment types
+//!
+//! An [`Env`](session/struct.Env.html) is the main entry point of the ONNX Runtime.
+//!
+//! Only one ONNX environment can be created per process. The `onnxruntime` crate
+//! uses a singleton (through `lazy_static!()`) to enforce this.
+//!
+//! Once an environment is created, a [`Session`](../session/struct.Session.html)
+//! can be obtained from it.
+//!
+//! **NOTE**: While the [`Env`](env/struct.Env.html) constructor takes a `name` parameter
+//! to name the environment, only the first name will be considered if many environments
+//! are created.
+//!
+//! # Example
+//!
+//! ```no_run
+//! # use std::error::Error;
+//! # fn main() -> Result<(), Box<dyn Error>> {
+//! let env = EnvBuilder::new()
+//!     .with_name("test")
+//!     .with_log_level(LoggingLevel::Verbose)
+//!     .build()?;
+//! # Ok(())
+//! # }
+//! ```
+
 use std::{
     ffi::CString,
     sync::{
@@ -41,17 +68,27 @@ impl Drop for EnvPointer {
 }
 
 #[derive(Debug)]
-pub struct NamedEnv {
+pub(crate) struct NamedEnv {
     pub(crate) env_ptr: EnvPointer,
     pub(crate) name: CString,
 }
 
+/// Struct used to build an environment [`Env`](env/struct.Env.html)
+///
+/// This is the crate's main entry point. An environment _must_ be created
+/// as the first step. An [`Env`](env/struct.Env.html) can only be built
+/// using `EnvBuilder` to configure it.
+///
+/// **NOTE**: If the same configuration method (for example [`with_name()`](struct.EnvBuilder.html#method.with_name))
+/// is called multiple times, the last value will have precedence.
 pub struct EnvBuilder {
     name: String,
     log_level: LoggingLevel,
 }
 
 impl EnvBuilder {
+    /// Create a new environment builder using default values
+    /// (name: `default`, log level: [LoggingLevel::Warning](../enum.LoggingLevel.html#variant.Warning))
     pub fn new() -> EnvBuilder {
         EnvBuilder {
             name: "default".into(),
@@ -59,6 +96,12 @@ impl EnvBuilder {
         }
     }
 
+    /// Configure the environment with a given name
+    ///
+    /// **NOTE**: Since ONNX can only define one environment per process,
+    /// creating multiple environments using multiple `EnvBuilder` will
+    /// end up re-using the same environment internally; a new one will _not_
+    /// be created. New parameters will be ignored.
     pub fn with_name<S>(mut self, name: S) -> EnvBuilder
     where
         S: Into<String>,
@@ -67,11 +110,18 @@ impl EnvBuilder {
         self
     }
 
+    /// Configure the environment with a given log level
+    ///
+    /// **NOTE**: Since ONNX can only define one environment per process,
+    /// creating multiple environments using multiple `EnvBuilder` will
+    /// end up re-using the same environment internally; a new one will _not_
+    /// be created. New parameters will be ignored.
     pub fn with_log_level(mut self, log_level: LoggingLevel) -> EnvBuilder {
         self.log_level = log_level;
         self
     }
 
+    /// Commit the configuration to a new [`Env`](env/struct.Env.html)
     pub fn build(self) -> Result<Env> {
         let mut g_named_env = G_NAMED_ENV.lock().unwrap();
 
@@ -119,12 +169,20 @@ impl EnvBuilder {
     }
 }
 
+/// Wrapper around the ONNX environment singleton
+///
+/// **NOTE**: Since ONNX can only define one environment per process,
+/// creating multiple environments will
+/// end up re-using the same environment internally; a new one will _not_
+/// be created.
 #[derive(Debug)]
 pub struct Env {
     inner: Arc<Mutex<NamedEnv>>,
 }
 
 impl Env {
+    /// Create a new [`SessionBuilder`](../session/struct.SessionBuilder.html)
+    /// used to create a new ONNX session.
     pub fn new_session_builder(&self) -> Result<SessionBuilder> {
         SessionBuilder::new(self.inner.clone())
     }

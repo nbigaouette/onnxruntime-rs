@@ -1,3 +1,5 @@
+#![forbid(unsafe_code)]
+
 use ndarray::Array;
 
 use onnxruntime::{EnvBuilder, GraphOptimizationLevel, LoggingLevel};

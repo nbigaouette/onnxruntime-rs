@@ -1,3 +1,28 @@
+//! Module containing tensor types.
+//!
+//! Two main types of tensors are available.
+//!
+//! The first one, [`Tensor`](struct.Tensor.html),
+//! is an _owned_ tensor that is backed by [`ndarray`](https://crates.io/crates/ndarray).
+//! This kind of tensor is used to pass input data for the inference.
+//!
+//! The second one, [`TensorFromOrt`](struct.TensorFromOrt.html), is used
+//! internally to pass to the ONNX Runtime inference execution to place
+//! its output values. It is built using a [`TensorFromOrtExtractor`](struct.TensorFromOrtExtractor.html)
+//! following the builder pattern.
+//!
+//! Once "extracted" from the runtime environment, this tensor will contain an
+//! [`ndarray::ArrayView`](https://docs.rs/ndarray/latest/ndarray/type.ArrayView.html)
+//! containing _a view_ of the data. When going out of scope, this tensor will free the required
+//! memory on the C side.
+//!
+//! **NOTE**: Tensors are not meant to be built directly. When performing inference,
+//! the [`Session::run()`](../session/struct.Session.html#method.run) method takes
+//! an `ndarray::Array` as input (taking ownership of it) and will convert it internally
+//! to a [`Tensor`](struct.Tensor.html). After inference, a [`TensorFromOrt`](struct.TensorFromOrt.html)
+//! will be returned by the method which can be derefed into its internal
+//! [`ndarray::ArrayView`](https://docs.rs/ndarray/latest/ndarray/type.ArrayView.html).
+
 use std::{fmt::Debug, ops::Deref};
 
 use ndarray::{Array, ArrayView};
@@ -9,6 +34,10 @@ use crate::{
     TypeToTensorElementDataType,
 };
 
+/// Owned tensor, backed by an [`ndarray::Array`](https://docs.rs/ndarray/latest/ndarray/type.Array.html)
+///
+/// **NOTE**: The type is not meant to be used directly, use an [`ndarray::Array`](https://docs.rs/ndarray/latest/ndarray/type.Array.html)
+/// instead.
 #[derive(Debug)]
 pub struct Tensor<'t, T, D>
 where
@@ -94,6 +123,16 @@ where
     }
 }
 
+/// Tensor containing data owned by the C library, used to return values from inference.
+///
+/// This tensor type is returned by the [`Session::run()`](../session/struct.Session.html#method.run) method.
+/// It is not meant to be created directly.
+///
+/// The tensor hosts an [`ndarray::ArrayView`](https://docs.rs/ndarray/latest/ndarray/type.ArrayView.html)
+/// of the data on the C side. This allows manipulation on the Rust side using `ndarray` without copying the data.
+///
+/// `TensorFromOrt` implements the [`std::deref::Deref`](#impl-Deref) trait for ergonomic access to
+/// the underlying [`ndarray::ArrayView`](https://docs.rs/ndarray/latest/ndarray/type.ArrayView.html).
 #[derive(Debug)]
 pub struct TensorFromOrt<'t, 'm, T, D>
 where
@@ -119,7 +158,7 @@ where
 }
 
 #[derive(Debug)]
-pub struct TensorFromOrtExtractor<'m, D>
+pub(crate) struct TensorFromOrtExtractor<'m, D>
 where
     D: ndarray::Dimension,
 {
