@@ -19,3 +19,10 @@ lazy_static = "1.4"
 ndarray = "0.13"
 onnxruntime-sys = {version = "0.0.5", path = "../onnxruntime-sys"}
 thiserror = "1.0"
+
+[features]
+# Disable build script; used by https://docs.rs
+disable-bindgen = ["onnxruntime-sys/disable-bindgen"]
+
+[package.metadata.docs.rs]
+features = ["disable-bindgen"]
