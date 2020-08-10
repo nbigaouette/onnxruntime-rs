@@ -6,27 +6,26 @@ use std::{
 };
 
 /// ONNX Runtime version
-const ORT_VERSION: &'static str = "1.3.0";
+const ORT_VERSION: &str = "1.3.0";
 
 /// Base Url from which to download pre-built releases/
-const ORT_RELEASE_BASE_URL: &'static str =
-    "https://github.com/microsoft/onnxruntime/releases/download";
+const ORT_RELEASE_BASE_URL: &str = "https://github.com/microsoft/onnxruntime/releases/download";
 
 /// Environment variable selecting which strategy to use for finding the library
 /// Possibilities:
 /// * "download": Download a pre-built library from upstream. This is the default if `ORT_STRATEGY` is not set.
 /// * "system": Use installed library. Use `ORT_LIB_LOCATION` to point to proper location.
 /// * "compile": Download source and compile (TODO).
-const ORT_ENV_STRATEGY: &'static str = "ORT_STRATEGY";
+const ORT_ENV_STRATEGY: &str = "ORT_STRATEGY";
 
 /// Name of environment variable that, if present, contains the location of a pre-built library.
 /// Only used if `ORT_STRATEGY=system`.
-const ORT_ENV_SYSTEM_LIB_LOCATION: &'static str = "ORT_LIB_LOCATION";
+const ORT_ENV_SYSTEM_LIB_LOCATION: &str = "ORT_LIB_LOCATION";
 /// Name of environment variable that, if present, controls wether to use CUDA or not.
-const ORT_ENV_GPU: &'static str = "ORT_USE_CUDA";
+const ORT_ENV_GPU: &str = "ORT_USE_CUDA";
 
 /// Subdirectory (of the 'target' directory) into which to extract the prebuilt library.
-const ORT_PREBUILT_EXTRACT_DIR: &'static str = "onnxruntime";
+const ORT_PREBUILT_EXTRACT_DIR: &str = "onnxruntime";
 
 fn main() {
     if !cfg!(feature = "disable-bindgen") {
