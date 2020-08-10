@@ -72,7 +72,7 @@ jobs:
           args: --package onnxruntime-sys
 
       - name: Copy libonnxruntime.*.dylib to /usr/lib/
-        run: cp -r target/debug/build/onnxruntime-sys-*/out/onnxruntime/onnxruntime-*/lib/libonnxruntime.* /usr/lib/
+        run: sudo cp -r target/debug/build/onnxruntime-sys-*/out/onnxruntime/onnxruntime-*/lib/libonnxruntime.* /usr/lib/
 
       - name: Run cargo-tarpaulin
         uses: actions-rs/tarpaulin@v0.1
