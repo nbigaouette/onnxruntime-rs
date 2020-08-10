@@ -1,3 +1,5 @@
+#![warn(missing_docs)]
+
 use std::sync::{atomic::AtomicPtr, Arc, Mutex};
 
 use lazy_static::lazy_static;
