@@ -65,6 +65,12 @@ jobs:
           toolchain: stable
           override: true
 
+      - name: Build (required to downloadd libonnxruntime)
+        uses: actions-rs/cargo@v1
+        with:
+          command: build
+          args: --package onnxruntime-sys
+
       - name: Copy libonnxruntime.*.dylib to /usr/lib/
         run: cp -r target/debug/build/onnxruntime-sys-*/out/onnxruntime/onnxruntime-*/lib/libonnxruntime.* /usr/lib/
 
