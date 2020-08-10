@@ -2,7 +2,7 @@
 authors = ["Nicolas Bigaouette <nbigaouette@gmail.com>"]
 edition = "2018"
 name = "onnxruntime"
-version = "0.0.3"
+version = "0.0.4"
 
 description = "Wrapper around Microsoft's ONNX Runtime"
 documentation = "https://docs.rs/onnxruntime"
@@ -17,5 +17,5 @@ keywords = ["neuralnetworks", "onnx", "bindings"]
 [dependencies]
 lazy_static = "1.4"
 ndarray = "0.13"
-onnxruntime-sys = {version = "0.0.3", path = "../onnxruntime-sys"}
+onnxruntime-sys = {version = "0.0.4", path = "../onnxruntime-sys"}
 thiserror = "1.0"
