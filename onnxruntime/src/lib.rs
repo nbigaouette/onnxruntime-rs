@@ -230,10 +230,15 @@ impl_type_trait!(u64, Uint64);
 #[repr(i32)]
 pub enum AllocatorType {
     // Invalid = sys::OrtAllocatorType_Invalid,
+    /// Device allocator
     Device = sys::OrtAllocatorType_OrtDeviceAllocator,
+    /// Arena allocator
     Arena = sys::OrtAllocatorType_OrtArenaAllocator,
 }
 
+/// Memory type
+///
+/// Only support ONNX's default type for now.
 #[derive(Debug, Clone)]
 #[repr(i32)]
 pub enum MemType {
@@ -241,6 +246,7 @@ pub enum MemType {
     // CPUInput = sys::OrtMemType_OrtMemTypeCPUInput,
     // CPUOutput = sys::OrtMemType_OrtMemTypeCPUOutput,
     // CPU = sys::OrtMemType_OrtMemTypeCPU,
+    /// Default memory type
     Default = sys::OrtMemType_OrtMemTypeDefault,
 }
 
