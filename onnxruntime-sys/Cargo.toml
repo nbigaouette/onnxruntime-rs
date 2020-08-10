@@ -29,7 +29,7 @@ tar = "0.4"
 
 [features]
 # Disable build script; used by https://docs.rs
-doc-only = []
+disable-bindgen = []
 
 [package.metadata.docs.rs]
-features = ["doc-only"]
+features = ["disable-bindgen"]

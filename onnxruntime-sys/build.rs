@@ -29,7 +29,7 @@ const ORT_ENV_GPU: &'static str = "ORT_USE_CUDA";
 const ORT_PREBUILT_EXTRACT_DIR: &'static str = "onnxruntime";
 
 fn main() {
-    if !cfg!(feature = "doc-only") {
+    if !cfg!(feature = "disable-bindgen") {
         let libort_install_dir = prepare_libort_dir();
 
         let lib_dir = libort_install_dir.join("lib");
@@ -67,8 +67,10 @@ fn main() {
             // Unwrap the Result and panic on failure.
             .expect("Unable to generate bindings");
 
-        // Write the bindings to the $OUT_DIR/bindings.rs file.
-        let out_path = PathBuf::from(env::var("OUT_DIR").unwrap());
+        // Write the bindings to (source controlled) src/generated/bindings.rs
+        let out_path = PathBuf::from(env::var("CARGO_MANIFEST_DIR").unwrap())
+            .join("src")
+            .join("generated");
         bindings
             .write_to_file(out_path.join("bindings.rs"))
             .expect("Couldn't write bindings!");
