@@ -65,6 +65,9 @@ jobs:
           toolchain: stable
           override: true
 
+      - name: Copy libonnxruntime.*.dylib to /usr/lib/
+        run: cp -r target/debug/build/onnxruntime-sys-*/out/onnxruntime/onnxruntime-*/lib/libonnxruntime.* /usr/lib/
+
       - name: Run cargo-tarpaulin
         uses: actions-rs/tarpaulin@v0.1
         with:
