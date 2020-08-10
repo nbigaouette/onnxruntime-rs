@@ -29,48 +29,50 @@ const ORT_ENV_GPU: &'static str = "ORT_USE_CUDA";
 const ORT_PREBUILT_EXTRACT_DIR: &'static str = "onnxruntime";
 
 fn main() {
-    let libort_install_dir = prepare_libort_dir();
+    if !cfg!(feature = "doc-only") {
+        let libort_install_dir = prepare_libort_dir();
 
-    let lib_dir = libort_install_dir.join("lib");
-    let include_dir = libort_install_dir.join("include");
-    let clang_arg = format!("-I{}", include_dir.display());
+        let lib_dir = libort_install_dir.join("lib");
+        let include_dir = libort_install_dir.join("include");
+        let clang_arg = format!("-I{}", include_dir.display());
 
-    println!("Include directory: {:?}", include_dir);
-    println!("Lib directory: {:?}", lib_dir);
+        println!("Include directory: {:?}", include_dir);
+        println!("Lib directory: {:?}", lib_dir);
 
-    // Tell cargo to tell rustc to link onnxruntime shared library.
-    println!("cargo:rustc-link-lib=onnxruntime");
-    println!("cargo:rustc-link-search=native={}", lib_dir.display());
+        // Tell cargo to tell rustc to link onnxruntime shared library.
+        println!("cargo:rustc-link-lib=onnxruntime");
+        println!("cargo:rustc-link-search=native={}", lib_dir.display());
 
-    // Tell cargo to invalidate the built crate whenever the wrapper changes
-    println!("cargo:rerun-if-changed=wrapper.h");
+        // Tell cargo to invalidate the built crate whenever the wrapper changes
+        println!("cargo:rerun-if-changed=wrapper.h");
 
-    println!("cargo:rerun-if-env-changed={}", ORT_ENV_STRATEGY);
-    println!("cargo:rerun-if-env-changed={}", ORT_ENV_GPU);
-    println!("cargo:rerun-if-env-changed={}", ORT_ENV_SYSTEM_LIB_LOCATION);
+        println!("cargo:rerun-if-env-changed={}", ORT_ENV_STRATEGY);
+        println!("cargo:rerun-if-env-changed={}", ORT_ENV_GPU);
+        println!("cargo:rerun-if-env-changed={}", ORT_ENV_SYSTEM_LIB_LOCATION);
 
-    // The bindgen::Builder is the main entry point
-    // to bindgen, and lets you build up options for
-    // the resulting bindings.
-    let bindings = bindgen::Builder::default()
-        // The input header we would like to generate
-        // bindings for.
-        .header("wrapper.h")
-        // The current working directory is 'onnxruntime-sys'
-        .clang_arg(clang_arg)
-        // Tell cargo to invalidate the built crate whenever any of the
-        // included header files changed.
-        .parse_callbacks(Box::new(bindgen::CargoCallbacks))
-        // Finish the builder and generate the bindings.
-        .generate()
-        // Unwrap the Result and panic on failure.
-        .expect("Unable to generate bindings");
+        // The bindgen::Builder is the main entry point
+        // to bindgen, and lets you build up options for
+        // the resulting bindings.
+        let bindings = bindgen::Builder::default()
+            // The input header we would like to generate
+            // bindings for.
+            .header("wrapper.h")
+            // The current working directory is 'onnxruntime-sys'
+            .clang_arg(clang_arg)
+            // Tell cargo to invalidate the built crate whenever any of the
+            // included header files changed.
+            .parse_callbacks(Box::new(bindgen::CargoCallbacks))
+            // Finish the builder and generate the bindings.
+            .generate()
+            // Unwrap the Result and panic on failure.
+            .expect("Unable to generate bindings");
 
-    // Write the bindings to the $OUT_DIR/bindings.rs file.
-    let out_path = PathBuf::from(env::var("OUT_DIR").unwrap());
-    bindings
-        .write_to_file(out_path.join("bindings.rs"))
-        .expect("Couldn't write bindings!");
+        // Write the bindings to the $OUT_DIR/bindings.rs file.
+        let out_path = PathBuf::from(env::var("OUT_DIR").unwrap());
+        bindings
+            .write_to_file(out_path.join("bindings.rs"))
+            .expect("Couldn't write bindings!");
+    }
 }
 
 fn download<P: AsRef<Path>>(source_url: &str, target_file: P) {

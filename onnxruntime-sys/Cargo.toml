@@ -26,3 +26,10 @@ zip = "0.5"
 [target.'cfg(unix)'.build-dependencies]
 flate2 = "1.0"
 tar = "0.4"
+
+[features]
+# Disable build script; used by https://docs.rs
+doc-only = []
+
+[package.metadata.docs.rs]
+features = ["doc-only"]
