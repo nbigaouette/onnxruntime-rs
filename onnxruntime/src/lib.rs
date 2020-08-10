@@ -27,6 +27,7 @@
 //!
 //! ```no_run
 //! # use std::error::Error;
+//! # use onnxruntime::{env::EnvBuilder, LoggingLevel};
 //! # fn main() -> Result<(), Box<dyn Error>> {
 //! let env = EnvBuilder::new()
 //!     .with_name("test")
@@ -40,6 +41,7 @@
 //!
 //! ```no_run
 //! # use std::error::Error;
+//! # use onnxruntime::{env::EnvBuilder, LoggingLevel, GraphOptimizationLevel};
 //! # fn main() -> Result<(), Box<dyn Error>> {
 //! # let env = EnvBuilder::new()
 //! #     .with_name("test")
@@ -58,6 +60,7 @@
 //!
 //! ```no_run
 //! # use std::error::Error;
+//! # use onnxruntime::{env::EnvBuilder, LoggingLevel, GraphOptimizationLevel, tensor::TensorFromOrt};
 //! # fn main() -> Result<(), Box<dyn Error>> {
 //! # let env = EnvBuilder::new()
 //! #     .with_name("test")
@@ -68,10 +71,10 @@
 //! #     .with_optimization_level(GraphOptimizationLevel::Basic)?
 //! #     .with_number_threads(1)?
 //! #     .load_model_from_file("squeezenet.onnx")?;
-//! let array = ndarray::Array::linspace(0.0_f32, 1.0, 100)?;
+//! let array = ndarray::Array::linspace(0.0_f32, 1.0, 100);
 //! // Multiple inputs and outputs are possible
 //! let input_tensor = vec![array];
-//! let outputs: Vec<TensorFromOrt> = session.run(input_tensor)?;
+//! let outputs: Vec<TensorFromOrt<f32,_>> = session.run(input_tensor)?;
 //! # Ok(())
 //! # }
 //! ```

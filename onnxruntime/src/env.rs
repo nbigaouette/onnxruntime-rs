@@ -16,6 +16,7 @@
 //!
 //! ```no_run
 //! # use std::error::Error;
+//! # use onnxruntime::{env::EnvBuilder, LoggingLevel};
 //! # fn main() -> Result<(), Box<dyn Error>> {
 //! let env = EnvBuilder::new()
 //!     .with_name("test")
@@ -58,7 +59,7 @@ pub(crate) struct EnvPointer(pub(crate) AtomicPtr<sys::OrtEnv>);
 impl Drop for EnvPointer {
     fn drop(&mut self) {
         println!("Dropping the environment.");
-        if *self.0.get_mut() == std::ptr::null_mut() {
+        if self.0.get_mut().is_null() {
             eprintln!("ERROR: InnerEnv pointer already null, cannot double-free!");
         } else {
             unsafe { (*g_ort()).ReleaseEnv.unwrap()(*self.0.get_mut()) };
@@ -84,6 +85,12 @@ pub(crate) struct NamedEnv {
 pub struct EnvBuilder {
     name: String,
     log_level: LoggingLevel,
+}
+
+impl Default for EnvBuilder {
+    fn default() -> Self {
+        EnvBuilder::new()
+    }
 }
 
 impl EnvBuilder {
@@ -127,7 +134,7 @@ impl EnvBuilder {
 
         let name = CString::new(self.name)?;
 
-        if *g_named_env.env_ptr.0.get_mut() == std::ptr::null_mut() {
+        if g_named_env.env_ptr.0.get_mut().is_null() {
             println!(
                 "Uninitialized environment found, initializing it with name {:?}.",
                 name

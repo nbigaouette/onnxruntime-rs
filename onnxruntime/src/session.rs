@@ -37,6 +37,7 @@ use crate::{
 ///
 /// ```no_run
 /// # use std::error::Error;
+/// # use onnxruntime::{env::EnvBuilder, LoggingLevel, GraphOptimizationLevel};
 /// # fn main() -> Result<(), Box<dyn Error>> {
 /// let env = EnvBuilder::new()
 ///     .with_name("test")
@@ -316,7 +317,7 @@ impl Session {
             .collect();
         let output_names_cstring: Vec<CString> = output_names
             .into_iter()
-            .map(|n| CString::new(n.clone()).unwrap())
+            .map(|n| CString::new(n).unwrap())
             .collect();
         let output_names_ptr: Vec<*const i8> = output_names_cstring
             .iter()

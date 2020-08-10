@@ -2,7 +2,7 @@
 authors = ["Nicolas Bigaouette <nbigaouette@gmail.com>"]
 edition = "2018"
 name = "onnxruntime"
-version = "0.0.4"
+version = "0.0.5"
 
 description = "Wrapper around Microsoft's ONNX Runtime"
 documentation = "https://docs.rs/onnxruntime"
@@ -17,5 +17,12 @@ keywords = ["neuralnetworks", "onnx", "bindings"]
 [dependencies]
 lazy_static = "1.4"
 ndarray = "0.13"
-onnxruntime-sys = {version = "0.0.4", path = "../onnxruntime-sys"}
+onnxruntime-sys = {version = "0.0.5", path = "../onnxruntime-sys"}
 thiserror = "1.0"
+
+[features]
+# Disable build script; used by https://docs.rs
+disable-bindgen = ["onnxruntime-sys/disable-bindgen"]
+
+[package.metadata.docs.rs]
+features = ["disable-bindgen"]

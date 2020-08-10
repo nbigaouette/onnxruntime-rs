@@ -117,7 +117,7 @@ impl From<*const sys::OrtStatus> for OrtStatusWrapper {
 
 impl From<OrtStatusWrapper> for std::result::Result<(), OrtApiError> {
     fn from(status: OrtStatusWrapper) -> Self {
-        if status.0 == std::ptr::null() {
+        if status.0.is_null() {
             Ok(())
         } else {
             let raw: *const i8 = unsafe { (*g_ort()).GetErrorMessage.unwrap()(status.0) };
