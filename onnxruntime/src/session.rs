@@ -139,7 +139,7 @@ impl SessionBuilder {
     where
         M: Into<AvailableOnnxModel>,
     {
-        let download_dir = environment::current_dir().map_err(OrtDownloadError::IoError)?;
+        let download_dir = env::current_dir().map_err(OrtDownloadError::IoError)?;
         let downloaded_path = model.into().download_to(download_dir)?;
         self.load_model_from_file_monorphomized(downloaded_path.as_ref())
     }
