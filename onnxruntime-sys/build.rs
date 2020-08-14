@@ -79,7 +79,7 @@ fn main() {
 fn download<P: AsRef<Path>>(source_url: &str, target_file: P) {
     let resp = ureq::get(source_url)
         .timeout_connect(1_000) // 1 second
-        .timeout(std::time::Duration::from_secs(60))
+        .timeout(std::time::Duration::from_secs(300))
         .call();
 
     assert!(resp.has("Content-Length"));
