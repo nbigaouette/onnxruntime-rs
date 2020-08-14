@@ -49,7 +49,7 @@ pub enum AvailableOnnxModel {
     /// Variant downloaded: ONNX Version 1.4 with Opset Version 9.
     SqueezeNet,
     /// Google's Inception
-    Inception(Inception),
+    Inception(InceptionVersion),
 }
 
 trait ModelUrl {
@@ -58,7 +58,7 @@ trait ModelUrl {
 
 /// Google's Inception
 #[derive(Debug, Clone)]
-pub enum Inception {
+pub enum InceptionVersion {
     /// Google's Inception v1
     ///
     /// Source: [https://github.com/onnx/models/tree/master/vision/classification/inception_and_googlenet/inception_v1](https://github.com/onnx/models/tree/master/vision/classification/inception_and_googlenet/inception_v1)
@@ -83,11 +83,11 @@ impl ModelUrl for AvailableOnnxModel {
     }
 }
 
-impl ModelUrl for Inception {
+impl ModelUrl for InceptionVersion {
     fn fetch_url(&self) -> &'static str {
         match self {
-            Inception::V1 => "https://github.com/onnx/models/raw/master/vision/classification/inception_and_googlenet/inception_v1/model/inception-v1-9.onnx",
-            Inception::V2 => "https://github.com/onnx/models/raw/master/vision/classification/inception_and_googlenet/inception_v2/model/inception-v2-9.onnx",
+            InceptionVersion::V1 => "https://github.com/onnx/models/raw/master/vision/classification/inception_and_googlenet/inception_v1/model/inception-v1-9.onnx",
+            InceptionVersion::V2 => "https://github.com/onnx/models/raw/master/vision/classification/inception_and_googlenet/inception_v2/model/inception-v2-9.onnx",
         }
     }
 }
