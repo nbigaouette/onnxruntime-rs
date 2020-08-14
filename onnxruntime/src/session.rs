@@ -7,6 +7,9 @@ use std::{
     sync::{Arc, Mutex},
 };
 
+#[cfg(feature = "model-fetching")]
+use std::env;
+
 use ndarray::Array;
 
 use onnxruntime_sys as sys;
@@ -21,6 +24,9 @@ use crate::{
     AllocatorType, GraphOptimizationLevel, MemType, TensorElementDataType,
     TypeToTensorElementDataType,
 };
+
+#[cfg(feature = "model-fetching")]
+use crate::{download::AvailableOnnxModel, error::OrtDownloadError};
 
 /// Type used to create a session using the _builder pattern_
 ///
@@ -37,9 +43,9 @@ use crate::{
 ///
 /// ```no_run
 /// # use std::error::Error;
-/// # use onnxruntime::{env::EnvBuilder, LoggingLevel, GraphOptimizationLevel};
+/// # use onnxruntime::{env::Env, LoggingLevel, GraphOptimizationLevel};
 /// # fn main() -> Result<(), Box<dyn Error>> {
-/// let env = EnvBuilder::new()
+/// let env = Env::builder()
 ///     .with_name("test")
 ///     .with_log_level(LoggingLevel::Verbose)
 ///     .build()?;
@@ -125,6 +131,17 @@ impl SessionBuilder {
     pub fn with_memory_type(mut self, memory_type: MemType) -> Result<SessionBuilder> {
         self.memory_type = memory_type;
         Ok(self)
+    }
+
+    /// Download an ONNX pre-trained model from the [ONNX Model Zoo](https://github.com/onnx/models) and commit the session
+    #[cfg(feature = "model-fetching")]
+    pub fn with_downloaded_model<M>(self, model: M) -> Result<Session>
+    where
+        M: Into<AvailableOnnxModel>,
+    {
+        let download_dir = env::current_dir().map_err(OrtDownloadError::IoError)?;
+        let downloaded_path = model.into().download_to(download_dir)?;
+        self.load_model_from_file_monorphomized(downloaded_path.as_ref())
     }
 
     // TODO: Add all functions changing the options.

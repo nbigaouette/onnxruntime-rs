@@ -14,13 +14,22 @@ repository = "https://github.com/nbigaouette/onnxruntime-rs"
 categories = ["science"]
 keywords = ["neuralnetworks", "onnx", "bindings"]
 
+[[example]]
+name = "sample"
+required-features = ["model-fetching"]
+
 [dependencies]
 lazy_static = "1.4"
 ndarray = "0.13"
 onnxruntime-sys = {version = "0.0.5", path = "../onnxruntime-sys"}
 thiserror = "1.0"
 
+# Enabled with 'model-fetching' feature
+ureq = {version = "1.3", optional = true}
+
 [features]
+# Fetch model from ONNX Model Zoo (https://github.com/onnx/models)
+model-fetching = ["ureq"]
 # Disable build script; used by https://docs.rs
 disable-bindgen = ["onnxruntime-sys/disable-bindgen"]
 

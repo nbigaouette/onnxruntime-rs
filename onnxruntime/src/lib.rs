@@ -27,9 +27,9 @@
 //!
 //! ```no_run
 //! # use std::error::Error;
-//! # use onnxruntime::{env::EnvBuilder, LoggingLevel};
+//! # use onnxruntime::{env::Env, LoggingLevel};
 //! # fn main() -> Result<(), Box<dyn Error>> {
-//! let env = EnvBuilder::new()
+//! let env = Env::builder()
 //!     .with_name("test")
 //!     .with_log_level(LoggingLevel::Verbose)
 //!     .build()?;
@@ -41,9 +41,9 @@
 //!
 //! ```no_run
 //! # use std::error::Error;
-//! # use onnxruntime::{env::EnvBuilder, LoggingLevel, GraphOptimizationLevel};
+//! # use onnxruntime::{env::Env, LoggingLevel, GraphOptimizationLevel};
 //! # fn main() -> Result<(), Box<dyn Error>> {
-//! # let env = EnvBuilder::new()
+//! # let env = Env::builder()
 //! #     .with_name("test")
 //! #     .with_log_level(LoggingLevel::Verbose)
 //! #     .build()?;
@@ -60,9 +60,9 @@
 //!
 //! ```no_run
 //! # use std::error::Error;
-//! # use onnxruntime::{env::EnvBuilder, LoggingLevel, GraphOptimizationLevel, tensor::TensorFromOrt};
+//! # use onnxruntime::{env::Env, LoggingLevel, GraphOptimizationLevel, tensor::TensorFromOrt};
 //! # fn main() -> Result<(), Box<dyn Error>> {
-//! # let env = EnvBuilder::new()
+//! # let env = Env::builder()
 //! #     .with_name("test")
 //! #     .with_log_level(LoggingLevel::Verbose)
 //! #     .build()?;
@@ -91,6 +91,8 @@ use lazy_static::lazy_static;
 
 use onnxruntime_sys as sys;
 
+#[cfg(feature = "model-fetching")]
+pub mod download;
 pub mod env;
 pub mod error;
 mod memory;
@@ -98,7 +100,6 @@ pub mod session;
 pub mod tensor;
 
 // Re-export
-pub use env::EnvBuilder;
 pub use error::{OrtApiError, OrtError, Result};
 
 lazy_static! {

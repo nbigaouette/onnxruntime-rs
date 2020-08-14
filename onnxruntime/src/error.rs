@@ -1,6 +1,6 @@
 //! Module containing error definitions.
 
-use std::path::PathBuf;
+use std::{io, path::PathBuf};
 
 use thiserror::Error;
 
@@ -68,6 +68,10 @@ pub enum OrtError {
     #[error("Failed to get tensor data: {0}")]
     GetTensorMutableData(OrtApiError),
 
+    /// Error occurred when downloading a pre-trained ONNX model from the [ONNX Model Zoo](https://github.com/onnx/models)
+    #[error("Failed to download ONNX model: {0}")]
+    DownloadError(#[from] OrtDownloadError),
+
     /// Dimensions of input data and ONNX model loaded from file do not match
     #[error("Dimensions do not match: {input:?} for the input but model expects {model:?}")]
     NonMatchingDimensions {
@@ -102,6 +106,25 @@ pub enum OrtApiError {
     /// Details as reported by the ONNX C API in case of error cannot be converted to UTF-8
     #[error("Error calling ONNX Runtime C function and failed to convert error message to UTF-8")]
     IntoStringError(std::ffi::IntoStringError),
+}
+
+/// Error from downloading pre-trained model from the [ONNX Model Zoo](https://github.com/onnx/models).
+#[derive(Error, Debug)]
+pub enum OrtDownloadError {
+    /// Generic input/output error
+    #[error("Error downloading data to file: {0}")]
+    IoError(#[from] io::Error),
+    /// Error getting content-length from an HTTP GET request
+    #[error("Error getting content-length")]
+    ContentLengthError,
+    /// Mismatch between amount of downloaded and expected bytes
+    #[error("Error copying data to file: expected {expected} length, received {io}")]
+    CopyError {
+        /// Expected amount of bytes to download
+        expected: u64,
+        /// Number of bytes read from network and written to file
+        io: u64,
+    },
 }
 
 /// Wrapper type around a ONNX C API's `OrtStatus` pointer
