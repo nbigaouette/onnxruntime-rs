@@ -157,10 +157,10 @@ impl SessionBuilder {
     where
         P: AsRef<Path>,
     {
-        self.load_model_from_file_monorphomized(model_filepath.as_ref())
+        self.load_model_from_file_monomorphized(model_filepath.as_ref())
     }
 
-    fn load_model_from_file_monorphomized(self, model_filepath: &Path) -> Result<Session> {
+    fn load_model_from_file_monomorphized(self, model_filepath: &Path) -> Result<Session> {
         let env_ptr: *const sys::OrtEnv = *self.env.lock().unwrap().env_ptr.0.get_mut();
         let mut session_ptr: *mut sys::OrtSession = std::ptr::null_mut();
 
@@ -422,7 +422,7 @@ impl Session {
 
 /// This module contains dangerous functions working on raw pointers.
 /// Those functions are only to be used from inside the
-/// `SessionBuilder::load_model_from_file_monorphomized()` method.
+/// `SessionBuilder::load_model_from_file_monomorphized()` method.
 mod dangerous {
     use super::*;
 
