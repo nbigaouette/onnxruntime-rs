@@ -102,33 +102,44 @@ impl AvailableOnnxModel {
         let model_filename = PathBuf::from(url.split('/').last().unwrap());
         let model_filepath = download_dir.as_ref().join(model_filename);
 
-        let resp = ureq::get(url)
-            .timeout_connect(1_000) // 1 second
-            .timeout(Duration::from_secs(180)) // 3 minutes
-            .call();
-
-        assert!(resp.has("Content-Length"));
-        let len = resp
-            .header("Content-Length")
-            .and_then(|s| s.parse::<usize>().ok())
-            .unwrap();
-
-        let mut reader = resp.into_reader();
-
-        let f = fs::File::create(&model_filepath).unwrap();
-        let mut writer = io::BufWriter::new(f);
-
-        let bytes_io_count =
-            io::copy(&mut reader, &mut writer).map_err(OrtDownloadError::IoError)?;
-
-        if bytes_io_count == len as u64 {
+        if model_filepath.exists() {
+            println!(
+                "File {:?} already exists, not re-downloading.",
+                model_filepath
+            );
             Ok(model_filepath)
         } else {
-            Err(OrtDownloadError::CopyError {
-                expected: len as u64,
-                io: bytes_io_count,
+            println!("Downloading {:?} to {:?}...", url, model_filepath);
+
+            let resp = ureq::get(url)
+                .timeout_connect(1_000) // 1 second
+                .timeout(Duration::from_secs(180)) // 3 minutes
+                .call();
+
+            assert!(resp.has("Content-Length"));
+            let len = resp
+                .header("Content-Length")
+                .and_then(|s| s.parse::<usize>().ok())
+                .unwrap();
+            println!("Downloading {} bytes...", len);
+
+            let mut reader = resp.into_reader();
+
+            let f = fs::File::create(&model_filepath).unwrap();
+            let mut writer = io::BufWriter::new(f);
+
+            let bytes_io_count =
+                io::copy(&mut reader, &mut writer).map_err(OrtDownloadError::IoError)?;
+
+            if bytes_io_count == len as u64 {
+                Ok(model_filepath)
+            } else {
+                Err(OrtDownloadError::CopyError {
+                    expected: len as u64,
+                    io: bytes_io_count,
+                }
+                .into())
             }
-            .into())
         }
     }
 }
