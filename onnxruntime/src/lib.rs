@@ -51,7 +51,7 @@
 //!     .new_session_builder()?
 //!     .with_optimization_level(GraphOptimizationLevel::Basic)?
 //!     .with_number_threads(1)?
-//!     .load_model_from_file("squeezenet.onnx")?;
+//!     .with_model_from_file("squeezenet.onnx")?;
 //! # Ok(())
 //! # }
 //! ```
@@ -59,7 +59,7 @@
 #![cfg_attr(
     feature = "model-fetching",
     doc = r##"
-Instead of loading a model from file using [`load_model_from_file()`](session/struct.SessionBuilder.html#method.load_model_from_file),
+Instead of loading a model from file using [`with_model_from_file()`](session/struct.SessionBuilder.html#method.with_model_from_file),
 a model can be fetched directly from the [ONNX Model Zoo](https://github.com/onnx/models) using
 [`with_downloaded_model()`](session/struct.SessionBuilder.html#method.with_downloaded_model) method
 (requires the `model-fetching` feature).
@@ -100,7 +100,7 @@ to download.
 //! #     .new_session_builder()?
 //! #     .with_optimization_level(GraphOptimizationLevel::Basic)?
 //! #     .with_number_threads(1)?
-//! #     .load_model_from_file("squeezenet.onnx")?;
+//! #     .with_model_from_file("squeezenet.onnx")?;
 //! let array = ndarray::Array::linspace(0.0_f32, 1.0, 100);
 //! // Multiple inputs and outputs are possible
 //! let input_tensor = vec![array];

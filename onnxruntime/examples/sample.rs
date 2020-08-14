@@ -26,7 +26,7 @@ fn run() -> Result<(), Error> {
         .new_session_builder()?
         .with_optimization_level(GraphOptimizationLevel::Basic)?
         .with_number_threads(1)?
-        // .load_model_from_file("squeezenet.onnx")?;
+        // .with_model_from_file("squeezenet.onnx")?;
         // .with_downloaded_model(ImageClassificationModel::MobileNet)?;
         .with_downloaded_model(ImageClassificationModel::SqueezeNet)?;
 

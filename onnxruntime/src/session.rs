@@ -36,7 +36,7 @@ use crate::{download::AvailableOnnxModel, error::OrtDownloadError};
 ///
 /// Once created, use the different methods to configure the session.
 ///
-/// Once configured, use the [`SessionBuilder::load_model_from_file()`](../session/struct.SessionBuilder.html#method.load_model_from_file)
+/// Once configured, use the [`SessionBuilder::with_model_from_file()`](../session/struct.SessionBuilder.html#method.with_model_from_file)
 /// method to "commit" the builder configuration into a [`Session`](../session/struct.Session.html).
 ///
 /// # Example
@@ -53,7 +53,7 @@ use crate::{download::AvailableOnnxModel, error::OrtDownloadError};
 ///     .new_session_builder()?
 ///     .with_optimization_level(GraphOptimizationLevel::Basic)?
 ///     .with_number_threads(1)?
-///     .load_model_from_file("squeezenet.onnx")?;
+///     .with_model_from_file("squeezenet.onnx")?;
 /// # Ok(())
 /// # }
 /// ```
@@ -146,21 +146,21 @@ impl SessionBuilder {
     fn with_downloaded_model_monomorphized(self, model: AvailableOnnxModel) -> Result<Session> {
         let download_dir = env::current_dir().map_err(OrtDownloadError::IoError)?;
         let downloaded_path = model.download_to(download_dir)?;
-        self.load_model_from_file_monomorphized(downloaded_path.as_ref())
+        self.with_model_from_file_monomorphized(downloaded_path.as_ref())
     }
 
     // TODO: Add all functions changing the options.
     //       See all OrtApi methods taking a `options: *mut OrtSessionOptions`.
 
     /// Load an ONNX graph from a file and commit the session
-    pub fn load_model_from_file<P>(self, model_filepath: P) -> Result<Session>
+    pub fn with_model_from_file<P>(self, model_filepath: P) -> Result<Session>
     where
         P: AsRef<Path>,
     {
-        self.load_model_from_file_monomorphized(model_filepath.as_ref())
+        self.with_model_from_file_monomorphized(model_filepath.as_ref())
     }
 
-    fn load_model_from_file_monomorphized(self, model_filepath: &Path) -> Result<Session> {
+    fn with_model_from_file_monomorphized(self, model_filepath: &Path) -> Result<Session> {
         let env_ptr: *const sys::OrtEnv = *self.env.lock().unwrap().env_ptr.0.get_mut();
         let mut session_ptr: *mut sys::OrtSession = std::ptr::null_mut();
 
@@ -422,7 +422,7 @@ impl Session {
 
 /// This module contains dangerous functions working on raw pointers.
 /// Those functions are only to be used from inside the
-/// `SessionBuilder::load_model_from_file_monomorphized()` method.
+/// `SessionBuilder::with_model_from_file_monomorphized()` method.
 mod dangerous {
     use super::*;
 
