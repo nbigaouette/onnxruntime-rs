@@ -2,7 +2,9 @@
 
 use ndarray::Array;
 
-use onnxruntime::{env::Env, GraphOptimizationLevel, LoggingLevel};
+use onnxruntime::{
+    download::ImageClassificationModel, env::Env, GraphOptimizationLevel, LoggingLevel,
+};
 
 type Error = Box<dyn std::error::Error>;
 
@@ -23,7 +25,9 @@ fn run() -> Result<(), Error> {
         .new_session_builder()?
         .with_optimization_level(GraphOptimizationLevel::Basic)?
         .with_number_threads(1)?
-        .load_model_from_file("squeezenet.onnx")?;
+        // .load_model_from_file("squeezenet.onnx")?;
+        // .with_downloaded_model(ImageClassificationModel::MobileNet)?;
+        .with_downloaded_model(ImageClassificationModel::SqueezeNet)?;
 
     let input0_shape: Vec<usize> = session.inputs[0].dimensions().collect();
     let output0_shape: Vec<usize> = session.outputs[0].dimensions().collect();
