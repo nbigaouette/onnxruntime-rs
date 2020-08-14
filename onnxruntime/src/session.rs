@@ -23,6 +23,7 @@ use crate::{
     TypeToTensorElementDataType,
 };
 
+#[cfg(feature = "model-fetching")]
 use crate::{download::AvailableOnnxModel, error::OrtDownloadError};
 
 /// Type used to create a session using the _builder pattern_
@@ -131,6 +132,7 @@ impl SessionBuilder {
     }
 
     /// Download an ONNX pre-trained model from the [ONNX Model Zoo](https://github.com/onnx/models) and commit the session
+    #[cfg(feature = "model-fetching")]
     pub fn with_downloaded_model<M>(self, model: M) -> Result<Session>
     where
         M: Into<AvailableOnnxModel>,
