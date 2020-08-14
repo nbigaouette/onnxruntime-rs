@@ -26,6 +26,17 @@ use crate::error::{OrtDownloadError, Result};
 /// > contributed by community members like you.
 #[derive(Debug, Clone)]
 pub enum AvailableOnnxModel {
+    /// Image classification aimed for mobile targets.
+    ///
+    /// > MobileNet models perform image classification - they take images as input and classify the major
+    /// > object in the image into a set of pre-defined classes. They are trained on ImageNet dataset which
+    /// > contains images from 1000 classes. MobileNet models are also very efficient in terms of speed and
+    /// > size and hence are ideal for embedded and mobile applications.
+    ///
+    /// Source: [https://github.com/onnx/models/tree/master/vision/classification/mobilenet](https://github.com/onnx/models/tree/master/vision/classification/mobilenet)
+    ///
+    /// Variant downloaded: ONNX Version 1.2.1 with Opset Version 7.
+    MobileNet,
     /// A small CNN with AlexNet level accuracy on ImageNet with 50x fewer parameters.
     ///
     /// > SqueezeNet is a small CNN which achieves AlexNet level accuracy on ImageNet with 50x fewer parameters.
@@ -42,6 +53,7 @@ pub enum AvailableOnnxModel {
 impl AvailableOnnxModel {
     fn fetch_url(&self) -> &'static str {
         match self {
+            AvailableOnnxModel::MobileNet => "https://github.com/onnx/models/raw/master/vision/classification/mobilenet/model/mobilenetv2-7.onnx",
             AvailableOnnxModel::SqueezeNet => "https://github.com/onnx/models/raw/master/vision/classification/squeezenet/model/squeezenet1.0-9.onnx",
         }
     }
