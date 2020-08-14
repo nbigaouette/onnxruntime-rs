@@ -49,7 +49,7 @@ use crate::{download::AvailableOnnxModel, error::OrtDownloadError};
 ///     .with_name("test")
 ///     .with_log_level(LoggingLevel::Verbose)
 ///     .build()?;
-/// let mut session = env
+/// let mut session = environment
 ///     .new_session_builder()?
 ///     .with_optimization_level(GraphOptimizationLevel::Basic)?
 ///     .with_number_threads(1)?
