@@ -17,9 +17,10 @@ use std::{
 };
 
 use crate::error::{OrtDownloadError, Result};
-use vision::{ImageClassificationModel, InceptionVersion, Vision};
 
 pub mod vision;
+
+use vision::{ImageClassificationModel, InceptionVersion, Vision};
 
 /// Available pre-trained models to download from [ONNX Model Zoo](https://github.com/onnx/models).
 ///
