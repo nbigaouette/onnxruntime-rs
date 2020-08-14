@@ -135,6 +135,10 @@ impl EnvBuilder {
             assert_eq!(status, std::ptr::null_mut());
             assert_ne!(env_ptr, std::ptr::null_mut());
 
+            // Disable telemetry by default
+            let status = unsafe { (*g_ort()).DisableTelemetryEvents.unwrap()(env_ptr) };
+            status_to_result(status).map_err(OrtError::Environment)?;
+
             // Replace the pointer stored in the lazy_static with the new one
             let old_ptr: *mut sys::OrtEnv = g_named_env.env_ptr.0.swap(env_ptr, Ordering::AcqRel);
             assert_eq!(old_ptr, std::ptr::null_mut());
