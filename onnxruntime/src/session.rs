@@ -139,9 +139,14 @@ impl SessionBuilder {
     where
         M: Into<AvailableOnnxModel>,
     {
+        self.with_downloaded_model_monomorphized(model.into())
+    }
+
+    #[cfg(feature = "model-fetching")]
+    fn with_downloaded_model_monomorphized(self, model: AvailableOnnxModel) -> Result<Session> {
         let download_dir = env::current_dir().map_err(OrtDownloadError::IoError)?;
-        let downloaded_path = model.into().download_to(download_dir)?;
-        self.load_model_from_file_monorphomized(downloaded_path.as_ref())
+        let downloaded_path = model.download_to(download_dir)?;
+        self.load_model_from_file_monomorphized(downloaded_path.as_ref())
     }
 
     // TODO: Add all functions changing the options.
