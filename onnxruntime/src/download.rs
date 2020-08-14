@@ -126,6 +126,20 @@ impl ModelUrl for InceptionVersion {
     }
 }
 
+impl From<ImageClassificationModel> for AvailableOnnxModel {
+    fn from(model: ImageClassificationModel) -> Self {
+        AvailableOnnxModel::Vision(Vision::ImageClassification(model))
+    }
+}
+
+impl From<InceptionVersion> for AvailableOnnxModel {
+    fn from(model: InceptionVersion) -> Self {
+        AvailableOnnxModel::Vision(Vision::ImageClassification(
+            ImageClassificationModel::Inception(model),
+        ))
+    }
+}
+
 impl AvailableOnnxModel {
     pub(crate) fn download_to<P>(&self, download_dir: P) -> Result<PathBuf>
     where
