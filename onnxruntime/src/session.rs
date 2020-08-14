@@ -1,12 +1,14 @@
 //! Module containing session types
 
 use std::{
-    env,
     ffi::CString,
     fmt::Debug,
     path::Path,
     sync::{Arc, Mutex},
 };
+
+#[cfg(feature = "model-fetching")]
+use std::env;
 
 use ndarray::Array;
 
