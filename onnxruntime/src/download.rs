@@ -26,6 +26,28 @@ use crate::error::{OrtDownloadError, Result};
 /// > contributed by community members like you.
 #[derive(Debug, Clone)]
 pub enum AvailableOnnxModel {
+    /// Computer vision model
+    Vision(VisionModel),
+}
+
+trait ModelUrl {
+    fn fetch_url(&self) -> &'static str;
+}
+
+/// Computer vision model
+#[derive(Debug, Clone)]
+pub enum VisionModel {
+    /// Image classification model
+    ImageClassification(ImageClassificationModel),
+}
+/// Image classification model
+///
+/// > This collection of models take images as input, then classifies the major objects in the images
+/// > into 1000 object categories such as keyboard, mouse, pencil, and many animals.
+///
+/// Source: [https://github.com/onnx/models#image-classification-](https://github.com/onnx/models#image-classification-)
+#[derive(Debug, Clone)]
+pub enum ImageClassificationModel {
     /// Image classification aimed for mobile targets.
     ///
     /// > MobileNet models perform image classification - they take images as input and classify the major
@@ -52,10 +74,6 @@ pub enum AvailableOnnxModel {
     Inception(InceptionVersion),
 }
 
-trait ModelUrl {
-    fn fetch_url(&self) -> &'static str;
-}
-
 /// Google's Inception
 #[derive(Debug, Clone)]
 pub enum InceptionVersion {
@@ -76,9 +94,25 @@ pub enum InceptionVersion {
 impl ModelUrl for AvailableOnnxModel {
     fn fetch_url(&self) -> &'static str {
         match self {
-            AvailableOnnxModel::MobileNet => "https://github.com/onnx/models/raw/master/vision/classification/mobilenet/model/mobilenetv2-7.onnx",
-            AvailableOnnxModel::SqueezeNet => "https://github.com/onnx/models/raw/master/vision/classification/squeezenet/model/squeezenet1.0-9.onnx",
-            AvailableOnnxModel::Inception(version) => version.fetch_url(),
+            AvailableOnnxModel::Vision(vision) => vision.fetch_url(),
+        }
+    }
+}
+
+impl ModelUrl for VisionModel {
+    fn fetch_url(&self) -> &'static str {
+        match self {
+            VisionModel::ImageClassification(ic) => ic.fetch_url(),
+        }
+    }
+}
+
+impl ModelUrl for ImageClassificationModel {
+    fn fetch_url(&self) -> &'static str {
+        match self {
+            ImageClassificationModel::MobileNet => "https://github.com/onnx/models/raw/master/vision/classification/mobilenet/model/mobilenetv2-7.onnx",
+            ImageClassificationModel::SqueezeNet => "https://github.com/onnx/models/raw/master/vision/classification/squeezenet/model/squeezenet1.0-9.onnx",
+            ImageClassificationModel::Inception(version) => version.fetch_url(),
         }
     }
 }
