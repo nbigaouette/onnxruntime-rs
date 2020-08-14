@@ -27,7 +27,7 @@ use crate::error::{OrtDownloadError, Result};
 #[derive(Debug, Clone)]
 pub enum AvailableOnnxModel {
     /// Computer vision model
-    Vision(VisionModel),
+    Vision(Vision),
 }
 
 trait ModelUrl {
@@ -36,7 +36,7 @@ trait ModelUrl {
 
 /// Computer vision model
 #[derive(Debug, Clone)]
-pub enum VisionModel {
+pub enum Vision {
     /// Image classification model
     ImageClassification(ImageClassificationModel),
 }
@@ -99,10 +99,10 @@ impl ModelUrl for AvailableOnnxModel {
     }
 }
 
-impl ModelUrl for VisionModel {
+impl ModelUrl for Vision {
     fn fetch_url(&self) -> &'static str {
         match self {
-            VisionModel::ImageClassification(ic) => ic.fetch_url(),
+            Vision::ImageClassification(ic) => ic.fetch_url(),
         }
     }
 }
