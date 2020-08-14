@@ -135,15 +135,15 @@ impl SessionBuilder {
 
     /// Download an ONNX pre-trained model from the [ONNX Model Zoo](https://github.com/onnx/models) and commit the session
     #[cfg(feature = "model-fetching")]
-    pub fn with_downloaded_model<M>(self, model: M) -> Result<Session>
+    pub fn with_model_downloaded<M>(self, model: M) -> Result<Session>
     where
         M: Into<AvailableOnnxModel>,
     {
-        self.with_downloaded_model_monomorphized(model.into())
+        self.with_model_downloaded_monomorphized(model.into())
     }
 
     #[cfg(feature = "model-fetching")]
-    fn with_downloaded_model_monomorphized(self, model: AvailableOnnxModel) -> Result<Session> {
+    fn with_model_downloaded_monomorphized(self, model: AvailableOnnxModel) -> Result<Session> {
         let download_dir = env::current_dir().map_err(OrtDownloadError::IoError)?;
         let downloaded_path = model.download_to(download_dir)?;
         self.with_model_from_file_monomorphized(downloaded_path.as_ref())

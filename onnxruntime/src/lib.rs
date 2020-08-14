@@ -61,7 +61,7 @@
     doc = r##"
 Instead of loading a model from file using [`with_model_from_file()`](session/struct.SessionBuilder.html#method.with_model_from_file),
 a model can be fetched directly from the [ONNX Model Zoo](https://github.com/onnx/models) using
-[`with_downloaded_model()`](session/struct.SessionBuilder.html#method.with_downloaded_model) method
+[`with_model_downloaded()`](session/struct.SessionBuilder.html#method.with_model_downloaded) method
 (requires the `model-fetching` feature).
 
 ```no_run
@@ -76,7 +76,7 @@ let mut session = environment
     .new_session_builder()?
     .with_optimization_level(GraphOptimizationLevel::Basic)?
     .with_number_threads(1)?
-    .with_downloaded_model(ImageClassificationModel::SqueezeNet)?;
+    .with_model_downloaded(ImageClassificationModel::SqueezeNet)?;
 # Ok(())
 # }
 ```

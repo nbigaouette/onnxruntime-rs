@@ -27,8 +27,8 @@ fn run() -> Result<(), Error> {
         .with_optimization_level(GraphOptimizationLevel::Basic)?
         .with_number_threads(1)?
         // .with_model_from_file("squeezenet.onnx")?;
-        // .with_downloaded_model(ImageClassificationModel::MobileNet)?;
-        .with_downloaded_model(ImageClassificationModel::SqueezeNet)?;
+        // .with_model_downloaded(ImageClassificationModel::MobileNet)?;
+        .with_model_downloaded(ImageClassificationModel::SqueezeNet)?;
 
     let input0_shape: Vec<usize> = session.inputs[0].dimensions().collect();
     let output0_shape: Vec<usize> = session.outputs[0].dimensions().collect();

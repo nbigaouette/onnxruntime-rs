@@ -5,7 +5,7 @@
 //!
 //! A pre-trained model can be downloaded automatically using the
 //! [`SessionBuilder`](../session/struct.SessionBuilder.html)'s
-//! [`with_downloaded_model()`](../session/struct.SessionBuilder.html#method.with_downloaded_model) method.
+//! [`with_model_downloaded()`](../session/struct.SessionBuilder.html#method.with_model_downloaded) method.
 //!
 //! See [`AvailableOnnxModel`](enum.AvailableOnnxModel.html) for the different models available
 //! to download.
