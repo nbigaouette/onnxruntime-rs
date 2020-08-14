@@ -16,7 +16,7 @@ use onnxruntime_sys as sys;
 
 use crate::{
     char_p_to_string,
-    env::NamedEnv,
+    environment::NamedEnvironment,
     error::{status_to_result, OrtError, Result},
     g_ort,
     memory::MemoryInfo,
@@ -31,7 +31,7 @@ use crate::{download::AvailableOnnxModel, error::OrtDownloadError};
 /// Type used to create a session using the _builder pattern_
 ///
 /// A `SessionBuilder` is created by calling the
-/// [`Env::new_session_builder()`](../env/struct.Env.html#method.new_session_builder)
+/// [`Environment::new_session_builder()`](../env/struct.Environment.html#method.new_session_builder)
 /// method on the environment.
 ///
 /// Once created, use the different methods to configure the session.
@@ -43,9 +43,9 @@ use crate::{download::AvailableOnnxModel, error::OrtDownloadError};
 ///
 /// ```no_run
 /// # use std::error::Error;
-/// # use onnxruntime::{env::Env, LoggingLevel, GraphOptimizationLevel};
+/// # use onnxruntime::{environment::Environment, LoggingLevel, GraphOptimizationLevel};
 /// # fn main() -> Result<(), Box<dyn Error>> {
-/// let env = Env::builder()
+/// let environment = Environment::builder()
 ///     .with_name("test")
 ///     .with_log_level(LoggingLevel::Verbose)
 ///     .build()?;
@@ -58,7 +58,7 @@ use crate::{download::AvailableOnnxModel, error::OrtDownloadError};
 /// # }
 /// ```
 pub struct SessionBuilder {
-    env: Arc<Mutex<NamedEnv>>,
+    env: Arc<Mutex<NamedEnvironment>>,
 
     session_options_ptr: *mut sys::OrtSessionOptions,
 
@@ -74,7 +74,7 @@ impl Drop for SessionBuilder {
 }
 
 impl SessionBuilder {
-    pub(crate) fn new(env: Arc<Mutex<NamedEnv>>) -> Result<SessionBuilder> {
+    pub(crate) fn new(env: Arc<Mutex<NamedEnvironment>>) -> Result<SessionBuilder> {
         let mut session_options_ptr: *mut sys::OrtSessionOptions = std::ptr::null_mut();
         let status = unsafe { (*g_ort()).CreateSessionOptions.unwrap()(&mut session_options_ptr) };
         status_to_result(status).map_err(OrtError::SessionOptions)?;
@@ -139,7 +139,7 @@ impl SessionBuilder {
     where
         M: Into<AvailableOnnxModel>,
     {
-        let download_dir = env::current_dir().map_err(OrtDownloadError::IoError)?;
+        let download_dir = environment::current_dir().map_err(OrtDownloadError::IoError)?;
         let downloaded_path = model.into().download_to(download_dir)?;
         self.load_model_from_file_monorphomized(downloaded_path.as_ref())
     }
@@ -214,7 +214,7 @@ impl SessionBuilder {
     }
 }
 
-/// Type storing the session information, built from an [`Env`](env/struct.Env.html)
+/// Type storing the session information, built from an [`Environment`](environment/struct.Environment.html)
 pub struct Session {
     session_ptr: *mut sys::OrtSession,
     allocator_ptr: *mut sys::OrtAllocator,

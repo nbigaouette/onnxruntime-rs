@@ -23,13 +23,13 @@
 //! was ported to
 //! [`onnxruntime`](https://github.com/nbigaouette/onnxruntime-rs/blob/master/onnxruntime/examples/sample.rs).
 //!
-//! First, an environment must be created using and [`EnvBuilder`](env/struct.EnvBuilder.html):
+//! First, an environment must be created using and [`EnvBuilder`](environment/struct.EnvBuilder.html):
 //!
 //! ```no_run
 //! # use std::error::Error;
-//! # use onnxruntime::{env::Env, LoggingLevel};
+//! # use onnxruntime::{environment::Environment, LoggingLevel};
 //! # fn main() -> Result<(), Box<dyn Error>> {
-//! let env = Env::builder()
+//! let environment = Environment::builder()
 //!     .with_name("test")
 //!     .with_log_level(LoggingLevel::Verbose)
 //!     .build()?;
@@ -41,9 +41,9 @@
 //!
 //! ```no_run
 //! # use std::error::Error;
-//! # use onnxruntime::{env::Env, LoggingLevel, GraphOptimizationLevel};
+//! # use onnxruntime::{environment::Environment, LoggingLevel, GraphOptimizationLevel};
 //! # fn main() -> Result<(), Box<dyn Error>> {
-//! # let env = Env::builder()
+//! # let environment = Environment::builder()
 //! #     .with_name("test")
 //! #     .with_log_level(LoggingLevel::Verbose)
 //! #     .build()?;
@@ -63,9 +63,9 @@
 //!
 //! ```no_run
 //! # use std::error::Error;
-//! # use onnxruntime::{env::Env, LoggingLevel, GraphOptimizationLevel};
+//! # use onnxruntime::{environment::Environment, LoggingLevel, GraphOptimizationLevel};
 //! # fn main() -> Result<(), Box<dyn Error>> {
-//! # let env = Env::builder()
+//! # let environment = Environment::builder()
 //! #     .with_name("test")
 //! #     .with_log_level(LoggingLevel::Verbose)
 //! #     .build()?;
@@ -86,9 +86,9 @@
 //!
 //! ```no_run
 //! # use std::error::Error;
-//! # use onnxruntime::{env::Env, LoggingLevel, GraphOptimizationLevel, tensor::TensorFromOrt};
+//! # use onnxruntime::{environment::Environment, LoggingLevel, GraphOptimizationLevel, tensor::TensorFromOrt};
 //! # fn main() -> Result<(), Box<dyn Error>> {
-//! # let env = Env::builder()
+//! # let environment = Environment::builder()
 //! #     .with_name("test")
 //! #     .with_log_level(LoggingLevel::Verbose)
 //! #     .build()?;
@@ -119,7 +119,7 @@ use onnxruntime_sys as sys;
 
 #[cfg(feature = "model-fetching")]
 pub mod download;
-pub mod env;
+pub mod environment;
 pub mod error;
 mod memory;
 pub mod session;

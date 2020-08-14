@@ -3,7 +3,8 @@
 use ndarray::Array;
 
 use onnxruntime::{
-    download::vision::ImageClassificationModel, env::Env, GraphOptimizationLevel, LoggingLevel,
+    download::vision::ImageClassificationModel, environment::Environment, GraphOptimizationLevel,
+    LoggingLevel,
 };
 
 type Error = Box<dyn std::error::Error>;
@@ -16,12 +17,12 @@ fn main() {
 }
 
 fn run() -> Result<(), Error> {
-    let env = Env::builder()
+    let environment = Environment::builder()
         .with_name("test")
         .with_log_level(LoggingLevel::Verbose)
         .build()?;
 
-    let mut session = env
+    let mut session = environment
         .new_session_builder()?
         .with_optimization_level(GraphOptimizationLevel::Basic)?
         .with_number_threads(1)?

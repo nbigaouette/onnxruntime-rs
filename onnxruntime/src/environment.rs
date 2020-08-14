@@ -1,6 +1,6 @@
 //! Module containing environment types
 //!
-//! An [`Env`](session/struct.Env.html) is the main entry point of the ONNX Runtime.
+//! An [`Environment`](session/struct.Environment.html) is the main entry point of the ONNX Runtime.
 //!
 //! Only one ONNX environment can be created per process. The `onnxruntime` crate
 //! uses a singleton (through `lazy_static!()`) to enforce this.
@@ -8,7 +8,7 @@
 //! Once an environment is created, a [`Session`](../session/struct.Session.html)
 //! can be obtained from it.
 //!
-//! **NOTE**: While the [`Env`](env/struct.Env.html) constructor takes a `name` parameter
+//! **NOTE**: While the [`Environment`](environment/struct.Environment.html) constructor takes a `name` parameter
 //! to name the environment, only the first name will be considered if many environments
 //! are created.
 //!
@@ -16,9 +16,9 @@
 //!
 //! ```no_run
 //! # use std::error::Error;
-//! # use onnxruntime::{env::Env, LoggingLevel};
+//! # use onnxruntime::{environment::Environment, LoggingLevel};
 //! # fn main() -> Result<(), Box<dyn Error>> {
-//! let env = Env::builder()
+//! let environment = Environment::builder()
 //!     .with_name("test")
 //!     .with_log_level(LoggingLevel::Verbose)
 //!     .build()?;
@@ -46,7 +46,7 @@ use crate::{
 };
 
 lazy_static! {
-    static ref G_NAMED_ENV: Arc<Mutex<NamedEnv>> = Arc::new(Mutex::new(NamedEnv {
+    static ref G_NAMED_ENV: Arc<Mutex<NamedEnvironment>> = Arc::new(Mutex::new(NamedEnvironment {
         env_ptr: EnvPointer(AtomicPtr::new(std::ptr::null_mut())),
         name: CString::new("uninitialized").unwrap(),
     }));
@@ -69,15 +69,15 @@ impl Drop for EnvPointer {
 }
 
 #[derive(Debug)]
-pub(crate) struct NamedEnv {
+pub(crate) struct NamedEnvironment {
     pub(crate) env_ptr: EnvPointer,
     pub(crate) name: CString,
 }
 
-/// Struct used to build an environment [`Env`](env/struct.Env.html)
+/// Struct used to build an environment [`Environment`](environment/struct.Environment.html)
 ///
 /// This is the crate's main entry point. An environment _must_ be created
-/// as the first step. An [`Env`](env/struct.Env.html) can only be built
+/// as the first step. An [`Environment`](environment/struct.Environment.html) can only be built
 /// using `EnvBuilder` to configure it.
 ///
 /// **NOTE**: If the same configuration method (for example [`with_name()`](struct.EnvBuilder.html#method.with_name))
@@ -113,8 +113,8 @@ impl EnvBuilder {
         self
     }
 
-    /// Commit the configuration to a new [`Env`](env/struct.Env.html)
-    pub fn build(self) -> Result<Env> {
+    /// Commit the configuration to a new [`Environment`](environment/struct.Environment.html)
+    pub fn build(self) -> Result<Environment> {
         let mut g_named_env = G_NAMED_ENV.lock().unwrap();
 
         let name = CString::new(self.name)?;
@@ -146,8 +146,8 @@ impl EnvBuilder {
             g_named_env.name = name.clone();
 
             let env_ptr = EnvPointer(AtomicPtr::new(env_ptr));
-            let named_env = NamedEnv { env_ptr, name };
-            let env = Env {
+            let named_env = NamedEnvironment { env_ptr, name };
+            let env = Environment {
                 inner: Arc::new(Mutex::new(named_env)),
             };
 
@@ -158,7 +158,7 @@ impl EnvBuilder {
                 g_named_env.name
             );
 
-            Ok(Env {
+            Ok(Environment {
                 inner: G_NAMED_ENV.clone(),
             })
         }
@@ -172,11 +172,11 @@ impl EnvBuilder {
 /// end up re-using the same environment internally; a new one will _not_
 /// be created.
 #[derive(Debug)]
-pub struct Env {
-    inner: Arc<Mutex<NamedEnv>>,
+pub struct Environment {
+    inner: Arc<Mutex<NamedEnvironment>>,
 }
 
-impl Env {
+impl Environment {
     /// Create a new environment builder using default values
     /// (name: `default`, log level: [LoggingLevel::Warning](../enum.LoggingLevel.html#variant.Warning))
     pub fn builder() -> EnvBuilder {
@@ -199,7 +199,7 @@ mod tests {
 
     #[test]
     fn singleton_env() {
-        let env1 = Env::builder().with_name("test1").build().unwrap();
+        let env1 = Environment::builder().with_name("test1").build().unwrap();
 
         assert_eq!(
             G_NAMED_ENV.lock().unwrap().name,
@@ -214,7 +214,7 @@ mod tests {
             *env1.inner.lock().unwrap().env_ptr.0.get_mut() as usize
         );
 
-        let env2 = Env::builder().with_name("test2").build().unwrap();
+        let env2 = Environment::builder().with_name("test2").build().unwrap();
 
         assert_eq!(
             G_NAMED_ENV.lock().unwrap().name,
@@ -227,7 +227,7 @@ mod tests {
             "Environment should contain information from first creation"
         );
 
-        let env3 = Env::builder().with_name("test3").build().unwrap();
+        let env3 = Environment::builder().with_name("test3").build().unwrap();
 
         assert_eq!(
             G_NAMED_ENV.lock().unwrap().name,
