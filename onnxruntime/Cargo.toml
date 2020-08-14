@@ -34,4 +34,4 @@ model-fetching = ["ureq"]
 disable-bindgen = ["onnxruntime-sys/disable-bindgen"]
 
 [package.metadata.docs.rs]
-features = ["disable-bindgen"]
+features = ["disable-bindgen", "model-fetching"]
