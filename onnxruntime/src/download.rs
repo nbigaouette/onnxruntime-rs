@@ -10,12 +10,14 @@
 //! See [`AvailableOnnxModel`](enum.AvailableOnnxModel.html) for the different models available
 //! to download.
 
+#[cfg(feature = "model-fetching")]
 use std::{
     fs, io,
     path::{Path, PathBuf},
     time::Duration,
 };
 
+#[cfg(feature = "model-fetching")]
 use crate::error::{OrtDownloadError, Result};
 
 pub mod vision;
@@ -47,6 +49,7 @@ impl ModelUrl for AvailableOnnxModel {
 }
 
 impl AvailableOnnxModel {
+    #[cfg(feature = "model-fetching")]
     pub(crate) fn download_to<P>(&self, download_dir: P) -> Result<PathBuf>
     where
         P: AsRef<Path>,

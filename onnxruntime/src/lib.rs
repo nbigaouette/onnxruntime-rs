@@ -121,7 +121,6 @@ use lazy_static::lazy_static;
 
 use onnxruntime_sys as sys;
 
-#[cfg(feature = "model-fetching")]
 pub mod download;
 pub mod environment;
 pub mod error;
