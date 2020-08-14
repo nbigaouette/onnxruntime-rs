@@ -3,7 +3,7 @@
 use ndarray::Array;
 
 use onnxruntime::{
-    download::ImageClassificationModel, env::Env, GraphOptimizationLevel, LoggingLevel,
+    download::vision::ImageClassificationModel, env::Env, GraphOptimizationLevel, LoggingLevel,
 };
 
 type Error = Box<dyn std::error::Error>;
