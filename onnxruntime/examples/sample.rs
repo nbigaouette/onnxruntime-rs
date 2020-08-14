@@ -2,7 +2,7 @@
 
 use ndarray::Array;
 
-use onnxruntime::{EnvBuilder, GraphOptimizationLevel, LoggingLevel};
+use onnxruntime::{env::Env, GraphOptimizationLevel, LoggingLevel};
 
 type Error = Box<dyn std::error::Error>;
 
@@ -14,7 +14,7 @@ fn main() {
 }
 
 fn run() -> Result<(), Error> {
-    let env = EnvBuilder::new()
+    let env = Env::builder()
         .with_name("test")
         .with_log_level(LoggingLevel::Verbose)
         .build()?;

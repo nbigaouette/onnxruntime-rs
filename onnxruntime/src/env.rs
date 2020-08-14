@@ -16,9 +16,9 @@
 //!
 //! ```no_run
 //! # use std::error::Error;
-//! # use onnxruntime::{env::EnvBuilder, LoggingLevel};
+//! # use onnxruntime::{env::Env, LoggingLevel};
 //! # fn main() -> Result<(), Box<dyn Error>> {
-//! let env = EnvBuilder::new()
+//! let env = Env::builder()
 //!     .with_name("test")
 //!     .with_log_level(LoggingLevel::Verbose)
 //!     .build()?;
@@ -87,22 +87,7 @@ pub struct EnvBuilder {
     log_level: LoggingLevel,
 }
 
-impl Default for EnvBuilder {
-    fn default() -> Self {
-        EnvBuilder::new()
-    }
-}
-
 impl EnvBuilder {
-    /// Create a new environment builder using default values
-    /// (name: `default`, log level: [LoggingLevel::Warning](../enum.LoggingLevel.html#variant.Warning))
-    pub fn new() -> EnvBuilder {
-        EnvBuilder {
-            name: "default".into(),
-            log_level: LoggingLevel::Warning,
-        }
-    }
-
     /// Configure the environment with a given name
     ///
     /// **NOTE**: Since ONNX can only define one environment per process,
@@ -188,6 +173,15 @@ pub struct Env {
 }
 
 impl Env {
+    /// Create a new environment builder using default values
+    /// (name: `default`, log level: [LoggingLevel::Warning](../enum.LoggingLevel.html#variant.Warning))
+    pub fn builder() -> EnvBuilder {
+        EnvBuilder {
+            name: "default".into(),
+            log_level: LoggingLevel::Warning,
+        }
+    }
+
     /// Create a new [`SessionBuilder`](../session/struct.SessionBuilder.html)
     /// used to create a new ONNX session.
     pub fn new_session_builder(&self) -> Result<SessionBuilder> {
@@ -201,7 +195,7 @@ mod tests {
 
     #[test]
     fn singleton_env() {
-        let env1 = EnvBuilder::new().with_name("test1").build().unwrap();
+        let env1 = Env::builder().with_name("test1").build().unwrap();
 
         assert_eq!(
             G_NAMED_ENV.lock().unwrap().name,
@@ -216,7 +210,7 @@ mod tests {
             *env1.inner.lock().unwrap().env_ptr.0.get_mut() as usize
         );
 
-        let env2 = EnvBuilder::new().with_name("test2").build().unwrap();
+        let env2 = Env::builder().with_name("test2").build().unwrap();
 
         assert_eq!(
             G_NAMED_ENV.lock().unwrap().name,
@@ -229,7 +223,7 @@ mod tests {
             "Environment should contain information from first creation"
         );
 
-        let env3 = EnvBuilder::new().with_name("test3").build().unwrap();
+        let env3 = Env::builder().with_name("test3").build().unwrap();
 
         assert_eq!(
             G_NAMED_ENV.lock().unwrap().name,

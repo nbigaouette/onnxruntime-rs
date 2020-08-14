@@ -37,9 +37,9 @@ use crate::{
 ///
 /// ```no_run
 /// # use std::error::Error;
-/// # use onnxruntime::{env::EnvBuilder, LoggingLevel, GraphOptimizationLevel};
+/// # use onnxruntime::{env::Env, LoggingLevel, GraphOptimizationLevel};
 /// # fn main() -> Result<(), Box<dyn Error>> {
-/// let env = EnvBuilder::new()
+/// let env = Env::builder()
 ///     .with_name("test")
 ///     .with_log_level(LoggingLevel::Verbose)
 ///     .build()?;
