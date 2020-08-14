@@ -91,6 +91,7 @@ use lazy_static::lazy_static;
 
 use onnxruntime_sys as sys;
 
+pub mod download;
 pub mod env;
 pub mod error;
 mod memory;

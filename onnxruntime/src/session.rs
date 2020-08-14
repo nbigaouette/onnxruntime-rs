@@ -1,6 +1,7 @@
 //! Module containing session types
 
 use std::{
+    env,
     ffi::CString,
     fmt::Debug,
     path::Path,
@@ -21,6 +22,8 @@ use crate::{
     AllocatorType, GraphOptimizationLevel, MemType, TensorElementDataType,
     TypeToTensorElementDataType,
 };
+
+use crate::{download::AvailableOnnxModel, error::OrtDownloadError};
 
 /// Type used to create a session using the _builder pattern_
 ///
@@ -125,6 +128,13 @@ impl SessionBuilder {
     pub fn with_memory_type(mut self, memory_type: MemType) -> Result<SessionBuilder> {
         self.memory_type = memory_type;
         Ok(self)
+    }
+
+    /// Download an ONNX pre-trained model from the [ONNX Model Zoo](https://github.com/onnx/models) and commit the session
+    pub fn with_downloaded_model(self, model: AvailableOnnxModel) -> Result<Session> {
+        let download_dir = env::current_dir().map_err(OrtDownloadError::IoError)?;
+        let downloaded_path = model.download_to(download_dir)?;
+        self.load_model_from_file_monorphomized(downloaded_path.as_ref())
     }
 
     // TODO: Add all functions changing the options.
