@@ -48,16 +48,51 @@ pub enum AvailableOnnxModel {
     ///
     /// Variant downloaded: ONNX Version 1.4 with Opset Version 9.
     SqueezeNet,
+    /// Google's Inception
+    Inception(Inception),
 }
 
-impl AvailableOnnxModel {
+trait ModelUrl {
+    fn fetch_url(&self) -> &'static str;
+}
+
+/// Google's Inception
+#[derive(Debug, Clone)]
+pub enum Inception {
+    /// Google's Inception v1
+    ///
+    /// Source: [https://github.com/onnx/models/tree/master/vision/classification/inception_and_googlenet/inception_v1](https://github.com/onnx/models/tree/master/vision/classification/inception_and_googlenet/inception_v1)
+    ///
+    /// Variant downloaded: ONNX Version 1.4 with Opset Version 9.
+    V1,
+    /// Google's Inception v2
+    ///
+    /// Source: [https://github.com/onnx/models/tree/master/vision/classification/inception_and_googlenet/inception_v2](https://github.com/onnx/models/tree/master/vision/classification/inception_and_googlenet/inception_v2)
+    ///
+    /// Variant downloaded: ONNX Version 1.4 with Opset Version 9.
+    V2,
+}
+
+impl ModelUrl for AvailableOnnxModel {
     fn fetch_url(&self) -> &'static str {
         match self {
             AvailableOnnxModel::MobileNet => "https://github.com/onnx/models/raw/master/vision/classification/mobilenet/model/mobilenetv2-7.onnx",
             AvailableOnnxModel::SqueezeNet => "https://github.com/onnx/models/raw/master/vision/classification/squeezenet/model/squeezenet1.0-9.onnx",
+            AvailableOnnxModel::Inception(version) => version.fetch_url(),
         }
     }
+}
 
+impl ModelUrl for Inception {
+    fn fetch_url(&self) -> &'static str {
+        match self {
+            Inception::V1 => "https://github.com/onnx/models/raw/master/vision/classification/inception_and_googlenet/inception_v1/model/inception-v1-9.onnx",
+            Inception::V2 => "https://github.com/onnx/models/raw/master/vision/classification/inception_and_googlenet/inception_v2/model/inception-v2-9.onnx",
+        }
+    }
+}
+
+impl AvailableOnnxModel {
     pub(crate) fn download_to<P>(&self, download_dir: P) -> Result<PathBuf>
     where
         P: AsRef<Path>,
