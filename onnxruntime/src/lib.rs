@@ -56,6 +56,32 @@
 //! # }
 //! ```
 //!
+//! Instead of loading a model from file using [`load_model_from_file()`](session/struct.SessionBuilder.html#method.load_model_from_file),
+//! a model can be fetched directly from the [ONNX Model Zoo](https://github.com/onnx/models) using
+//! [`with_downloaded_model()`](session/struct.SessionBuilder.html#method.with_downloaded_model) method
+//! (requires the `model-fetching` feature).
+//!
+//! ```no_run
+//! # use std::error::Error;
+//! # use onnxruntime::{env::Env, LoggingLevel, GraphOptimizationLevel};
+//! # fn main() -> Result<(), Box<dyn Error>> {
+//! # let env = Env::builder()
+//! #     .with_name("test")
+//! #     .with_log_level(LoggingLevel::Verbose)
+//! #     .build()?;
+//! let mut session = env
+//!     .new_session_builder()?
+//!     .with_optimization_level(GraphOptimizationLevel::Basic)?
+//!     .with_number_threads(1)?
+//!     .with_downloaded_model(ImageClassificationModel::SqueezeNet)?;
+//! # Ok(())
+//! # }
+//! ```
+//!
+//! See [`AvailableOnnxModel`](download/enum.AvailableOnnxModel.html) for the different models available
+//! to download.
+//!
+//!
 //! Inference will be run on data passed as an [`ndarray::Array`](https://docs.rs/ndarray/latest/ndarray/type.Array.html).
 //!
 //! ```no_run
