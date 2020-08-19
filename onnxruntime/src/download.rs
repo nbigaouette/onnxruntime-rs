@@ -22,8 +22,6 @@ use crate::error::{OrtDownloadError, Result};
 
 pub mod vision;
 
-use vision::{ImageClassificationModel, InceptionVersion, Vision};
-
 /// Available pre-trained models to download from [ONNX Model Zoo](https://github.com/onnx/models).
 ///
 /// According to [ONNX Model Zoo](https://github.com/onnx/models)'s GitHub page:
@@ -98,19 +96,5 @@ impl AvailableOnnxModel {
                 .into())
             }
         }
-    }
-}
-
-impl From<ImageClassificationModel> for AvailableOnnxModel {
-    fn from(model: ImageClassificationModel) -> Self {
-        AvailableOnnxModel::Vision(Vision::ImageClassification(model))
-    }
-}
-
-impl From<InceptionVersion> for AvailableOnnxModel {
-    fn from(model: InceptionVersion) -> Self {
-        AvailableOnnxModel::Vision(Vision::ImageClassification(
-            ImageClassificationModel::Inception(model),
-        ))
     }
 }

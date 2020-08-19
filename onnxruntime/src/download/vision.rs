@@ -1,6 +1,6 @@
 //! Module defining computer vision models available to download.
 
-use super::ModelUrl;
+use super::{AvailableOnnxModel, ModelUrl};
 
 /// Computer vision model
 #[derive(Debug, Clone)]
@@ -541,5 +541,19 @@ impl ModelUrl for FastNeuralStyleTransferStyle {
             FastNeuralStyleTransferStyle::Udnie => "https://github.com/onnx/models/raw/master/vision/style_transfer/fast_neural_style/model/udnie-9.onnx",
             FastNeuralStyleTransferStyle::Pointilism => "https://github.com/onnx/models/raw/master/vision/style_transfer/fast_neural_style/model/pointilism-9.onnx",
         }
+    }
+}
+
+impl From<ImageClassificationModel> for AvailableOnnxModel {
+    fn from(model: ImageClassificationModel) -> Self {
+        AvailableOnnxModel::Vision(Vision::ImageClassification(model))
+    }
+}
+
+impl From<InceptionVersion> for AvailableOnnxModel {
+    fn from(model: InceptionVersion) -> Self {
+        AvailableOnnxModel::Vision(Vision::ImageClassification(
+            ImageClassificationModel::Inception(model),
+        ))
     }
 }
