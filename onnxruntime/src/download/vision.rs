@@ -92,6 +92,10 @@ pub enum ImageClassificationModel {
     DenseNet121,
     /// Google's Inception
     Inception(InceptionVersion),
+    /// Computationally efficient CNN architecture designed specifically for mobile devices with very limited computing power.
+    ///
+    /// Source: [https://github.com/onnx/models/tree/master/vision/classification/shufflenet](https://github.com/onnx/models/tree/master/vision/classification/shufflenet)
+    ShuffleNet(ShuffleNetVersion),
 }
 
 /// Google's Inception
@@ -201,6 +205,23 @@ pub enum Vgg {
     Vgg19Bn,
 }
 
+/// Computationally efficient CNN architecture designed specifically for mobile devices with very limited computing power.
+///
+/// Source: [https://github.com/onnx/models/tree/master/vision/classification/shufflenet](https://github.com/onnx/models/tree/master/vision/classification/shufflenet)
+#[derive(Debug, Clone)]
+pub enum ShuffleNetVersion {
+    /// Source: [https://github.com/onnx/models/tree/master/vision/classification/shufflenet](https://github.com/onnx/models/tree/master/vision/classification/shufflenet)
+    ///
+    /// Variant downloaded: ONNX Version 1.4 with Opset Version 9.
+    V1,
+    /// ShuffleNetV2 is an improved architecture that is the state-of-the-art in terms of speed and accuracy tradeoff used for image classification.
+    ///
+    /// Source: [https://github.com/onnx/models/tree/master/vision/classification/shufflenet](https://github.com/onnx/models/tree/master/vision/classification/shufflenet)
+    ///
+    /// Variant downloaded: ONNX Version 1.6 with Opset Version 10.
+    V2,
+}
+
 impl ModelUrl for Vision {
     fn fetch_url(&self) -> &'static str {
         match self {
@@ -223,6 +244,7 @@ impl ModelUrl for ImageClassificationModel {
             ImageClassificationModel::CaffeNet => "https://github.com/onnx/models/raw/master/vision/classification/caffenet/model/caffenet-9.onnx",
             ImageClassificationModel::RcnnIlsvrc13 => "https://github.com/onnx/models/raw/master/vision/classification/rcnn_ilsvrc13/model/rcnn-ilsvrc13-9.onnx",
             ImageClassificationModel::DenseNet121 => "https://github.com/onnx/models/raw/master/vision/classification/densenet-121/model/densenet-9.onnx",
+            ImageClassificationModel::ShuffleNet(version) => version.fetch_url(),
         }
     }
 }
@@ -276,6 +298,15 @@ impl ModelUrl for Vgg {
             Vgg::Vgg16Bn => "https://github.com/onnx/models/raw/master/vision/classification/vgg/model/vgg16-bn-7.onnx",
             Vgg::Vgg19 => "https://github.com/onnx/models/raw/master/vision/classification/vgg/model/vgg19-7.onnx",
             Vgg::Vgg19Bn => "https://github.com/onnx/models/raw/master/vision/classification/vgg/model/vgg19-bn-7.onnx",
+        }
+    }
+}
+
+impl ModelUrl for ShuffleNetVersion {
+    fn fetch_url(&self) -> &'static str {
+        match self {
+            ShuffleNetVersion::V1 => "https://github.com/onnx/models/raw/master/vision/classification/shufflenet/model/shufflenet-9.onnx",
+            ShuffleNetVersion::V2 => "https://github.com/onnx/models/raw/master/vision/classification/shufflenet/model/shufflenet-v2-10.onnx",
         }
     }
 }
