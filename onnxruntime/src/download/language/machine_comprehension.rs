@@ -25,13 +25,46 @@ pub enum MachineComprehension {
     ///
     /// Variant downloaded: ONNX Version 1.5 with Opset Version 10.
     BERTSquad,
+    /// Large transformer-based model that predicts sentiment based on given input text.
+    ///
+    /// > Transformer-based language model for text generation.
+    ///
+    /// Source: [https://github.com/onnx/models/tree/master/text/machine_comprehension/roberta](https://github.com/onnx/models/tree/master/text/machine_comprehension/roberta)
+    RoBERTa(RoBERTa),
+}
+
+/// Large transformer-based model that predicts sentiment based on given input text.
+///
+/// > Transformer-based language model for text generation.
+///
+/// Source: [https://github.com/onnx/models/tree/master/text/machine_comprehension/roberta](https://github.com/onnx/models/tree/master/text/machine_comprehension/roberta)
+#[derive(Debug, Clone)]
+pub enum RoBERTa {
+    /// Variant with input is a sequence of words as a string. Example: "Text to encode: Hello, World"
+    ///
+    /// Variant downloaded: ONNX Version 1.6 with Opset Version 11.
+    RoBERTaBase,
+    /// Variant with input is a sequence of words as a string including sentiment. Example: "This film is so good"
+    ///
+    /// Variant downloaded: ONNX Version 1.6 with Opset Version 9.
+    RoBERTaSequenceClassification,
 }
 
 impl ModelUrl for MachineComprehension {
     fn fetch_url(&self) -> &'static str {
         match self {
             MachineComprehension::BiDAF => "https://github.com/onnx/models/raw/master/text/machine_comprehension/bidirectional_attention_flow/model/bidaf-9.onnx",
-            MachineComprehension::BERTSquad => "https://github.com/onnx/models/blob/master/text/machine_comprehension/bert-squad/model/bertsquad-10.onnx",
+            MachineComprehension::BERTSquad => "https://github.com/onnx/models/raw/master/text/machine_comprehension/bert-squad/model/bertsquad-10.onnx",
+            MachineComprehension::RoBERTa(variant) => variant.fetch_url(),
+        }
+    }
+}
+
+impl ModelUrl for RoBERTa {
+    fn fetch_url(&self) -> &'static str {
+        match self {
+            RoBERTa::RoBERTaBase => "https://github.com/onnx/models/raw/master/text/machine_comprehension/roberta/model/roberta-base-11.onnx",
+            RoBERTa::RoBERTaSequenceClassification => "https://github.com/onnx/models/raw/master/text/machine_comprehension/roberta/model/roberta-sequence-classification-9.onnx",
         }
     }
 }
