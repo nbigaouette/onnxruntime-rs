@@ -2,6 +2,10 @@
 
 use super::{AvailableOnnxModel, ModelUrl};
 
+pub mod domain_based_image_classification;
+
+use domain_based_image_classification::DomainBasedImageClassification;
+
 /// Computer vision model
 #[derive(Debug, Clone)]
 pub enum Vision {
@@ -15,17 +19,6 @@ pub enum Vision {
     BodyFaceGestureAnalysis(BodyFaceGestureAnalysis),
     /// Image Manipulation
     ImageManipulation(ImageManipulation),
-}
-
-/// Image classification model
-#[derive(Debug, Clone)]
-pub enum DomainBasedImageClassification {
-    /// Handwritten digits prediction using CNN
-    ///
-    /// Source: [https://github.com/onnx/models/tree/master/vision/classification/mnist](https://github.com/onnx/models/tree/master/vision/classification/mnist)
-    ///
-    /// Variant downloaded: ONNX Version 1.3 with Opset Version 8.
-    Mnist,
 }
 
 /// Image classification model
@@ -401,14 +394,6 @@ impl ModelUrl for Vision {
             Vision::ObjectDetectionImageSegmentation(odis) => odis.fetch_url(),
             Vision::BodyFaceGestureAnalysis(bfga) => bfga.fetch_url(),
             Vision::ImageManipulation(im) => im.fetch_url(),
-        }
-    }
-}
-
-impl ModelUrl for DomainBasedImageClassification {
-    fn fetch_url(&self) -> &'static str {
-        match self {
-            DomainBasedImageClassification::Mnist => "https://github.com/onnx/models/raw/master/vision/classification/mnist/model/mnist-8.onnx",
         }
     }
 }
