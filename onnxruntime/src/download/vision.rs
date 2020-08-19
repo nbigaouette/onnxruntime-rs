@@ -1,6 +1,6 @@
 //! Module defining computer vision models available to download.
 
-use super::{AvailableOnnxModel, ModelUrl};
+use super::ModelUrl;
 
 pub mod domain_based_image_classification;
 pub mod image_classification;
@@ -169,11 +169,11 @@ pub enum FastNeuralStyleTransferStyle {
 impl ModelUrl for Vision {
     fn fetch_url(&self) -> &'static str {
         match self {
-            Vision::DomainBasedImageClassification(dbic) => dbic.fetch_url(),
-            Vision::ImageClassification(ic) => ic.fetch_url(),
-            Vision::ObjectDetectionImageSegmentation(odis) => odis.fetch_url(),
-            Vision::BodyFaceGestureAnalysis(bfga) => bfga.fetch_url(),
-            Vision::ImageManipulation(im) => im.fetch_url(),
+            Vision::DomainBasedImageClassification(variant) => variant.fetch_url(),
+            Vision::ImageClassification(variant) => variant.fetch_url(),
+            Vision::ObjectDetectionImageSegmentation(variant) => variant.fetch_url(),
+            Vision::BodyFaceGestureAnalysis(variant) => variant.fetch_url(),
+            Vision::ImageManipulation(variant) => variant.fetch_url(),
         }
     }
 }

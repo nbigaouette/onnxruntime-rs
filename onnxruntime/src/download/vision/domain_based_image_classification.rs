@@ -1,4 +1,4 @@
-//! Module defining domain-based image classification available to download.
+//! Module defining domain-based image classification models available to download.
 //!
 //! See [https://github.com/onnx/models#domain-based-image-classification-](https://github.com/onnx/models#domain-based-image-classification-)
 
