@@ -1,4 +1,6 @@
 //! Module defining computer vision models available to download.
+//!
+//! See [https://github.com/onnx/models#image_classification](https://github.com/onnx/models#image_classification)
 
 use super::ModelUrl;
 
