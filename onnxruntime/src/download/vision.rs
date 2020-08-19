@@ -204,7 +204,7 @@ impl ModelUrl for ImageClassificationModel {
             ImageClassificationModel::Inception(version) => version.fetch_url(),
             ImageClassificationModel::ResNet(version) => version.fetch_url(),
             ImageClassificationModel::Vgg(variant) => variant.fetch_url(),
-            ImageClassificationModel::AlexNet => "https://github.com/onnx/models/blob/master/vision/classification/alexnet/model/bvlcalexnet-9.onnx",
+            ImageClassificationModel::AlexNet => "https://github.com/onnx/models/raw/master/vision/classification/alexnet/model/bvlcalexnet-9.onnx",
             ImageClassificationModel::GoogleNet => "https://github.com/onnx/models/raw/master/vision/classification/inception_and_googlenet/googlenet/model/googlenet-9.onnx",
             ImageClassificationModel::CaffeNet => "https://github.com/onnx/models/raw/master/vision/classification/caffenet/model/caffenet-9.onnx",
         }
