@@ -11,7 +11,7 @@ use crate::download::{language::Language, AvailableOnnxModel, ModelUrl};
 /// Source: [https://github.com/onnx/models#machine_comprehension](https://github.com/onnx/models#machine_comprehension)
 #[derive(Debug, Clone)]
 pub enum MachineComprehension {
-    /// A model that answers a query about a given context paragraph.
+    /// Answers a query about a given context paragraph.
     ///
     /// > This model is a neural network for answering a query about a given context paragraph.
     ///
@@ -19,12 +19,19 @@ pub enum MachineComprehension {
     ///
     /// Variant downloaded: ONNX Version 1.4 with Opset Version 9.
     BiDAF,
+    /// Answers questions based on the context of the given input paragraph.
+    ///
+    /// Source: [https://github.com/onnx/models/tree/master/text/machine_comprehension/bert-squad](https://github.com/onnx/models/tree/master/text/machine_comprehension/bert-squad)
+    ///
+    /// Variant downloaded: ONNX Version 1.5 with Opset Version 10.
+    BERTSquad,
 }
 
 impl ModelUrl for MachineComprehension {
     fn fetch_url(&self) -> &'static str {
         match self {
             MachineComprehension::BiDAF => "https://github.com/onnx/models/raw/master/text/machine_comprehension/bidirectional_attention_flow/model/bidaf-9.onnx",
+            MachineComprehension::BERTSquad => "https://github.com/onnx/models/blob/master/text/machine_comprehension/bert-squad/model/bertsquad-10.onnx",
         }
     }
 }
