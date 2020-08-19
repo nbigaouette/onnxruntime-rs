@@ -5,9 +5,23 @@ use super::ModelUrl;
 /// Computer vision model
 #[derive(Debug, Clone)]
 pub enum Vision {
+    /// Domain-based Image Classification
+    DomainBasedImageClassification(DomainBasedImageClassification),
     /// Image classification model
     ImageClassification(ImageClassificationModel),
 }
+
+/// Image classification model
+#[derive(Debug, Clone)]
+pub enum DomainBasedImageClassification {
+    /// Handwritten digits prediction using CNN
+    ///
+    /// Source: [https://github.com/onnx/models/tree/master/vision/classification/mnist](https://github.com/onnx/models/tree/master/vision/classification/mnist)
+    ///
+    /// Variant downloaded: ONNX Version 1.3 with Opset Version 8.
+    Mnist,
+}
+
 /// Image classification model
 ///
 /// > This collection of models take images as input, then classifies the major objects in the images
@@ -16,12 +30,6 @@ pub enum Vision {
 /// Source: [https://github.com/onnx/models#image-classification-](https://github.com/onnx/models#image-classification-)
 #[derive(Debug, Clone)]
 pub enum ImageClassificationModel {
-    /// Handwritten digits prediction using CNN
-    ///
-    /// Source: [https://github.com/onnx/models/tree/master/vision/classification/mnist](https://github.com/onnx/models/tree/master/vision/classification/mnist)
-    ///
-    /// Variant downloaded: ONNX Version 1.3 with Opset Version 8.
-    Mnist,
     /// Image classification aimed for mobile targets.
     ///
     /// > MobileNet models perform image classification - they take images as input and classify the major
@@ -239,7 +247,16 @@ pub enum ShuffleNetVersion {
 impl ModelUrl for Vision {
     fn fetch_url(&self) -> &'static str {
         match self {
+            Vision::DomainBasedImageClassification(dbic) => dbic.fetch_url(),
             Vision::ImageClassification(ic) => ic.fetch_url(),
+        }
+    }
+}
+
+impl ModelUrl for DomainBasedImageClassification {
+    fn fetch_url(&self) -> &'static str {
+        match self {
+            DomainBasedImageClassification::Mnist => "https://github.com/onnx/models/raw/master/vision/classification/mnist/model/mnist-8.onnx",
         }
     }
 }
@@ -247,7 +264,6 @@ impl ModelUrl for Vision {
 impl ModelUrl for ImageClassificationModel {
     fn fetch_url(&self) -> &'static str {
         match self {
-            ImageClassificationModel::Mnist => "https://github.com/onnx/models/raw/master/vision/classification/mnist/model/mnist-8.onnx",
             ImageClassificationModel::MobileNet => "https://github.com/onnx/models/raw/master/vision/classification/mobilenet/model/mobilenetv2-7.onnx",
             ImageClassificationModel::SqueezeNet => "https://github.com/onnx/models/raw/master/vision/classification/squeezenet/model/squeezenet1.0-9.onnx",
             ImageClassificationModel::Inception(version) => version.fetch_url(),
