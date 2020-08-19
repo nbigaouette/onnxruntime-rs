@@ -64,6 +64,11 @@ pub enum ImageClassificationModel {
     ///
     /// Variant downloaded: ONNX Version 1.4 with Opset Version 9.
     AlexNet,
+    /// Convolutional neural network for classification, which competed in the ImageNet Large Scale Visual Recognition Challenge in 2014.
+    /// Source: [https://github.com/onnx/models/tree/master/vision/classification/inception_and_googlenet/googlenet](https://github.com/onnx/models/tree/master/vision/classification/inception_and_googlenet/googlenet)
+    ///
+    /// Variant downloaded: ONNX Version 1.4 with Opset Version 9.
+    GoogleNet,
     /// Google's Inception
     Inception(InceptionVersion),
 }
@@ -193,6 +198,7 @@ impl ModelUrl for ImageClassificationModel {
             ImageClassificationModel::ResNet(version) => version.fetch_url(),
             ImageClassificationModel::Vgg(variant) => variant.fetch_url(),
             ImageClassificationModel::AlexNet => "https://github.com/onnx/models/blob/master/vision/classification/alexnet/model/bvlcalexnet-9.onnx",
+            ImageClassificationModel::GoogleNet => "https://github.com/onnx/models/raw/master/vision/classification/inception_and_googlenet/googlenet/model/googlenet-9.onnx",
         }
     }
 }
