@@ -33,6 +33,13 @@ pub enum ImageClassificationModel {
     ///
     /// Variant downloaded: ONNX Version 1.2.1 with Opset Version 7.
     MobileNet,
+    /// Image classification, trained on ImageNet with 1000 classes.
+    ///
+    /// > ResNet models provide very high accuracies with affordable model sizes. They are ideal for cases when
+    /// > high accuracy of classification is required.
+    ///
+    /// Source: [https://github.com/onnx/models/tree/master/vision/classification/resnet](https://github.com/onnx/models/tree/master/vision/classification/resnet)
+    ResNet(ResNet),
     /// A small CNN with AlexNet level accuracy on ImageNet with 50x fewer parameters.
     ///
     /// > SqueezeNet is a small CNN which achieves AlexNet level accuracy on ImageNet with 50x fewer parameters.
@@ -65,6 +72,69 @@ pub enum InceptionVersion {
     V2,
 }
 
+/// ResNet
+///
+/// Source: [https://github.com/onnx/models/tree/master/vision/classification/resnet](https://github.com/onnx/models/tree/master/vision/classification/resnet)
+#[derive(Debug, Clone)]
+pub enum ResNet {
+    /// ResNet v1
+    V1(ResNetV1),
+    /// ResNet v2
+    V2(ResNetV2),
+}
+/// ResNet v1
+///
+/// Source: [https://github.com/onnx/models/tree/master/vision/classification/resnet](https://github.com/onnx/models/tree/master/vision/classification/resnet)
+#[derive(Debug, Clone)]
+pub enum ResNetV1 {
+    /// ResNet18
+    ///
+    /// Variant downloaded: ONNX Version 1.2.1 with Opset Version 7.
+    ResNet18,
+    /// ResNet34
+    ///
+    /// Variant downloaded: ONNX Version 1.2.1 with Opset Version 7.
+    ResNet34,
+    /// ResNet50
+    ///
+    /// Variant downloaded: ONNX Version 1.2.1 with Opset Version 7.
+    ResNet50,
+    /// ResNet101
+    ///
+    /// Variant downloaded: ONNX Version 1.2.1 with Opset Version 7.
+    ResNet101,
+    /// ResNet152
+    ///
+    /// Variant downloaded: ONNX Version 1.2.1 with Opset Version 7.
+    ResNet152,
+}
+/// ResNet v2
+///
+/// Source: [https://github.com/onnx/models/tree/master/vision/classification/resnet](https://github.com/onnx/models/tree/master/vision/classification/resnet)
+#[derive(Debug, Clone)]
+pub enum ResNetV2 {
+    /// ResNet18
+    ///
+    /// Variant downloaded: ONNX Version 1.2.1 with Opset Version 7.
+    ResNet18,
+    /// ResNet34
+    ///
+    /// Variant downloaded: ONNX Version 1.2.1 with Opset Version 7.
+    ResNet34,
+    /// ResNet50
+    ///
+    /// Variant downloaded: ONNX Version 1.2.1 with Opset Version 7.
+    ResNet50,
+    /// ResNet101
+    ///
+    /// Variant downloaded: ONNX Version 1.2.1 with Opset Version 7.
+    ResNet101,
+    /// ResNet152
+    ///
+    /// Variant downloaded: ONNX Version 1.2.1 with Opset Version 7.
+    ResNet152,
+}
+
 impl ModelUrl for Vision {
     fn fetch_url(&self) -> &'static str {
         match self {
@@ -80,6 +150,7 @@ impl ModelUrl for ImageClassificationModel {
             ImageClassificationModel::MobileNet => "https://github.com/onnx/models/raw/master/vision/classification/mobilenet/model/mobilenetv2-7.onnx",
             ImageClassificationModel::SqueezeNet => "https://github.com/onnx/models/raw/master/vision/classification/squeezenet/model/squeezenet1.0-9.onnx",
             ImageClassificationModel::Inception(version) => version.fetch_url(),
+            ImageClassificationModel::ResNet(version) => version.fetch_url(),
         }
     }
 }
@@ -89,6 +160,39 @@ impl ModelUrl for InceptionVersion {
         match self {
             InceptionVersion::V1 => "https://github.com/onnx/models/raw/master/vision/classification/inception_and_googlenet/inception_v1/model/inception-v1-9.onnx",
             InceptionVersion::V2 => "https://github.com/onnx/models/raw/master/vision/classification/inception_and_googlenet/inception_v2/model/inception-v2-9.onnx",
+        }
+    }
+}
+
+impl ModelUrl for ResNet {
+    fn fetch_url(&self) -> &'static str {
+        match self {
+            ResNet::V1(variant) => variant.fetch_url(),
+            ResNet::V2(variant) => variant.fetch_url(),
+        }
+    }
+}
+
+impl ModelUrl for ResNetV1 {
+    fn fetch_url(&self) -> &'static str {
+        match self {
+            ResNetV1::ResNet18 => "https://github.com/onnx/models/raw/master/vision/classification/resnet/model/resnet18-v1-7.onnx",
+            ResNetV1::ResNet34 => "https://github.com/onnx/models/raw/master/vision/classification/resnet/model/resnet34-v1-7.onnx",
+            ResNetV1::ResNet50 => "https://github.com/onnx/models/raw/master/vision/classification/resnet/model/resnet50-v1-7.onnx",
+            ResNetV1::ResNet101 => "https://github.com/onnx/models/raw/master/vision/classification/resnet/model/resnet101-v1-7.onnx",
+            ResNetV1::ResNet152 => "https://github.com/onnx/models/raw/master/vision/classification/resnet/model/resnet152-v1-7.onnx",
+        }
+    }
+}
+
+impl ModelUrl for ResNetV2 {
+    fn fetch_url(&self) -> &'static str {
+        match self {
+            ResNetV2::ResNet18 => "https://github.com/onnx/models/raw/master/vision/classification/resnet/model/resnet18-v2-7.onnx",
+            ResNetV2::ResNet34 => "https://github.com/onnx/models/raw/master/vision/classification/resnet/model/resnet34-v2-7.onnx",
+            ResNetV2::ResNet50 => "https://github.com/onnx/models/raw/master/vision/classification/resnet/model/resnet50-v2-7.onnx",
+            ResNetV2::ResNet101 => "https://github.com/onnx/models/raw/master/vision/classification/resnet/model/resnet101-v2-7.onnx",
+            ResNetV2::ResNet152 => "https://github.com/onnx/models/raw/master/vision/classification/resnet/model/resnet152-v2-7.onnx",
         }
     }
 }
