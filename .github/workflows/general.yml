@@ -65,7 +65,7 @@ jobs:
           toolchain: stable
           override: true
 
-      - name: Build (required to downloadd libonnxruntime)
+      - name: Build (required to download libonnxruntime)
         uses: actions-rs/cargo@v1
         with:
           command: build
