@@ -51,6 +51,13 @@ pub enum ImageClassificationModel {
     ///
     /// Variant downloaded: ONNX Version 1.4 with Opset Version 9.
     SqueezeNet,
+    /// Image classification, trained on ImageNet with 1000 classes.
+    ///
+    /// > VGG models provide very high accuracies but at the cost of increased model sizes. They are ideal for
+    /// > cases when high accuracy of classification is essential and there are limited constraints on model sizes.
+    ///
+    /// Source: [https://github.com/onnx/models/tree/master/vision/classification/vgg](https://github.com/onnx/models/tree/master/vision/classification/vgg)
+    Vgg(Vgg),
     /// Google's Inception
     Inception(InceptionVersion),
 }
@@ -135,6 +142,33 @@ pub enum ResNetV2 {
     ResNet152,
 }
 
+/// ResNet
+///
+/// Source: [https://github.com/onnx/models/tree/master/vision/classification/resnet](https://github.com/onnx/models/tree/master/vision/classification/resnet)
+#[derive(Debug, Clone)]
+pub enum Vgg {
+    /// VGG with 16 convolutional layers
+    ///
+    /// Variant downloaded: ONNX Version 1.2.1 with Opset Version 7.
+    Vgg16,
+    /// VGG with 16 convolutional layers, with batch normalization applied after each convolutional layer.
+    ///
+    /// The batch normalization leads to better convergence and slightly better accuracies.
+    ///
+    /// Variant downloaded: ONNX Version 1.2.1 with Opset Version 7.
+    Vgg16Bn,
+    /// VGG with 19 convolutional layers
+    ///
+    /// Variant downloaded: ONNX Version 1.2.1 with Opset Version 7.
+    Vgg19,
+    /// VGG with 19 convolutional layers, with batch normalization applied after each convolutional layer.
+    ///
+    /// The batch normalization leads to better convergence and slightly better accuracies.
+    ///
+    /// Variant downloaded: ONNX Version 1.2.1 with Opset Version 7.
+    Vgg19Bn,
+}
+
 impl ModelUrl for Vision {
     fn fetch_url(&self) -> &'static str {
         match self {
@@ -151,6 +185,7 @@ impl ModelUrl for ImageClassificationModel {
             ImageClassificationModel::SqueezeNet => "https://github.com/onnx/models/raw/master/vision/classification/squeezenet/model/squeezenet1.0-9.onnx",
             ImageClassificationModel::Inception(version) => version.fetch_url(),
             ImageClassificationModel::ResNet(version) => version.fetch_url(),
+            ImageClassificationModel::Vgg(variant) => variant.fetch_url(),
         }
     }
 }
@@ -193,6 +228,17 @@ impl ModelUrl for ResNetV2 {
             ResNetV2::ResNet50 => "https://github.com/onnx/models/raw/master/vision/classification/resnet/model/resnet50-v2-7.onnx",
             ResNetV2::ResNet101 => "https://github.com/onnx/models/raw/master/vision/classification/resnet/model/resnet101-v2-7.onnx",
             ResNetV2::ResNet152 => "https://github.com/onnx/models/raw/master/vision/classification/resnet/model/resnet152-v2-7.onnx",
+        }
+    }
+}
+
+impl ModelUrl for Vgg {
+    fn fetch_url(&self) -> &'static str {
+        match self {
+            Vgg::Vgg16 => "https://github.com/onnx/models/raw/master/vision/classification/vgg/model/vgg16-7.onnx",
+            Vgg::Vgg16Bn => "https://github.com/onnx/models/raw/master/vision/classification/vgg/model/vgg16-bn-7.onnx",
+            Vgg::Vgg19 => "https://github.com/onnx/models/raw/master/vision/classification/vgg/model/vgg19-7.onnx",
+            Vgg::Vgg19Bn => "https://github.com/onnx/models/raw/master/vision/classification/vgg/model/vgg19-bn-7.onnx",
         }
     }
 }
