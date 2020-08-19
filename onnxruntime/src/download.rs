@@ -33,6 +33,7 @@ pub mod vision;
 pub enum AvailableOnnxModel {
     /// Computer vision model
     Vision(vision::Vision),
+    /// Natural language model
     Language(language::Language),
 }
 
