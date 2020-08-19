@@ -20,6 +20,7 @@ use std::{
 #[cfg(feature = "model-fetching")]
 use crate::error::{OrtDownloadError, Result};
 
+pub mod language;
 pub mod vision;
 
 /// Available pre-trained models to download from [ONNX Model Zoo](https://github.com/onnx/models).
@@ -32,6 +33,7 @@ pub mod vision;
 pub enum AvailableOnnxModel {
     /// Computer vision model
     Vision(vision::Vision),
+    Language(language::Language),
 }
 
 trait ModelUrl {
@@ -41,7 +43,8 @@ trait ModelUrl {
 impl ModelUrl for AvailableOnnxModel {
     fn fetch_url(&self) -> &'static str {
         match self {
-            AvailableOnnxModel::Vision(vision) => vision.fetch_url(),
+            AvailableOnnxModel::Vision(model) => model.fetch_url(),
+            AvailableOnnxModel::Language(model) => model.fetch_url(),
         }
     }
 }
