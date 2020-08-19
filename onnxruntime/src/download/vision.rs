@@ -12,7 +12,7 @@ pub mod object_detection_image_segmentation;
 
 use body_face_gesture_analysis::BodyFaceGestureAnalysis;
 use domain_based_image_classification::DomainBasedImageClassification;
-use image_classification::ImageClassificationModel;
+use image_classification::ImageClassification;
 use image_manipulation::ImageManipulation;
 use object_detection_image_segmentation::ObjectDetectionImageSegmentation;
 
@@ -22,7 +22,7 @@ pub enum Vision {
     /// Domain-based Image Classification
     DomainBasedImageClassification(DomainBasedImageClassification),
     /// Image classification model
-    ImageClassification(ImageClassificationModel),
+    ImageClassification(ImageClassification),
     /// Object Detection & Image Segmentation
     ObjectDetectionImageSegmentation(ObjectDetectionImageSegmentation),
     /// Body, Face & Gesture Analysis

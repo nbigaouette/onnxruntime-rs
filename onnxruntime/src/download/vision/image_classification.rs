@@ -11,7 +11,7 @@ use crate::download::{vision::Vision, AvailableOnnxModel, ModelUrl};
 ///
 /// Source: [https://github.com/onnx/models#image-classification-](https://github.com/onnx/models#image-classification-)
 #[derive(Debug, Clone)]
-pub enum ImageClassificationModel {
+pub enum ImageClassification {
     /// Image classification aimed for mobile targets.
     ///
     /// > MobileNet models perform image classification - they take images as input and classify the major
@@ -226,22 +226,22 @@ pub enum ShuffleNetVersion {
     V2,
 }
 
-impl ModelUrl for ImageClassificationModel {
+impl ModelUrl for ImageClassification {
     fn fetch_url(&self) -> &'static str {
         match self {
-            ImageClassificationModel::MobileNet => "https://github.com/onnx/models/raw/master/vision/classification/mobilenet/model/mobilenetv2-7.onnx",
-            ImageClassificationModel::SqueezeNet => "https://github.com/onnx/models/raw/master/vision/classification/squeezenet/model/squeezenet1.0-9.onnx",
-            ImageClassificationModel::Inception(version) => version.fetch_url(),
-            ImageClassificationModel::ResNet(version) => version.fetch_url(),
-            ImageClassificationModel::Vgg(variant) => variant.fetch_url(),
-            ImageClassificationModel::AlexNet => "https://github.com/onnx/models/raw/master/vision/classification/alexnet/model/bvlcalexnet-9.onnx",
-            ImageClassificationModel::GoogleNet => "https://github.com/onnx/models/raw/master/vision/classification/inception_and_googlenet/googlenet/model/googlenet-9.onnx",
-            ImageClassificationModel::CaffeNet => "https://github.com/onnx/models/raw/master/vision/classification/caffenet/model/caffenet-9.onnx",
-            ImageClassificationModel::RcnnIlsvrc13 => "https://github.com/onnx/models/raw/master/vision/classification/rcnn_ilsvrc13/model/rcnn-ilsvrc13-9.onnx",
-            ImageClassificationModel::DenseNet121 => "https://github.com/onnx/models/raw/master/vision/classification/densenet-121/model/densenet-9.onnx",
-            ImageClassificationModel::ShuffleNet(version) => version.fetch_url(),
-            ImageClassificationModel::ZFNet512 => "https://github.com/onnx/models/raw/master/vision/classification/zfnet-512/model/zfnet512-9.onnx",
-            ImageClassificationModel::EfficientNetLite4 => "https://github.com/onnx/models/raw/master/vision/classification/efficientnet-lite4/model/efficientnet-lite4.onnx"
+            ImageClassification::MobileNet => "https://github.com/onnx/models/raw/master/vision/classification/mobilenet/model/mobilenetv2-7.onnx",
+            ImageClassification::SqueezeNet => "https://github.com/onnx/models/raw/master/vision/classification/squeezenet/model/squeezenet1.0-9.onnx",
+            ImageClassification::Inception(version) => version.fetch_url(),
+            ImageClassification::ResNet(version) => version.fetch_url(),
+            ImageClassification::Vgg(variant) => variant.fetch_url(),
+            ImageClassification::AlexNet => "https://github.com/onnx/models/raw/master/vision/classification/alexnet/model/bvlcalexnet-9.onnx",
+            ImageClassification::GoogleNet => "https://github.com/onnx/models/raw/master/vision/classification/inception_and_googlenet/googlenet/model/googlenet-9.onnx",
+            ImageClassification::CaffeNet => "https://github.com/onnx/models/raw/master/vision/classification/caffenet/model/caffenet-9.onnx",
+            ImageClassification::RcnnIlsvrc13 => "https://github.com/onnx/models/raw/master/vision/classification/rcnn_ilsvrc13/model/rcnn-ilsvrc13-9.onnx",
+            ImageClassification::DenseNet121 => "https://github.com/onnx/models/raw/master/vision/classification/densenet-121/model/densenet-9.onnx",
+            ImageClassification::ShuffleNet(version) => version.fetch_url(),
+            ImageClassification::ZFNet512 => "https://github.com/onnx/models/raw/master/vision/classification/zfnet-512/model/zfnet512-9.onnx",
+            ImageClassification::EfficientNetLite4 => "https://github.com/onnx/models/raw/master/vision/classification/efficientnet-lite4/model/efficientnet-lite4.onnx"
         }
     }
 }
@@ -308,23 +308,23 @@ impl ModelUrl for ShuffleNetVersion {
     }
 }
 
-impl From<ImageClassificationModel> for AvailableOnnxModel {
-    fn from(model: ImageClassificationModel) -> Self {
+impl From<ImageClassification> for AvailableOnnxModel {
+    fn from(model: ImageClassification) -> Self {
         AvailableOnnxModel::Vision(Vision::ImageClassification(model))
     }
 }
 
 impl From<ResNet> for AvailableOnnxModel {
     fn from(variant: ResNet) -> Self {
-        AvailableOnnxModel::Vision(Vision::ImageClassification(
-            ImageClassificationModel::ResNet(variant),
-        ))
+        AvailableOnnxModel::Vision(Vision::ImageClassification(ImageClassification::ResNet(
+            variant,
+        )))
     }
 }
 
 impl From<Vgg> for AvailableOnnxModel {
     fn from(variant: Vgg) -> Self {
-        AvailableOnnxModel::Vision(Vision::ImageClassification(ImageClassificationModel::Vgg(
+        AvailableOnnxModel::Vision(Vision::ImageClassification(ImageClassification::Vgg(
             variant,
         )))
     }
@@ -332,16 +332,16 @@ impl From<Vgg> for AvailableOnnxModel {
 
 impl From<InceptionVersion> for AvailableOnnxModel {
     fn from(variant: InceptionVersion) -> Self {
-        AvailableOnnxModel::Vision(Vision::ImageClassification(
-            ImageClassificationModel::Inception(variant),
-        ))
+        AvailableOnnxModel::Vision(Vision::ImageClassification(ImageClassification::Inception(
+            variant,
+        )))
     }
 }
 
 impl From<ShuffleNetVersion> for AvailableOnnxModel {
     fn from(variant: ShuffleNetVersion) -> Self {
         AvailableOnnxModel::Vision(Vision::ImageClassification(
-            ImageClassificationModel::ShuffleNet(variant),
+            ImageClassification::ShuffleNet(variant),
         ))
     }
 }
