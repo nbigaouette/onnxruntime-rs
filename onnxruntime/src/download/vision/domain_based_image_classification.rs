@@ -2,7 +2,7 @@
 //!
 //! See [https://github.com/onnx/models#domain-based-image-classification-](https://github.com/onnx/models#domain-based-image-classification-)
 
-use crate::download::ModelUrl;
+use crate::download::{vision::Vision, AvailableOnnxModel, ModelUrl};
 
 /// Image classification model
 #[derive(Debug, Clone)]
@@ -20,5 +20,11 @@ impl ModelUrl for DomainBasedImageClassification {
         match self {
             DomainBasedImageClassification::Mnist => "https://github.com/onnx/models/raw/master/vision/classification/mnist/model/mnist-8.onnx",
         }
+    }
+}
+
+impl From<DomainBasedImageClassification> for AvailableOnnxModel {
+    fn from(model: DomainBasedImageClassification) -> Self {
+        AvailableOnnxModel::Vision(Vision::DomainBasedImageClassification(model))
     }
 }
