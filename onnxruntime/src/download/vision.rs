@@ -76,6 +76,14 @@ pub enum ImageClassificationModel {
     ///
     /// Variant downloaded: ONNX Version 1.4 with Opset Version 9.
     CaffeNet,
+    /// Convolutional neural network for detection.
+    ///
+    /// > This model was made by transplanting the R-CNN SVM classifiers into a fc-rcnn classification layer.
+    ///
+    /// Source: [https://github.com/onnx/models/tree/master/vision/classification/rcnn_ilsvrc13](https://github.com/onnx/models/tree/master/vision/classification/rcnn_ilsvrc13)
+    ///
+    /// Variant downloaded: ONNX Version 1.4 with Opset Version 9.
+    RcnnIlsvrc13,
     /// Google's Inception
     Inception(InceptionVersion),
 }
@@ -207,6 +215,7 @@ impl ModelUrl for ImageClassificationModel {
             ImageClassificationModel::AlexNet => "https://github.com/onnx/models/raw/master/vision/classification/alexnet/model/bvlcalexnet-9.onnx",
             ImageClassificationModel::GoogleNet => "https://github.com/onnx/models/raw/master/vision/classification/inception_and_googlenet/googlenet/model/googlenet-9.onnx",
             ImageClassificationModel::CaffeNet => "https://github.com/onnx/models/raw/master/vision/classification/caffenet/model/caffenet-9.onnx",
+            ImageClassificationModel::RcnnIlsvrc13 => "https://github.com/onnx/models/raw/master/vision/classification/rcnn_ilsvrc13/model/rcnn-ilsvrc13-9.onnx",
         }
     }
 }
