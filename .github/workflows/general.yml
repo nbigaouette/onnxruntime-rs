@@ -34,7 +34,7 @@ jobs:
           override: true
       - uses: actions-rs/cargo@v1
         with:
-          command: test --features model-fetching
+          command: test
 
   clippy:
     name: Clippy
@@ -50,7 +50,7 @@ jobs:
       - uses: actions-rs/cargo@v1
         with:
           command: clippy
-          args: --features model-fetching -- -D warnings
+          args: -- -D warnings
 
   coverage:
     name: Code coverage
@@ -65,7 +65,7 @@ jobs:
           toolchain: stable
           override: true
 
-      - name: Build (required to download libonnxruntime)
+      - name: Build (required to downloadd libonnxruntime)
         uses: actions-rs/cargo@v1
         with:
           command: build
