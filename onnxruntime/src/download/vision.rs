@@ -58,6 +58,12 @@ pub enum ImageClassificationModel {
     ///
     /// Source: [https://github.com/onnx/models/tree/master/vision/classification/vgg](https://github.com/onnx/models/tree/master/vision/classification/vgg)
     Vgg(Vgg),
+    /// Convolutional neural network for classification, which competed in the ImageNet Large Scale Visual Recognition Challenge in 2012.
+    ///
+    /// Source: [https://github.com/onnx/models/tree/master/vision/classification/alexnet](https://github.com/onnx/models/tree/master/vision/classification/alexnet)
+    ///
+    /// Variant downloaded: ONNX Version 1.4 with Opset Version 9.
+    AlexNet,
     /// Google's Inception
     Inception(InceptionVersion),
 }
@@ -186,6 +192,7 @@ impl ModelUrl for ImageClassificationModel {
             ImageClassificationModel::Inception(version) => version.fetch_url(),
             ImageClassificationModel::ResNet(version) => version.fetch_url(),
             ImageClassificationModel::Vgg(variant) => variant.fetch_url(),
+            ImageClassificationModel::AlexNet => "https://github.com/onnx/models/blob/master/vision/classification/alexnet/model/bvlcalexnet-9.onnx",
         }
     }
 }
