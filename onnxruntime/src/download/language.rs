@@ -8,8 +8,10 @@ pub mod machine_comprehension;
 
 use machine_comprehension::MachineComprehension;
 
+/// Natural language models
 #[derive(Debug, Clone)]
 pub enum Language {
+    /// Machine comprehension
     MachineComprehension(MachineComprehension),
 }
 
