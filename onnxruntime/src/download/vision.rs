@@ -65,6 +65,7 @@ pub enum ImageClassificationModel {
     /// Variant downloaded: ONNX Version 1.4 with Opset Version 9.
     AlexNet,
     /// Convolutional neural network for classification, which competed in the ImageNet Large Scale Visual Recognition Challenge in 2014.
+    ///
     /// Source: [https://github.com/onnx/models/tree/master/vision/classification/inception_and_googlenet/googlenet](https://github.com/onnx/models/tree/master/vision/classification/inception_and_googlenet/googlenet)
     ///
     /// Variant downloaded: ONNX Version 1.4 with Opset Version 9.
