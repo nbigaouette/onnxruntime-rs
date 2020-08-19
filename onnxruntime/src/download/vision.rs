@@ -2,10 +2,12 @@
 
 use super::ModelUrl;
 
+pub mod body_face_gesture_analysis;
 pub mod domain_based_image_classification;
 pub mod image_classification;
 pub mod object_detection_image_segmentation;
 
+use body_face_gesture_analysis::BodyFaceGestureAnalysis;
 use domain_based_image_classification::DomainBasedImageClassification;
 use image_classification::ImageClassificationModel;
 use object_detection_image_segmentation::ObjectDetectionImageSegmentation;
@@ -23,29 +25,6 @@ pub enum Vision {
     BodyFaceGestureAnalysis(BodyFaceGestureAnalysis),
     /// Image Manipulation
     ImageManipulation(ImageManipulation),
-}
-
-/// Body, Face & Gesture Analysis
-///
-/// > Face detection models identify and/or recognize human faces and emotions in given images. Body and Gesture
-/// > Analysis models identify gender and age in given image.
-///
-/// Source: [https://github.com/onnx/models#body_analysis](https://github.com/onnx/models#body_analysis)
-#[derive(Debug, Clone)]
-pub enum BodyFaceGestureAnalysis {
-    /// A CNN based model for face recognition which learns discriminative features of faces and produces
-    /// embeddings for input face images.
-    ///
-    /// Source: [https://github.com/onnx/models/tree/master/vision/body_analysis/arcface](https://github.com/onnx/models/tree/master/vision/body_analysis/arcface)
-    ///
-    /// Variant downloaded: ONNX Version 1.3 with Opset Version 8.
-    ArcFace,
-    /// Deep CNN for emotion recognition trained on images of faces.
-    ///
-    /// Source: [https://github.com/onnx/models/tree/master/vision/body_analysis/emotion_ferplus](https://github.com/onnx/models/tree/master/vision/body_analysis/emotion_ferplus)
-    ///
-    /// Variant downloaded: ONNX Version 1.3 with Opset Version 8.
-    EmotionFerPlus,
 }
 
 /// Image Manipulation
@@ -102,15 +81,6 @@ impl ModelUrl for Vision {
             Vision::ObjectDetectionImageSegmentation(variant) => variant.fetch_url(),
             Vision::BodyFaceGestureAnalysis(variant) => variant.fetch_url(),
             Vision::ImageManipulation(variant) => variant.fetch_url(),
-        }
-    }
-}
-
-impl ModelUrl for BodyFaceGestureAnalysis {
-    fn fetch_url(&self) -> &'static str {
-        match self {
-            BodyFaceGestureAnalysis::ArcFace => "https://github.com/onnx/models/raw/master/vision/body_analysis/arcface/model/arcfaceresnet100-8.onnx",
-            BodyFaceGestureAnalysis::EmotionFerPlus => "https://github.com/onnx/models/raw/master/vision/body_analysis/emotion_ferplus/model/emotion-ferplus-8.onnx",
         }
     }
 }
