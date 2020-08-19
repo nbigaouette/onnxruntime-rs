@@ -70,6 +70,12 @@ pub enum ImageClassificationModel {
     ///
     /// Variant downloaded: ONNX Version 1.4 with Opset Version 9.
     GoogleNet,
+    /// Variant of AlexNet, it's the name of a convolutional neural network for classification, which competed in the ImageNet Large Scale Visual Recognition Challenge in 2012.
+    ///
+    /// Source: [https://github.com/onnx/models/tree/master/vision/classification/caffenet](https://github.com/onnx/models/tree/master/vision/classification/caffenet)
+    ///
+    /// Variant downloaded: ONNX Version 1.4 with Opset Version 9.
+    CaffeNet,
     /// Google's Inception
     Inception(InceptionVersion),
 }
@@ -200,6 +206,7 @@ impl ModelUrl for ImageClassificationModel {
             ImageClassificationModel::Vgg(variant) => variant.fetch_url(),
             ImageClassificationModel::AlexNet => "https://github.com/onnx/models/blob/master/vision/classification/alexnet/model/bvlcalexnet-9.onnx",
             ImageClassificationModel::GoogleNet => "https://github.com/onnx/models/raw/master/vision/classification/inception_and_googlenet/googlenet/model/googlenet-9.onnx",
+            ImageClassificationModel::CaffeNet => "https://github.com/onnx/models/raw/master/vision/classification/caffenet/model/caffenet-9.onnx",
         }
     }
 }
