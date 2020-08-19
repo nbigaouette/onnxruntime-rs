@@ -3,7 +3,7 @@
 use ndarray::Array;
 
 use onnxruntime::{
-    download::vision::ImageClassificationModel, environment::Environment, GraphOptimizationLevel,
+    download::vision::ImageClassification, environment::Environment, GraphOptimizationLevel,
     LoggingLevel,
 };
 
@@ -28,7 +28,7 @@ fn run() -> Result<(), Error> {
         .with_number_threads(1)?
         // .with_model_from_file("squeezenet.onnx")?;
         // .with_model_downloaded(ImageClassificationModel::MobileNet)?;
-        .with_model_downloaded(ImageClassificationModel::SqueezeNet)?;
+        .with_model_downloaded(ImageClassification::SqueezeNet)?;
 
     let input0_shape: Vec<usize> = session.inputs[0].dimensions().collect();
     let output0_shape: Vec<usize> = session.outputs[0].dimensions().collect();
