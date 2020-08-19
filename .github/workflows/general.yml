@@ -32,9 +32,19 @@ jobs:
           profile: minimal
           toolchain: stable
           override: true
+      # We want to test using '--features model-fetching', but this is not possible yet.
+      # See https://github.com/actions-rs/cargo/issues/86
       - uses: actions-rs/cargo@v1
+        name: Test onnxruntime-sys
         with:
           command: test
+          args: --package onnxruntime-sys
+      - uses: actions-rs/cargo@v1
+        name: Test onnxruntime
+        with:
+          # Use --manifest-path instead of --package. See https://github.com/actions-rs/cargo/issues/86
+          command: test
+          args: --manifest-path onnxruntime/Cargo.toml --features model-fetching
 
   clippy:
     name: Clippy
@@ -50,7 +60,7 @@ jobs:
       - uses: actions-rs/cargo@v1
         with:
           command: clippy
-          args: -- -D warnings
+          args: --all-features -- -D warnings
 
   coverage:
     name: Code coverage
