@@ -11,6 +11,8 @@ pub enum Vision {
     ImageClassification(ImageClassificationModel),
     /// Object Detection & Image Segmentation
     ObjectDetectionImageSegmentation(ObjectDetectionImageSegmentation),
+    /// Body, Face & Gesture Analysis
+    BodyFaceGestureAnalysis(BodyFaceGestureAnalysis),
 }
 
 /// Image classification model
@@ -320,12 +322,36 @@ pub enum ObjectDetectionImageSegmentation {
     Duc,
 }
 
+/// Body, Face & Gesture Analysis
+///
+/// > Face detection models identify and/or recognize human faces and emotions in given images. Body and Gesture
+/// > Analysis models identify gender and age in given image.
+///
+/// Source: [https://github.com/onnx/models#body_analysis](https://github.com/onnx/models#body_analysis)
+#[derive(Debug, Clone)]
+pub enum BodyFaceGestureAnalysis {
+    /// A CNN based model for face recognition which learns discriminative features of faces and produces
+    /// embeddings for input face images.
+    ///
+    /// Source: [https://github.com/onnx/models/tree/master/vision/body_analysis/arcface](https://github.com/onnx/models/tree/master/vision/body_analysis/arcface)
+    ///
+    /// Variant downloaded: ONNX Version 1.3 with Opset Version 8.
+    ArcFace,
+    /// Deep CNN for emotion recognition trained on images of faces.
+    ///
+    /// Source: [https://github.com/onnx/models/tree/master/vision/body_analysis/emotion_ferplus](https://github.com/onnx/models/tree/master/vision/body_analysis/emotion_ferplus)
+    ///
+    /// Variant downloaded: ONNX Version 1.3 with Opset Version 8.
+    EmotionFerPlus,
+}
+
 impl ModelUrl for Vision {
     fn fetch_url(&self) -> &'static str {
         match self {
             Vision::DomainBasedImageClassification(dbic) => dbic.fetch_url(),
             Vision::ImageClassification(ic) => ic.fetch_url(),
             Vision::ObjectDetectionImageSegmentation(odis) => odis.fetch_url(),
+            Vision::BodyFaceGestureAnalysis(bfga) => bfga.fetch_url(),
         }
     }
 }
@@ -435,6 +461,15 @@ impl ModelUrl for ObjectDetectionImageSegmentation {
             ObjectDetectionImageSegmentation::TinyYoloV3 => "https://github.com/onnx/models/raw/master/vision/object_detection_segmentation/tiny-yolov3/model/tiny-yolov3-11.onnx",
             ObjectDetectionImageSegmentation::YoloV4 => "https://github.com/onnx/models/raw/master/vision/object_detection_segmentation/yolov4/model/yolov4.onnx",
             ObjectDetectionImageSegmentation::Duc => "https://github.com/onnx/models/raw/master/vision/object_detection_segmentation/duc/model/ResNet101-DUC-7.onnx",
+        }
+    }
+}
+
+impl ModelUrl for BodyFaceGestureAnalysis {
+    fn fetch_url(&self) -> &'static str {
+        match self {
+            BodyFaceGestureAnalysis::ArcFace => "https://github.com/onnx/models/raw/master/vision/body_analysis/arcface/model/arcfaceresnet100-8.onnx",
+            BodyFaceGestureAnalysis::EmotionFerPlus => "https://github.com/onnx/models/raw/master/vision/body_analysis/emotion_ferplus/model/emotion-ferplus-8.onnx",
         }
     }
 }
