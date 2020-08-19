@@ -102,6 +102,14 @@ pub enum ImageClassificationModel {
     ///
     /// Source: [https://github.com/onnx/models/tree/master/vision/classification/zfnet-512](https://github.com/onnx/models/tree/master/vision/classification/zfnet-512)
     ZFNet512,
+    /// Image classification model that achieves state-of-the-art accuracy.
+    ///
+    /// >  It is designed to run on mobile CPU, GPU, and EdgeTPU devices, allowing for applications on mobile and loT, where computational resources are limited.
+    ///
+    /// Source: [https://github.com/onnx/models/tree/master/vision/classification/efficientnet-lite4](https://github.com/onnx/models/tree/master/vision/classification/efficientnet-lite4)
+    ///
+    /// Variant downloaded: ONNX Version 1.7.0 with Opset Version 11.
+    EfficientNetLite4,
 }
 
 /// Google's Inception
@@ -252,6 +260,7 @@ impl ModelUrl for ImageClassificationModel {
             ImageClassificationModel::DenseNet121 => "https://github.com/onnx/models/raw/master/vision/classification/densenet-121/model/densenet-9.onnx",
             ImageClassificationModel::ShuffleNet(version) => version.fetch_url(),
             ImageClassificationModel::ZFNet512 => "https://github.com/onnx/models/raw/master/vision/classification/zfnet-512/model/zfnet512-9.onnx",
+            ImageClassificationModel::EfficientNetLite4 => "https://github.com/onnx/models/raw/master/vision/classification/efficientnet-lite4/model/efficientnet-lite4.onnx"
         }
     }
 }
