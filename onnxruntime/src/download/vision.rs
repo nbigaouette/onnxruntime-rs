@@ -96,6 +96,12 @@ pub enum ImageClassificationModel {
     ///
     /// Source: [https://github.com/onnx/models/tree/master/vision/classification/shufflenet](https://github.com/onnx/models/tree/master/vision/classification/shufflenet)
     ShuffleNet(ShuffleNetVersion),
+    /// Deep convolutional networks for classification.
+    ///
+    /// > This model's 4th layer has 512 maps instead of 1024 maps mentioned in the paper.
+    ///
+    /// Source: [https://github.com/onnx/models/tree/master/vision/classification/zfnet-512](https://github.com/onnx/models/tree/master/vision/classification/zfnet-512)
+    ZFNet512,
 }
 
 /// Google's Inception
@@ -245,6 +251,7 @@ impl ModelUrl for ImageClassificationModel {
             ImageClassificationModel::RcnnIlsvrc13 => "https://github.com/onnx/models/raw/master/vision/classification/rcnn_ilsvrc13/model/rcnn-ilsvrc13-9.onnx",
             ImageClassificationModel::DenseNet121 => "https://github.com/onnx/models/raw/master/vision/classification/densenet-121/model/densenet-9.onnx",
             ImageClassificationModel::ShuffleNet(version) => version.fetch_url(),
+            ImageClassificationModel::ZFNet512 => "https://github.com/onnx/models/raw/master/vision/classification/zfnet-512/model/zfnet512-9.onnx",
         }
     }
 }
