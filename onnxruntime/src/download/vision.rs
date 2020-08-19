@@ -10,11 +10,12 @@ pub mod image_classification;
 pub mod image_manipulation;
 pub mod object_detection_image_segmentation;
 
-use body_face_gesture_analysis::BodyFaceGestureAnalysis;
-use domain_based_image_classification::DomainBasedImageClassification;
-use image_classification::ImageClassification;
-use image_manipulation::ImageManipulation;
-use object_detection_image_segmentation::ObjectDetectionImageSegmentation;
+// Re-exports
+pub use body_face_gesture_analysis::BodyFaceGestureAnalysis;
+pub use domain_based_image_classification::DomainBasedImageClassification;
+pub use image_classification::ImageClassification;
+pub use image_manipulation::ImageManipulation;
+pub use object_detection_image_segmentation::ObjectDetectionImageSegmentation;
 
 /// Computer vision model
 #[derive(Debug, Clone)]

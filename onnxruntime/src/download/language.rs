@@ -6,7 +6,8 @@ use super::ModelUrl;
 
 pub mod machine_comprehension;
 
-use machine_comprehension::MachineComprehension;
+// Re-exports
+pub use machine_comprehension::MachineComprehension;
 
 /// Natural language models
 #[derive(Debug, Clone)]

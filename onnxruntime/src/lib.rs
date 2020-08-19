@@ -66,7 +66,7 @@ a model can be fetched directly from the [ONNX Model Zoo](https://github.com/onn
 
 ```no_run
 # use std::error::Error;
-# use onnxruntime::{environment::Environment, download::vision::ImageClassificationModel, LoggingLevel, GraphOptimizationLevel};
+# use onnxruntime::{environment::Environment, download::vision::ImageClassification, LoggingLevel, GraphOptimizationLevel};
 # fn main() -> Result<(), Box<dyn Error>> {
 # let environment = Environment::builder()
 #     .with_name("test")
@@ -76,7 +76,7 @@ let mut session = environment
     .new_session_builder()?
     .with_optimization_level(GraphOptimizationLevel::Basic)?
     .with_number_threads(1)?
-    .with_model_downloaded(ImageClassificationModel::SqueezeNet)?;
+    .with_model_downloaded(ImageClassification::SqueezeNet)?;
 # Ok(())
 # }
 ```
