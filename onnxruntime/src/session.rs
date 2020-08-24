@@ -20,7 +20,7 @@ use crate::{
     error::{status_to_result, OrtError, Result},
     g_ort,
     memory::MemoryInfo,
-    tensor::{Tensor, TensorFromOrt, TensorFromOrtExtractor},
+    tensor::{OrtTensor, TensorFromOrt, TensorFromOrtExtractor},
     AllocatorType, GraphOptimizationLevel, MemType, TensorElementDataType,
     TypeToTensorElementDataType,
 };
@@ -300,7 +300,7 @@ impl Session {
         input_arrays: Vec<Array<T, D>>,
     ) -> Result<Vec<TensorFromOrt<'t, 'm, T, ndarray::IxDyn>>>
     where
-        T: TypeToTensorElementDataType + Debug,
+        T: TypeToTensorElementDataType + Debug + Clone,
         D: ndarray::Dimension,
         'm: 't, // 'm outlives 't (memory info outlives tensor)
         's: 'm, // 's outlives 'm (session outlives memory info)
@@ -352,7 +352,7 @@ impl Session {
             Vec::with_capacity(input_arrays.len());
 
         for (input_idx, input_array) in input_arrays.into_iter().enumerate() {
-            let input_tensor = Tensor::from_array(&self.memory_info, input_array)?;
+            let input_tensor = OrtTensor::from_array(&self.memory_info, input_array)?;
 
             let input_tensor_ptr2: *const sys::OrtValue =
                 input_tensor.c_ptr as *const sys::OrtValue;

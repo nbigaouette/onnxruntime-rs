@@ -39,7 +39,7 @@ use crate::{
 /// **NOTE**: The type is not meant to be used directly, use an [`ndarray::Array`](https://docs.rs/ndarray/latest/ndarray/type.Array.html)
 /// instead.
 #[derive(Debug)]
-pub struct Tensor<'t, T, D>
+pub struct OrtTensor<'t, T, D>
 where
     T: TypeToTensorElementDataType + Debug,
     D: ndarray::Dimension,
@@ -49,7 +49,7 @@ where
     memory_info: &'t MemoryInfo,
 }
 
-impl<'t, T, D> Tensor<'t, T, D>
+impl<'t, T, D> OrtTensor<'t, T, D>
 where
     T: TypeToTensorElementDataType + Debug,
     D: ndarray::Dimension,
@@ -57,7 +57,7 @@ where
     pub(crate) fn from_array<'m>(
         memory_info: &'m MemoryInfo,
         mut array: Array<T, D>,
-    ) -> Result<Tensor<'t, T, D>>
+    ) -> Result<OrtTensor<'t, T, D>>
     where
         'm: 't, // 'm outlives 't
     {
@@ -89,7 +89,7 @@ where
         status_to_result(status).map_err(OrtError::IsTensor)?;
         assert_eq!(is_tensor, 1);
 
-        Ok(Tensor {
+        Ok(OrtTensor {
             c_ptr: tensor_ptr,
             array,
             memory_info,
@@ -97,7 +97,7 @@ where
     }
 }
 
-impl<'t, T, D> Deref for Tensor<'t, T, D>
+impl<'t, T, D> Deref for OrtTensor<'t, T, D>
 where
     T: TypeToTensorElementDataType + Debug,
     D: ndarray::Dimension,
@@ -109,7 +109,7 @@ where
     }
 }
 
-impl<'t, T, D> Drop for Tensor<'t, T, D>
+impl<'t, T, D> Drop for OrtTensor<'t, T, D>
 where
     T: TypeToTensorElementDataType + Debug,
     D: ndarray::Dimension,
@@ -238,7 +238,7 @@ mod tests {
     fn tensor_from_array_0d_i32() {
         let memory_info = MemoryInfo::new(AllocatorType::Arena, MemType::Default).unwrap();
         let array = arr0::<i32>(123);
-        let tensor = Tensor::from_array(&memory_info, array).unwrap();
+        let tensor = OrtTensor::from_array(&memory_info, array).unwrap();
         assert_eq!(tensor.shape(), &[]);
     }
 
@@ -246,7 +246,7 @@ mod tests {
     fn tensor_from_array_1d_i32() {
         let memory_info = MemoryInfo::new(AllocatorType::Arena, MemType::Default).unwrap();
         let array = arr1(&[1_i32, 2, 3, 4, 5, 6]);
-        let tensor = Tensor::from_array(&memory_info, array).unwrap();
+        let tensor = OrtTensor::from_array(&memory_info, array).unwrap();
         assert_eq!(tensor.shape(), &[6]);
     }
 
@@ -254,7 +254,7 @@ mod tests {
     fn tensor_from_array_2d_i32() {
         let memory_info = MemoryInfo::new(AllocatorType::Arena, MemType::Default).unwrap();
         let array = arr2(&[[1_i32, 2, 3, 4, 5, 6], [7, 8, 9, 10, 11, 12]]);
-        let tensor = Tensor::from_array(&memory_info, array).unwrap();
+        let tensor = OrtTensor::from_array(&memory_info, array).unwrap();
         assert_eq!(tensor.shape(), &[2, 6]);
     }
 
@@ -266,7 +266,7 @@ mod tests {
             [[13, 14, 15, 16, 17, 18], [19, 20, 21, 22, 23, 24]],
             [[25, 26, 27, 28, 29, 30], [31, 32, 33, 34, 35, 36]],
         ]);
-        let tensor = Tensor::from_array(&memory_info, array).unwrap();
+        let tensor = OrtTensor::from_array(&memory_info, array).unwrap();
         assert_eq!(tensor.shape(), &[3, 2, 6]);
     }
 }
