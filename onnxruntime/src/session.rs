@@ -20,7 +20,10 @@ use crate::{
     error::{status_to_result, OrtError, Result},
     g_ort,
     memory::MemoryInfo,
-    tensor::{OrtTensor, TensorFromOrt, TensorFromOrtExtractor},
+    tensor::{
+        ort_owned_tensor::{OrtOwnedTensor, OrtOwnedTensorExtractor},
+        OrtTensor,
+    },
     AllocatorType, GraphOptimizationLevel, MemType, TensorElementDataType,
     TypeToTensorElementDataType,
 };
@@ -298,7 +301,7 @@ impl Session {
     pub fn run<'s, 't, 'm, T, D>(
         &'s mut self,
         input_arrays: Vec<Array<T, D>>,
-    ) -> Result<Vec<TensorFromOrt<'t, 'm, T, ndarray::IxDyn>>>
+    ) -> Result<Vec<OrtOwnedTensor<'t, 'm, T, ndarray::IxDyn>>>
     where
         T: TypeToTensorElementDataType + Debug + Clone,
         D: ndarray::Dimension,
@@ -348,7 +351,7 @@ impl Session {
             .collect();
         let output_names_ptr_ptr: *const *const i8 = output_names_ptr.as_ptr();
 
-        let mut outputs: Vec<TensorFromOrt<T, ndarray::Dim<ndarray::IxDynImpl>>> =
+        let mut outputs: Vec<OrtOwnedTensor<T, ndarray::Dim<ndarray::IxDynImpl>>> =
             Vec::with_capacity(input_arrays.len());
 
         for (input_idx, input_array) in input_arrays.into_iter().enumerate() {
@@ -370,7 +373,7 @@ impl Session {
                 .map(|d| *d as usize)
                 .collect::<Vec<usize>>();
             let mut output_tensor_extractor =
-                TensorFromOrtExtractor::new(&self.memory_info, ndarray::IxDyn(&output_shape));
+                OrtOwnedTensorExtractor::new(&self.memory_info, ndarray::IxDyn(&output_shape));
 
             let run_options_ptr: *const sys::OrtRunOptions = std::ptr::null();
 
@@ -396,7 +399,7 @@ impl Session {
             };
             status_to_result(status).map_err(OrtError::Run)?;
 
-            let output_tensor: TensorFromOrt<T, ndarray::Dim<ndarray::IxDynImpl>> =
+            let output_tensor: OrtOwnedTensor<T, ndarray::Dim<ndarray::IxDynImpl>> =
                 output_tensor_extractor.extract::<T>()?;
 
             outputs.push(output_tensor);

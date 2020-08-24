@@ -90,7 +90,7 @@ to download.
 //!
 //! ```no_run
 //! # use std::error::Error;
-//! # use onnxruntime::{environment::Environment, LoggingLevel, GraphOptimizationLevel, tensor::TensorFromOrt};
+//! # use onnxruntime::{environment::Environment, LoggingLevel, GraphOptimizationLevel, tensor::OrtOwnedTensor};
 //! # fn main() -> Result<(), Box<dyn Error>> {
 //! # let environment = Environment::builder()
 //! #     .with_name("test")
@@ -104,12 +104,12 @@ to download.
 //! let array = ndarray::Array::linspace(0.0_f32, 1.0, 100);
 //! // Multiple inputs and outputs are possible
 //! let input_tensor = vec![array];
-//! let outputs: Vec<TensorFromOrt<f32,_>> = session.run(input_tensor)?;
+//! let outputs: Vec<OrtOwnedTensor<f32,_>> = session.run(input_tensor)?;
 //! # Ok(())
 //! # }
 //! ```
 //!
-//! The outputs are of type [`TensorFromOrt`](tensor/struct.TensorFromOrt.html)s inside a vector,
+//! The outputs are of type [`OrtOwnedTensor`](tensor/struct.OrtOwnedTensor.html)s inside a vector,
 //! with the same length as the inputs.
 //!
 //! See the [`sample.rs`](https://github.com/nbigaouette/onnxruntime-rs/blob/master/onnxruntime/examples/sample.rs)
