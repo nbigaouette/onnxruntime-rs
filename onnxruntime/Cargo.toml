@@ -18,6 +18,10 @@ keywords = ["neuralnetworks", "onnx", "bindings"]
 name = "sample"
 required-features = ["model-fetching"]
 
+[[test]]
+name = "integration_tests"
+required-features = ["model-fetching"]
+
 [dependencies]
 lazy_static = "1.4"
 ndarray = "0.13"
@@ -25,7 +29,11 @@ onnxruntime-sys = {version = "0.0.6", path = "../onnxruntime-sys"}
 thiserror = "1.0"
 
 # Enabled with 'model-fetching' feature
-ureq = {version = "1.3", optional = true}
+ureq = {version = "1.4", optional = true}
+
+[dev-dependencies]
+image = "0.23"
+ureq = "*"
 
 [features]
 # Fetch model from ONNX Model Zoo (https://github.com/onnx/models)
