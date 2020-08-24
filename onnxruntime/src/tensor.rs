@@ -117,7 +117,11 @@ where
     fn drop(&mut self) {
         // We need to let the C part free
         println!("Dropping Tensor.");
-        unsafe { (*g_ort()).ReleaseValue.unwrap()(self.c_ptr) }
+        if self.c_ptr.is_null() {
+            println!("--> Null pointer, not calling free.");
+        } else {
+            unsafe { (*g_ort()).ReleaseValue.unwrap()(self.c_ptr) }
+        }
 
         self.c_ptr = std::ptr::null_mut();
     }
