@@ -41,7 +41,7 @@ use crate::{
 #[derive(Debug)]
 pub struct OrtTensor<'t, T, D>
 where
-    T: TypeToTensorElementDataType + Debug,
+    T: TypeToTensorElementDataType + Debug + Clone,
     D: ndarray::Dimension,
 {
     pub(crate) c_ptr: *mut sys::OrtValue,
@@ -51,7 +51,7 @@ where
 
 impl<'t, T, D> OrtTensor<'t, T, D>
 where
-    T: TypeToTensorElementDataType + Debug,
+    T: TypeToTensorElementDataType + Debug + Clone,
     D: ndarray::Dimension,
 {
     pub(crate) fn from_array<'m>(
@@ -99,7 +99,7 @@ where
 
 impl<'t, T, D> Deref for OrtTensor<'t, T, D>
 where
-    T: TypeToTensorElementDataType + Debug,
+    T: TypeToTensorElementDataType + Debug + Clone,
     D: ndarray::Dimension,
 {
     type Target = Array<T, D>;
@@ -111,7 +111,7 @@ where
 
 impl<'t, T, D> Drop for OrtTensor<'t, T, D>
 where
-    T: TypeToTensorElementDataType + Debug,
+    T: TypeToTensorElementDataType + Debug + Clone,
     D: ndarray::Dimension,
 {
     fn drop(&mut self) {
@@ -136,7 +136,7 @@ where
 #[derive(Debug)]
 pub struct TensorFromOrt<'t, 'm, T, D>
 where
-    T: TypeToTensorElementDataType + Debug,
+    T: TypeToTensorElementDataType + Debug + Clone,
     D: ndarray::Dimension,
     'm: 't, // 'm outlives 't
 {
@@ -147,7 +147,7 @@ where
 
 impl<'t, 'm, T, D> Deref for TensorFromOrt<'t, 'm, T, D>
 where
-    T: TypeToTensorElementDataType + Debug,
+    T: TypeToTensorElementDataType + Debug + Clone,
     D: ndarray::Dimension,
 {
     type Target = ArrayView<'t, T, D>;
@@ -181,7 +181,7 @@ where
 
     pub(crate) fn extract<'t, T>(self) -> Result<TensorFromOrt<'t, 'm, T, D>>
     where
-        T: TypeToTensorElementDataType + Debug,
+        T: TypeToTensorElementDataType + Debug + Clone,
     {
         // Note: Both tensor and array will point to the same data, nothing is copied.
         // As such, there is no need too free the pointer used to create the ArrayView.
@@ -216,7 +216,7 @@ where
 
 impl<'t, 'm, T, D> Drop for TensorFromOrt<'t, 'm, T, D>
 where
-    T: TypeToTensorElementDataType + Debug,
+    T: TypeToTensorElementDataType + Debug + Clone,
     D: ndarray::Dimension,
     'm: 't, // 'm outlives 't
 {
