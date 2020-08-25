@@ -5,16 +5,17 @@ use std::{
     time::Duration,
 };
 
-use image::{imageops::FilterType, ImageBuffer, Pixel, Rgb};
-use ndarray::s;
-
-use onnxruntime::{
-    download::vision::ImageClassification, environment::Environment, GraphOptimizationLevel,
-    LoggingLevel,
-};
-
 mod download {
     use super::*;
+
+    use image::{imageops::FilterType, ImageBuffer, Luma, Pixel, Rgb};
+    use ndarray::s;
+
+    use onnxruntime::{
+        download::vision::{DomainBasedImageClassification, ImageClassification},
+        environment::Environment,
+        GraphOptimizationLevel, LoggingLevel,
+    };
 
     #[test]
     fn squeezenet_mushroom() {
@@ -35,6 +36,8 @@ mod download {
             .unwrap()
             .with_model_downloaded(ImageClassification::SqueezeNet)
             .expect("Could not download model from file");
+
+        let class_labels = get_imagenet_labels().unwrap();
 
         let input0_shape: Vec<usize> = session.inputs[0].dimensions().collect();
         let output0_shape: Vec<usize> = session.outputs[0].dimensions().collect();
@@ -84,8 +87,6 @@ mod download {
 
         // Batch of 1
         let input_tensor_values = vec![array];
-
-        let class_labels = get_imagenet_labels().unwrap();
 
         // Perform the inference
         let outputs: Vec<
