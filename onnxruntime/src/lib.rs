@@ -298,5 +298,3 @@ pub enum MemType {
     /// Default memory type
     Default = sys::OrtMemType_OrtMemTypeDefault,
 }
-
-
