@@ -22,7 +22,7 @@ mod download {
         const IMAGE_TO_LOAD: &str = "mushroom.png";
 
         let environment = Environment::builder()
-            .with_name("test")
+            .with_name("integration_test")
             .with_log_level(LoggingLevel::Warning)
             .build()
             .unwrap();
@@ -129,7 +129,7 @@ mod download {
         const IMAGE_TO_LOAD: &str = "mnist_5.jpg";
 
         let environment = Environment::builder()
-            .with_name("test")
+            .with_name("integration_test")
             .with_log_level(LoggingLevel::Warning)
             .build()
             .unwrap();
