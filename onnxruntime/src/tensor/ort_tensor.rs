@@ -51,7 +51,7 @@ where
         let shape_len = array.shape().len() as u64;
 
         let status = unsafe {
-            (*g_ort()).CreateTensorWithDataAsOrtValue.unwrap()(
+            g_ort().CreateTensorWithDataAsOrtValue.unwrap()(
                 memory_info.ptr,
                 tensor_values_ptr,
                 (array.len() * std::mem::size_of::<T>()) as u64,
@@ -65,7 +65,7 @@ where
         assert_ne!(tensor_ptr, std::ptr::null_mut());
 
         let mut is_tensor = 0;
-        let status = unsafe { (*g_ort()).IsTensor.unwrap()(tensor_ptr, &mut is_tensor) };
+        let status = unsafe { g_ort().IsTensor.unwrap()(tensor_ptr, &mut is_tensor) };
         status_to_result(status).map_err(OrtError::IsTensor)?;
         assert_eq!(is_tensor, 1);
 
@@ -100,7 +100,7 @@ where
         if self.c_ptr.is_null() {
             println!("--> Null pointer, not calling free.");
         } else {
-            unsafe { (*g_ort()).ReleaseValue.unwrap()(self.c_ptr) }
+            unsafe { g_ort().ReleaseValue.unwrap()(self.c_ptr) }
         }
 
         self.c_ptr = std::ptr::null_mut();

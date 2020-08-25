@@ -132,14 +132,30 @@ pub mod tensor;
 pub use error::{OrtApiError, OrtError, Result};
 
 lazy_static! {
-    static ref G_ORT: Arc<Mutex<AtomicPtr<sys::OrtApi>>> =
-        Arc::new(Mutex::new(AtomicPtr::new(unsafe {
-            sys::OrtGetApiBase().as_ref().unwrap().GetApi.unwrap()(sys::ORT_API_VERSION)
-        } as *mut sys::OrtApi)));
+    // static ref G_ORT: Arc<Mutex<AtomicPtr<sys::OrtApi>>> =
+    //     Arc::new(Mutex::new(AtomicPtr::new(unsafe {
+    //         sys::OrtGetApiBase().as_ref().unwrap().GetApi.unwrap()(sys::ORT_API_VERSION)
+    //     } as *mut sys::OrtApi)));
+    static ref G_ORT_API: Arc<Mutex<AtomicPtr<sys::OrtApi>>> = {
+        let base: *const sys::OrtApiBase = unsafe { sys::OrtGetApiBase() };
+        assert_ne!(base, std::ptr::null());
+        let get_api: unsafe extern "C" fn(u32) -> *const onnxruntime_sys::OrtApi =
+            unsafe { (*base).GetApi.unwrap() };
+        let api: *const sys::OrtApi = unsafe { get_api(sys::ORT_API_VERSION) };
+        Arc::new(Mutex::new(AtomicPtr::new(api as *mut sys::OrtApi)))
+    };
 }
 
-fn g_ort() -> *mut sys::OrtApi {
-    *G_ORT.lock().unwrap().get_mut()
+fn g_ort() -> sys::OrtApi {
+    let mut api_ref = G_ORT_API
+        .lock()
+        .expect("Failed to acquire lock: another thread panicked?");
+    let api_ref_mut: &mut *mut sys::OrtApi = api_ref.get_mut();
+    let api_ptr_mut: *mut sys::OrtApi = *api_ref_mut;
+
+    assert_ne!(api_ptr_mut, std::ptr::null_mut());
+
+    unsafe { *api_ptr_mut }
 }
 
 fn char_p_to_string(raw: *const i8) -> Result<String> {
@@ -283,12 +299,4 @@ pub enum MemType {
     Default = sys::OrtMemType_OrtMemTypeDefault,
 }
 
-#[cfg(test)]
-mod tests {
-    use super::*;
 
-    #[test]
-    fn api_base_non_null() {
-        assert_ne!(*G_ORT.lock().unwrap().get_mut(), std::ptr::null_mut());
-    }
-}

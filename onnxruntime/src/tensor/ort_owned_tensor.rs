@@ -92,7 +92,7 @@ where
         assert_ne!(self.tensor_ptr, std::ptr::null_mut());
 
         let mut is_tensor = 0;
-        let status = unsafe { (*g_ort()).IsTensor.unwrap()(self.tensor_ptr, &mut is_tensor) };
+        let status = unsafe { g_ort().IsTensor.unwrap()(self.tensor_ptr, &mut is_tensor) };
         status_to_result(status).map_err(OrtError::IsTensor)?;
         assert_eq!(is_tensor, 1);
 
@@ -102,7 +102,7 @@ where
         let output_array_ptr_ptr_void: *mut *mut std::ffi::c_void =
             output_array_ptr_ptr as *mut *mut std::ffi::c_void;
         let status = unsafe {
-            (*g_ort()).GetTensorMutableData.unwrap()(self.tensor_ptr, output_array_ptr_ptr_void)
+            g_ort().GetTensorMutableData.unwrap()(self.tensor_ptr, output_array_ptr_ptr_void)
         };
         status_to_result(status).map_err(OrtError::IsTensor)?;
         assert_ne!(output_array_ptr, std::ptr::null_mut());
@@ -125,7 +125,7 @@ where
 {
     fn drop(&mut self) {
         println!("Dropping OrtOwnedTensor.");
-        unsafe { (*g_ort()).ReleaseValue.unwrap()(self.tensor_ptr) }
+        unsafe { g_ort().ReleaseValue.unwrap()(self.tensor_ptr) }
 
         self.tensor_ptr = std::ptr::null_mut();
     }
