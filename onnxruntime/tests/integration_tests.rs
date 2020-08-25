@@ -23,7 +23,7 @@ mod download {
 
         let environment = Environment::builder()
             .with_name("test")
-            .with_log_level(LoggingLevel::Verbose)
+            .with_log_level(LoggingLevel::Warning)
             .build()
             .unwrap();
 
@@ -130,7 +130,7 @@ mod download {
 
         let environment = Environment::builder()
             .with_name("test")
-            .with_log_level(LoggingLevel::Verbose)
+            .with_log_level(LoggingLevel::Warning)
             .build()
             .unwrap();
 
