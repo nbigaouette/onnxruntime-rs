@@ -1,30 +1,4 @@
 //! Module containing environment types
-//!
-//! An [`Environment`](session/struct.Environment.html) is the main entry point of the ONNX Runtime.
-//!
-//! Only one ONNX environment can be created per process. The `onnxruntime` crate
-//! uses a singleton (through `lazy_static!()`) to enforce this.
-//!
-//! Once an environment is created, a [`Session`](../session/struct.Session.html)
-//! can be obtained from it.
-//!
-//! **NOTE**: While the [`Environment`](environment/struct.Environment.html) constructor takes a `name` parameter
-//! to name the environment, only the first name will be considered if many environments
-//! are created.
-//!
-//! # Example
-//!
-//! ```no_run
-//! # use std::error::Error;
-//! # use onnxruntime::{environment::Environment, LoggingLevel};
-//! # fn main() -> Result<(), Box<dyn Error>> {
-//! let environment = Environment::builder()
-//!     .with_name("test")
-//!     .with_log_level(LoggingLevel::Verbose)
-//!     .build()?;
-//! # Ok(())
-//! # }
-//! ```
 
 use std::{
     ffi::CString,
@@ -50,26 +24,37 @@ lazy_static! {
         }));
 }
 
-impl G_ENV {
-    fn is_initialized(&self) -> bool {
-        Arc::strong_count(self) >= 2
-    }
-
-    // fn name(&self) -> String {
-    //     *self.lock().unwrap().name.clone()
-    // }
-
-    fn env_ptr(&self) -> *const sys::OrtEnv {
-        *self.lock().unwrap().env_ptr.get_mut()
-    }
-}
-
 #[derive(Debug)]
-pub struct EnvironmentSingleton {
+struct EnvironmentSingleton {
     name: String,
     env_ptr: AtomicPtr<sys::OrtEnv>,
 }
 
+/// An [`Environment`](session/struct.Environment.html) is the main entry point of the ONNX Runtime.
+///
+/// Only one ONNX environment can be created per process. The `onnxruntime` crate
+/// uses a singleton (through `lazy_static!()`) to enforce this.
+///
+/// Once an environment is created, a [`Session`](../session/struct.Session.html)
+/// can be obtained from it.
+///
+/// **NOTE**: While the [`Environment`](environment/struct.Environment.html) constructor takes a `name` parameter
+/// to name the environment, only the first name will be considered if many environments
+/// are created.
+///
+/// # Example
+///
+/// ```no_run
+/// # use std::error::Error;
+/// # use onnxruntime::{environment::Environment, LoggingLevel};
+/// # fn main() -> Result<(), Box<dyn Error>> {
+/// let environment = Environment::builder()
+///     .with_name("test")
+///     .with_log_level(LoggingLevel::Verbose)
+///     .build()?;
+/// # Ok(())
+/// # }
+/// ```
 #[derive(Debug, Clone)]
 pub struct Environment {
     env: Arc<Mutex<EnvironmentSingleton>>,
@@ -85,6 +70,7 @@ impl Environment {
         }
     }
 
+    /// Return the name of the current environment
     pub fn name(&self) -> String {
         self.env.lock().unwrap().name.to_string()
     }
@@ -214,7 +200,21 @@ impl EnvBuilder {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use std::sync::{RwLock, RwLockReadGuard, RwLockWriteGuard};
+    use std::sync::{RwLock, RwLockWriteGuard};
+
+    impl G_ENV {
+        fn is_initialized(&self) -> bool {
+            Arc::strong_count(self) >= 2
+        }
+
+        // fn name(&self) -> String {
+        //     *self.lock().unwrap().name.clone()
+        // }
+
+        fn env_ptr(&self) -> *const sys::OrtEnv {
+            *self.lock().unwrap().env_ptr.get_mut()
+        }
+    }
 
     struct ConcurrentTestRun {
         lock: Arc<RwLock<()>>,
@@ -227,9 +227,9 @@ mod tests {
     }
 
     impl CONCURRENT_TEST_RUN {
-        fn run(&self) -> RwLockReadGuard<()> {
-            self.lock.read().unwrap()
-        }
+        // fn run(&self) -> std::sync::RwLockReadGuard<()> {
+        //     self.lock.read().unwrap()
+        // }
         fn single_test_run(&self) -> RwLockWriteGuard<()> {
             self.lock.write().unwrap()
         }
