@@ -129,6 +129,7 @@ mod tests {
     use super::*;
     use crate::{AllocatorType, MemType};
     use ndarray::{arr0, arr1, arr2, arr3};
+    use test_env_log::test;
 
     #[test]
     fn orttensor_from_array_0d_i32() {
