@@ -14,10 +14,6 @@ repository = "https://github.com/nbigaouette/onnxruntime-rs"
 categories = ["science"]
 keywords = ["neuralnetworks", "onnx", "bindings"]
 
-[[example]]
-name = "sample"
-required-features = ["model-fetching"]
-
 [[test]]
 name = "integration_tests"
 required-features = ["model-fetching"]
