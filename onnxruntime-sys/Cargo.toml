@@ -17,7 +17,7 @@ keywords = ["neuralnetworks", "onnx", "bindings"]
 [dependencies]
 
 [build-dependencies]
-bindgen = "0.54"
+bindgen = "0.55"
 ureq = "1.4"
 
 [target.'cfg(windows)'.build-dependencies]
