@@ -56,6 +56,8 @@ was ported to both the low level crate (`onnxruntime-sys`) and the high level on
 To run this example ([`onnxruntime-sys/examples/c_api_sample.rs`](onnxruntime-sys/examples/c_api_sample.rs)):
 
 ```sh
+# Download the model (SqueezeNet 1.0, ONNX version: 1.3, Opset version: 8)
+❯ curl -LO "https://github.com/onnx/models/raw/master/vision/classification/squeezenet/model/squeezenet1.0-8.onnx"
 ❯ cargo run --example c_api_sample
 [...]
     Finished dev [unoptimized + debuginfo] target(s) in 1.88s
@@ -106,6 +108,8 @@ Done!
 To run this example ([`onnxruntime/examples/sample.rs`](onnxruntime/examples/sample.rs)):
 
 ```sh
+# Download the model (SqueezeNet 1.0, ONNX version: 1.3, Opset version: 8)
+❯ curl -LO "https://github.com/onnx/models/raw/master/vision/classification/squeezenet/model/squeezenet1.0-8.onnx"
 ❯ cargo run --example sample
 [...]
     Finished dev [unoptimized + debuginfo] target(s) in 13.62s
