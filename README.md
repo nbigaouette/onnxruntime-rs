@@ -19,6 +19,8 @@ This project consist on two crates:
 **WARNING**:
 
 * This is an experiment and work in progress; it is _not_ complete/working/safe. Help welcome!
+* Basic inference works, see [`onnxruntime/examples/sample.rs`](onnxruntime/examples/sample.rs) or [`onnxruntime/tests/integration_tests.rs`](onnxruntime/tests/integration_tests.rs)
+* ONNX Runtime has many options to control the inference process but those options are not yet exposed.
 * This was developed and tested on macOS Catalina. Other platforms should work but have not been tested.
 
 ---
@@ -145,6 +147,9 @@ Dropping the session.
 Dropping the memory information.
 Dropping the environment.
 ```
+
+See also the integration tests ([`onnxruntime/tests/integration_tests.rs`](onnxruntime/tests/integration_tests.rs))
+that performs simple model download and inference, validating the results.
 
 ## License
 
