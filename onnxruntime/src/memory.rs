@@ -1,3 +1,5 @@
+use tracing::debug;
+
 use onnxruntime_sys as sys;
 
 use crate::{
@@ -11,7 +13,9 @@ pub(crate) struct MemoryInfo {
 }
 
 impl MemoryInfo {
+    #[tracing::instrument]
     pub fn new(allocator: AllocatorType, memory_type: MemType) -> Result<Self> {
+        debug!("Creating new memory info.");
         let mut memory_info_ptr: *mut sys::OrtMemoryInfo = std::ptr::null_mut();
         let status = unsafe {
             g_ort().CreateCpuMemoryInfo.unwrap()(
@@ -30,8 +34,9 @@ impl MemoryInfo {
 }
 
 impl Drop for MemoryInfo {
+    #[tracing::instrument]
     fn drop(&mut self) {
-        println!("Dropping the memory information.");
+        debug!("Dropping the memory information.");
         assert_ne!(self.ptr, std::ptr::null_mut());
 
         unsafe { g_ort().ReleaseMemoryInfo.unwrap()(self.ptr) };
@@ -43,6 +48,7 @@ impl Drop for MemoryInfo {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use test_env_log::test;
 
     #[test]
     fn memory_info_constructor_destructor() {

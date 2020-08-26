@@ -3,6 +3,7 @@
 use std::{fmt::Debug, ops::Deref};
 
 use ndarray::Array;
+use tracing::{debug, error};
 
 use onnxruntime_sys as sys;
 
@@ -94,11 +95,12 @@ where
     T: TypeToTensorElementDataType + Debug + Clone,
     D: ndarray::Dimension,
 {
+    #[tracing::instrument]
     fn drop(&mut self) {
         // We need to let the C part free
-        println!("Dropping Tensor.");
+        debug!("Dropping Tensor.");
         if self.c_ptr.is_null() {
-            println!("--> Null pointer, not calling free.");
+            error!("Null pointer, not calling free.");
         } else {
             unsafe { g_ort().ReleaseValue.unwrap()(self.c_ptr) }
         }
@@ -127,13 +129,15 @@ mod tests {
     use super::*;
     use crate::{AllocatorType, MemType};
     use ndarray::{arr0, arr1, arr2, arr3};
+    use test_env_log::test;
 
     #[test]
     fn orttensor_from_array_0d_i32() {
         let memory_info = MemoryInfo::new(AllocatorType::Arena, MemType::Default).unwrap();
         let array = arr0::<i32>(123);
         let tensor = OrtTensor::from_array(&memory_info, array).unwrap();
-        assert_eq!(tensor.shape(), &[]);
+        let expected_shape: &[usize] = &[];
+        assert_eq!(tensor.shape(), expected_shape);
     }
 
     #[test]
@@ -141,7 +145,8 @@ mod tests {
         let memory_info = MemoryInfo::new(AllocatorType::Arena, MemType::Default).unwrap();
         let array = arr1(&[1_i32, 2, 3, 4, 5, 6]);
         let tensor = OrtTensor::from_array(&memory_info, array).unwrap();
-        assert_eq!(tensor.shape(), &[6]);
+        let expected_shape: &[usize] = &[6];
+        assert_eq!(tensor.shape(), expected_shape);
     }
 
     #[test]

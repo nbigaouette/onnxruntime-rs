@@ -41,6 +41,8 @@ jobs:
           args: --package onnxruntime-sys
       - uses: actions-rs/cargo@v1
         name: Test onnxruntime
+        env:
+          RUST_LOG: onnxruntime=debug
         with:
           # Use --manifest-path instead of --package. See https://github.com/actions-rs/cargo/issues/86
           command: test

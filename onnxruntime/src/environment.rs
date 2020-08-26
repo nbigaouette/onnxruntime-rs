@@ -6,6 +6,7 @@ use std::{
 };
 
 use lazy_static::lazy_static;
+use tracing::{debug, warn};
 
 use onnxruntime_sys as sys;
 
@@ -79,16 +80,14 @@ impl Environment {
         *self.env.lock().unwrap().env_ptr.get_mut()
     }
 
+    #[tracing::instrument]
     fn new(name: String, log_level: LoggingLevel) -> Result<Environment> {
         let mut environment_guard = G_ENV
             .lock()
             .expect("Failed to acquire lock: another thread panicked?");
         let g_env_ptr = environment_guard.env_ptr.get_mut();
         if g_env_ptr.is_null() {
-            println!(
-                "Environment not yet initialized, creating a new one with name {:?}.",
-                name
-            );
+            debug!("Environment not yet initialized, creating a new one.");
 
             let mut env_ptr: *mut sys::OrtEnv = std::ptr::null_mut();
 
@@ -100,16 +99,20 @@ impl Environment {
 
             status_to_result(status).map_err(OrtError::Environment)?;
 
-            println!("Environment {:?} created at {:?}", name, env_ptr);
+            debug!(
+                env_ptr = format!("{:?}", env_ptr).as_str(),
+                "Environment created."
+            );
 
             *g_env_ptr = env_ptr;
             environment_guard.name = name;
 
             Ok(Environment { env: G_ENV.clone() })
         } else {
-            println!(
-                "Environment {:?} already initialized at {:?}, reusing it.",
-                environment_guard.name, environment_guard.env_ptr
+            warn!(
+                name = environment_guard.name.as_str(),
+                env_ptr = format!("{:?}", environment_guard.env_ptr).as_str(),
+                "Environment already initialized, reusing it.",
             );
             Ok(Environment { env: G_ENV.clone() })
         }
@@ -123,12 +126,11 @@ impl Environment {
 }
 
 impl Drop for Environment {
+    #[tracing::instrument]
     fn drop(&mut self) {
-        println!(
-            "Dropping the Environment ({:?} at {:?})  (arc-count={})",
-            self.name(),
-            self.env_ptr(),
-            Arc::strong_count(&G_ENV)
+        debug!(
+            global_arc_count = Arc::strong_count(&G_ENV),
+            "Dropping the Environment.",
         );
 
         let mut environment_guard = self
@@ -139,10 +141,12 @@ impl Drop for Environment {
         if Arc::strong_count(&G_ENV) == 2 {
             let release_env = g_ort().ReleaseEnv.unwrap();
             let env_ptr: *mut sys::OrtEnv = *environment_guard.env_ptr.get_mut();
-            println!(
-                "Releasing environment {} at {:?}",
-                environment_guard.name, env_ptr
+
+            debug!(
+                global_arc_count = Arc::strong_count(&G_ENV),
+                "Releasing the Environment.",
             );
+
             assert_ne!(env_ptr, std::ptr::null_mut());
             unsafe { release_env(env_ptr) };
 
@@ -201,6 +205,7 @@ impl EnvBuilder {
 mod tests {
     use super::*;
     use std::sync::{RwLock, RwLockWriteGuard};
+    use test_env_log::test;
 
     impl G_ENV {
         fn is_initialized(&self) -> bool {
