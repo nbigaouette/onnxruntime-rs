@@ -2,7 +2,7 @@
 
 use onnxruntime_sys::*;
 
-// https://github.com/microsoft/onnxruntime/blob/v1.3.1/csharp/test/Microsoft.ML.OnnxRuntime.EndToEndTests.Capi/C_Api_Sample.cpp
+// https://github.com/microsoft/onnxruntime/blob/v1.4.0/csharp/test/Microsoft.ML.OnnxRuntime.EndToEndTests.Capi/C_Api_Sample.cpp
 
 fn main() {
     let g_ort = unsafe { OrtGetApiBase().as_ref().unwrap().GetApi.unwrap()(ORT_API_VERSION) };
@@ -46,9 +46,12 @@ fn main() {
 
     //*************************************************************************
     // create session and load model into memory
-    // using squeezenet version 1.3
-    // https://github.com/onnx/models/raw/master/vision/classification/squeezenet/model/squeezenet1.1-7.onnx
-    let model_path = std::ffi::CString::new("squeezenet.onnx").unwrap();
+    // NOTE: Original C version loaded SqueezeNet 1.0 (ONNX version: 1.3, Opset version: 8,
+    //       https://github.com/onnx/models/blob/master/vision/classification/squeezenet/model/squeezenet1.0-8.onnx)
+    //       Download it:
+    //           curl -LO "https://github.com/onnx/models/raw/master/vision/classification/squeezenet/model/squeezenet1.0-8.onnx"
+    //       Reference: https://github.com/onnx/models/tree/master/vision/classification/squeezenet#model
+    let model_path = std::ffi::CString::new("squeezenet1.0-8.onnx").unwrap();
 
     let mut session_ptr: *mut OrtSession = std::ptr::null_mut();
 

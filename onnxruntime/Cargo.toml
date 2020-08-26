@@ -2,7 +2,7 @@
 authors = ["Nicolas Bigaouette <nbigaouette@gmail.com>"]
 edition = "2018"
 name = "onnxruntime"
-version = "0.0.7"
+version = "0.0.8"
 
 description = "Wrapper around Microsoft's ONNX Runtime"
 documentation = "https://docs.rs/onnxruntime"
@@ -14,10 +14,6 @@ repository = "https://github.com/nbigaouette/onnxruntime-rs"
 categories = ["science"]
 keywords = ["neuralnetworks", "onnx", "bindings"]
 
-[[example]]
-name = "sample"
-required-features = ["model-fetching"]
-
 [[test]]
 name = "integration_tests"
 required-features = ["model-fetching"]
@@ -25,7 +21,7 @@ required-features = ["model-fetching"]
 [dependencies]
 lazy_static = "1.4"
 ndarray = "0.13"
-onnxruntime-sys = {version = "0.0.6", path = "../onnxruntime-sys"}
+onnxruntime-sys = {version = "0.0.8", path = "../onnxruntime-sys"}
 thiserror = "1.0"
 tracing = "0.1"
 

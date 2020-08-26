@@ -2,7 +2,7 @@
 authors = ["Nicolas Bigaouette <nbigaouette@elementai.com>"]
 edition = "2018"
 name = "onnxruntime-sys"
-version = "0.0.6"
+version = "0.0.8"
 
 description = "Unsafe wrapper around Microsoft's ONNX Runtime"
 documentation = "https://docs.rs/onnxruntime-sys"
@@ -17,8 +17,8 @@ keywords = ["neuralnetworks", "onnx", "bindings"]
 [dependencies]
 
 [build-dependencies]
-bindgen = "0.54"
-ureq = "1.3"
+bindgen = "0.55"
+ureq = "1.4"
 
 [target.'cfg(windows)'.build-dependencies]
 zip = "0.5"
