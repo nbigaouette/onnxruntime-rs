@@ -17,6 +17,8 @@ use std::{
     time::Duration,
 };
 
+use tracing::{debug, error, info};
+
 #[cfg(feature = "model-fetching")]
 use crate::error::{OrtDownloadError, Result};
 
@@ -52,9 +54,10 @@ impl ModelUrl for AvailableOnnxModel {
 
 impl AvailableOnnxModel {
     #[cfg(feature = "model-fetching")]
+    #[tracing::instrument]
     pub(crate) fn download_to<P>(&self, download_dir: P) -> Result<PathBuf>
     where
-        P: AsRef<Path>,
+        P: AsRef<Path> + std::fmt::Debug,
     {
         let url = self.fetch_url();
 
@@ -62,13 +65,17 @@ impl AvailableOnnxModel {
         let model_filepath = download_dir.as_ref().join(model_filename);
 
         if model_filepath.exists() {
-            println!(
-                "File {:?} already exists, not re-downloading.",
-                model_filepath
+            info!(
+                model_filepath = format!("{}", model_filepath.display()).as_str(),
+                "File already exists, not re-downloading.",
             );
             Ok(model_filepath)
         } else {
-            println!("Downloading {:?} to {:?}...", url, model_filepath);
+            info!(
+                model_filepath = format!("{}", model_filepath.display()).as_str(),
+                url = format!("{:?}", url).as_str(),
+                "Downloading file, please wait....",
+            );
 
             let resp = ureq::get(url)
                 .timeout_connect(1_000) // 1 second
@@ -80,7 +87,7 @@ impl AvailableOnnxModel {
                 .header("Content-Length")
                 .and_then(|s| s.parse::<usize>().ok())
                 .unwrap();
-            println!("Downloading {} bytes...", len);
+            info!(len, "Downloading {} bytes...", len);
 
             let mut reader = resp.into_reader();
 

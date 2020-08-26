@@ -6,6 +6,7 @@ use std::{ffi::CString, fmt::Debug, path::Path};
 use std::env;
 
 use ndarray::Array;
+use tracing::debug;
 
 use onnxruntime_sys as sys;
 
@@ -55,6 +56,7 @@ use crate::{download::AvailableOnnxModel, error::OrtDownloadError};
 /// # Ok(())
 /// # }
 /// ```
+#[derive(Debug)]
 pub struct SessionBuilder {
     env: Environment,
     session_options_ptr: *mut sys::OrtSessionOptions,
@@ -64,8 +66,9 @@ pub struct SessionBuilder {
 }
 
 impl Drop for SessionBuilder {
+    #[tracing::instrument]
     fn drop(&mut self) {
-        println!("Dropping the session options.");
+        debug!("Dropping the session options.");
         assert_ne!(self.session_options_ptr, std::ptr::null_mut());
         unsafe { g_ort().ReleaseSessionOptions.unwrap()(self.session_options_ptr) };
     }
@@ -277,8 +280,9 @@ impl Output {
 }
 
 impl Drop for Session {
+    #[tracing::instrument]
     fn drop(&mut self) {
-        println!("Dropping the session.");
+        debug!("Dropping the session.");
         unsafe { g_ort().ReleaseSession.unwrap()(self.session_ptr) };
         // FIXME: There is no C function to release the allocator?
 
@@ -547,7 +551,7 @@ mod dangerous {
         // This transmute should be safe since its value is read from GetTensorElementType which we must trust.
         let io_type: TensorElementDataType = unsafe { std::mem::transmute(type_sys) };
 
-        // println!("{} : type={}", i, type_);
+        // info!("{} : type={}", i, type_);
 
         // print input shapes/dims
         let mut num_dims = 0;
@@ -555,7 +559,7 @@ mod dangerous {
         status_to_result(status).map_err(OrtError::GetDimensionsCount)?;
         assert_ne!(num_dims, 0);
 
-        // println!("{} : num_dims={}", i, num_dims);
+        // info!("{} : num_dims={}", i, num_dims);
         let mut node_dims: Vec<i64> = vec![0; num_dims as usize];
         let status = unsafe {
             g_ort().GetDimensions.unwrap()(
@@ -567,7 +571,7 @@ mod dangerous {
         status_to_result(status).map_err(OrtError::GetDimensions)?;
 
         // for j in 0..num_dims {
-        //     println!("{} : dim {}={}", i, j, node_dims[j as usize]);
+        //     info!("{} : dim {}={}", i, j, node_dims[j as usize]);
         // }
 
         unsafe { g_ort().ReleaseTypeInfo.unwrap()(typeinfo_ptr) };

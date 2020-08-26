@@ -3,6 +3,7 @@
 use std::{fmt::Debug, ops::Deref};
 
 use ndarray::Array;
+use tracing::{debug, error};
 
 use onnxruntime_sys as sys;
 
@@ -94,11 +95,12 @@ where
     T: TypeToTensorElementDataType + Debug + Clone,
     D: ndarray::Dimension,
 {
+    #[tracing::instrument]
     fn drop(&mut self) {
         // We need to let the C part free
-        println!("Dropping Tensor.");
+        debug!("Dropping Tensor.");
         if self.c_ptr.is_null() {
-            println!("--> Null pointer, not calling free.");
+            error!("Null pointer, not calling free.");
         } else {
             unsafe { g_ort().ReleaseValue.unwrap()(self.c_ptr) }
         }

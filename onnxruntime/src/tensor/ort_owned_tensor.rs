@@ -2,9 +2,10 @@
 
 use std::{fmt::Debug, ops::Deref};
 
-use onnxruntime_sys as sys;
-
 use ndarray::{Array, ArrayView};
+use tracing::debug;
+
+use onnxruntime_sys as sys;
 
 use crate::{
     error::status_to_result, g_ort, memory::MemoryInfo, tensor::ndarray_tensor::NdArrayTensor,
@@ -123,8 +124,9 @@ where
     D: ndarray::Dimension,
     'm: 't, // 'm outlives 't
 {
+    #[tracing::instrument]
     fn drop(&mut self) {
-        println!("Dropping OrtOwnedTensor.");
+        debug!("Dropping OrtOwnedTensor.");
         unsafe { g_ort().ReleaseValue.unwrap()(self.tensor_ptr) }
 
         self.tensor_ptr = std::ptr::null_mut();
