@@ -17,10 +17,11 @@ use std::{
     time::Duration,
 };
 
-use tracing::{debug, error, info};
-
 #[cfg(feature = "model-fetching")]
 use crate::error::{OrtDownloadError, Result};
+
+#[cfg(feature = "model-fetching")]
+use tracing::info;
 
 pub mod language;
 pub mod vision;
