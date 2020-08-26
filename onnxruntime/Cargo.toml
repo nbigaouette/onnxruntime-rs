@@ -36,7 +36,7 @@ ureq = {version = "1.4", optional = true}
 image = "0.23"
 test-env-log = {version = "0.2", default-features = false, features = ["trace"]}
 tracing-subscriber = "0.2"
-ureq = "*"
+ureq = "1.4"
 
 [features]
 # Fetch model from ONNX Model Zoo (https://github.com/onnx/models)
