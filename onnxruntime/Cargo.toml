@@ -27,12 +27,15 @@ lazy_static = "1.4"
 ndarray = "0.13"
 onnxruntime-sys = {version = "0.0.6", path = "../onnxruntime-sys"}
 thiserror = "1.0"
+tracing = "0.1"
 
 # Enabled with 'model-fetching' feature
 ureq = {version = "1.4", optional = true}
 
 [dev-dependencies]
 image = "0.23"
+test-env-log = {version = "0.2", default-features = false, features = ["trace"]}
+tracing-subscriber = "0.2"
 ureq = "*"
 
 [features]
