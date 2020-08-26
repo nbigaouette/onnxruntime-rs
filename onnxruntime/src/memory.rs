@@ -14,7 +14,7 @@ impl MemoryInfo {
     pub fn new(allocator: AllocatorType, memory_type: MemType) -> Result<Self> {
         let mut memory_info_ptr: *mut sys::OrtMemoryInfo = std::ptr::null_mut();
         let status = unsafe {
-            (*g_ort()).CreateCpuMemoryInfo.unwrap()(
+            g_ort().CreateCpuMemoryInfo.unwrap()(
                 allocator as i32,
                 memory_type as i32,
                 &mut memory_info_ptr,
@@ -34,7 +34,7 @@ impl Drop for MemoryInfo {
         println!("Dropping the memory information.");
         assert_ne!(self.ptr, std::ptr::null_mut());
 
-        unsafe { (*g_ort()).ReleaseMemoryInfo.unwrap()(self.ptr) };
+        unsafe { g_ort().ReleaseMemoryInfo.unwrap()(self.ptr) };
 
         self.ptr = std::ptr::null_mut();
     }

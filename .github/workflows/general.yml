@@ -44,7 +44,7 @@ jobs:
         with:
           # Use --manifest-path instead of --package. See https://github.com/actions-rs/cargo/issues/86
           command: test
-          args: --manifest-path onnxruntime/Cargo.toml --features model-fetching
+          args: --manifest-path onnxruntime/Cargo.toml --features model-fetching -- --test-threads=1 --nocapture
 
   clippy:
     name: Clippy

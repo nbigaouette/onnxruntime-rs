@@ -39,7 +39,7 @@ pub enum ImageClassification {
     ///
     /// Source: [https://github.com/onnx/models/tree/master/vision/classification/squeezenet](https://github.com/onnx/models/tree/master/vision/classification/squeezenet)
     ///
-    /// Variant downloaded: ONNX Version 1.4 with Opset Version 9.
+    /// Variant downloaded: SqueezeNet v1.1, ONNX Version 1.2.1 with Opset Version 7.
     SqueezeNet,
     /// Image classification, trained on ImageNet with 1000 classes.
     ///
@@ -230,7 +230,7 @@ impl ModelUrl for ImageClassification {
     fn fetch_url(&self) -> &'static str {
         match self {
             ImageClassification::MobileNet => "https://github.com/onnx/models/raw/master/vision/classification/mobilenet/model/mobilenetv2-7.onnx",
-            ImageClassification::SqueezeNet => "https://github.com/onnx/models/raw/master/vision/classification/squeezenet/model/squeezenet1.0-9.onnx",
+            ImageClassification::SqueezeNet => "https://github.com/onnx/models/raw/master/vision/classification/squeezenet/model/squeezenet1.1-7.onnx",
             ImageClassification::Inception(version) => version.fetch_url(),
             ImageClassification::ResNet(version) => version.fetch_url(),
             ImageClassification::Vgg(variant) => variant.fetch_url(),

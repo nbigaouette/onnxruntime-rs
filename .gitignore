@@ -4,3 +4,4 @@
 **/*.dSYM
 onnxruntime.git
 Cargo.lock
+**/synset.txt

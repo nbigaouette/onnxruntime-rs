@@ -1,37 +1,8 @@
 //! Module containing environment types
-//!
-//! An [`Environment`](session/struct.Environment.html) is the main entry point of the ONNX Runtime.
-//!
-//! Only one ONNX environment can be created per process. The `onnxruntime` crate
-//! uses a singleton (through `lazy_static!()`) to enforce this.
-//!
-//! Once an environment is created, a [`Session`](../session/struct.Session.html)
-//! can be obtained from it.
-//!
-//! **NOTE**: While the [`Environment`](environment/struct.Environment.html) constructor takes a `name` parameter
-//! to name the environment, only the first name will be considered if many environments
-//! are created.
-//!
-//! # Example
-//!
-//! ```no_run
-//! # use std::error::Error;
-//! # use onnxruntime::{environment::Environment, LoggingLevel};
-//! # fn main() -> Result<(), Box<dyn Error>> {
-//! let environment = Environment::builder()
-//!     .with_name("test")
-//!     .with_log_level(LoggingLevel::Verbose)
-//!     .build()?;
-//! # Ok(())
-//! # }
-//! ```
 
 use std::{
     ffi::CString,
-    sync::{
-        atomic::{AtomicPtr, Ordering},
-        Arc, Mutex,
-    },
+    sync::{atomic::AtomicPtr, Arc, Mutex},
 };
 
 use lazy_static::lazy_static;
@@ -46,32 +17,139 @@ use crate::{
 };
 
 lazy_static! {
-    static ref G_NAMED_ENV: Arc<Mutex<NamedEnvironment>> = Arc::new(Mutex::new(NamedEnvironment {
-        env_ptr: EnvPointer(AtomicPtr::new(std::ptr::null_mut())),
-        name: CString::new("uninitialized").unwrap(),
-    }));
+    static ref G_ENV: Arc<Mutex<EnvironmentSingleton>> =
+        Arc::new(Mutex::new(EnvironmentSingleton {
+            name: String::from("uninitialized"),
+            env_ptr: AtomicPtr::new(std::ptr::null_mut()),
+        }));
 }
 
-// FIXME: Implement Deref
 #[derive(Debug)]
-pub(crate) struct EnvPointer(pub(crate) AtomicPtr<sys::OrtEnv>);
+struct EnvironmentSingleton {
+    name: String,
+    env_ptr: AtomicPtr<sys::OrtEnv>,
+}
 
-impl Drop for EnvPointer {
-    fn drop(&mut self) {
-        println!("Dropping the environment.");
-        if self.0.get_mut().is_null() {
-            eprintln!("ERROR: InnerEnv pointer already null, cannot double-free!");
-        } else {
-            unsafe { (*g_ort()).ReleaseEnv.unwrap()(*self.0.get_mut()) };
-            *self.0.get_mut() = std::ptr::null_mut();
+/// An [`Environment`](session/struct.Environment.html) is the main entry point of the ONNX Runtime.
+///
+/// Only one ONNX environment can be created per process. The `onnxruntime` crate
+/// uses a singleton (through `lazy_static!()`) to enforce this.
+///
+/// Once an environment is created, a [`Session`](../session/struct.Session.html)
+/// can be obtained from it.
+///
+/// **NOTE**: While the [`Environment`](environment/struct.Environment.html) constructor takes a `name` parameter
+/// to name the environment, only the first name will be considered if many environments
+/// are created.
+///
+/// # Example
+///
+/// ```no_run
+/// # use std::error::Error;
+/// # use onnxruntime::{environment::Environment, LoggingLevel};
+/// # fn main() -> Result<(), Box<dyn Error>> {
+/// let environment = Environment::builder()
+///     .with_name("test")
+///     .with_log_level(LoggingLevel::Verbose)
+///     .build()?;
+/// # Ok(())
+/// # }
+/// ```
+#[derive(Debug, Clone)]
+pub struct Environment {
+    env: Arc<Mutex<EnvironmentSingleton>>,
+}
+
+impl Environment {
+    /// Create a new environment builder using default values
+    /// (name: `default`, log level: [LoggingLevel::Warning](../enum.LoggingLevel.html#variant.Warning))
+    pub fn builder() -> EnvBuilder {
+        EnvBuilder {
+            name: "default".into(),
+            log_level: LoggingLevel::Warning,
         }
+    }
+
+    /// Return the name of the current environment
+    pub fn name(&self) -> String {
+        self.env.lock().unwrap().name.to_string()
+    }
+
+    pub(crate) fn env_ptr(&self) -> *const sys::OrtEnv {
+        *self.env.lock().unwrap().env_ptr.get_mut()
+    }
+
+    fn new(name: String, log_level: LoggingLevel) -> Result<Environment> {
+        let mut environment_guard = G_ENV
+            .lock()
+            .expect("Failed to acquire lock: another thread panicked?");
+        let g_env_ptr = environment_guard.env_ptr.get_mut();
+        if g_env_ptr.is_null() {
+            println!(
+                "Environment not yet initialized, creating a new one with name {:?}.",
+                name
+            );
+
+            let mut env_ptr: *mut sys::OrtEnv = std::ptr::null_mut();
+
+            let create_env = g_ort().CreateEnv.unwrap();
+
+            let cname = CString::new(name.clone()).unwrap();
+
+            let status = { unsafe { create_env(log_level as u32, cname.as_ptr(), &mut env_ptr) } };
+
+            status_to_result(status).map_err(OrtError::Environment)?;
+
+            println!("Environment {:?} created at {:?}", name, env_ptr);
+
+            *g_env_ptr = env_ptr;
+            environment_guard.name = name;
+
+            Ok(Environment { env: G_ENV.clone() })
+        } else {
+            println!(
+                "Environment {:?} already initialized at {:?}, reusing it.",
+                environment_guard.name, environment_guard.env_ptr
+            );
+            Ok(Environment { env: G_ENV.clone() })
+        }
+    }
+
+    /// Create a new [`SessionBuilder`](../session/struct.SessionBuilder.html)
+    /// used to create a new ONNX session.
+    pub fn new_session_builder(&self) -> Result<SessionBuilder> {
+        SessionBuilder::new(self.clone())
     }
 }
 
-#[derive(Debug)]
-pub(crate) struct NamedEnvironment {
-    pub(crate) env_ptr: EnvPointer,
-    pub(crate) name: CString,
+impl Drop for Environment {
+    fn drop(&mut self) {
+        println!(
+            "Dropping the Environment ({:?} at {:?})  (arc-count={})",
+            self.name(),
+            self.env_ptr(),
+            Arc::strong_count(&G_ENV)
+        );
+
+        let mut environment_guard = self
+            .env
+            .lock()
+            .expect("Failed to acquire lock: another thread panicked?");
+
+        if Arc::strong_count(&G_ENV) == 2 {
+            let release_env = g_ort().ReleaseEnv.unwrap();
+            let env_ptr: *mut sys::OrtEnv = *environment_guard.env_ptr.get_mut();
+            println!(
+                "Releasing environment {} at {:?}",
+                environment_guard.name, env_ptr
+            );
+            assert_ne!(env_ptr, std::ptr::null_mut());
+            unsafe { release_env(env_ptr) };
+
+            environment_guard.env_ptr = AtomicPtr::new(std::ptr::null_mut());
+            environment_guard.name = String::from("uninitialized");
+        }
+    }
 }
 
 /// Struct used to build an environment [`Environment`](environment/struct.Environment.html)
@@ -115,129 +193,119 @@ impl EnvBuilder {
 
     /// Commit the configuration to a new [`Environment`](environment/struct.Environment.html)
     pub fn build(self) -> Result<Environment> {
-        let mut g_named_env = G_NAMED_ENV.lock().unwrap();
-
-        let name = CString::new(self.name)?;
-
-        if g_named_env.env_ptr.0.get_mut().is_null() {
-            println!(
-                "Uninitialized environment found, initializing it with name {:?}.",
-                name
-            );
-            let mut env_ptr: *mut sys::OrtEnv = std::ptr::null_mut();
-
-            // FIXME: Pass log level to function
-            let status = unsafe {
-                (*g_ort()).CreateEnv.unwrap()(self.log_level as u32, name.as_ptr(), &mut env_ptr)
-            };
-
-            status_to_result(status).map_err(OrtError::Environment)?;
-            assert_eq!(status, std::ptr::null_mut());
-            assert_ne!(env_ptr, std::ptr::null_mut());
-
-            // Disable telemetry by default
-            let status = unsafe { (*g_ort()).DisableTelemetryEvents.unwrap()(env_ptr) };
-            status_to_result(status).map_err(OrtError::Environment)?;
-
-            // Replace the pointer stored in the lazy_static with the new one
-            let old_ptr: *mut sys::OrtEnv = g_named_env.env_ptr.0.swap(env_ptr, Ordering::AcqRel);
-            assert_eq!(old_ptr, std::ptr::null_mut());
-            // Replace the name stored in the lazy_static with the new one
-            g_named_env.name = name.clone();
-
-            let env_ptr = EnvPointer(AtomicPtr::new(env_ptr));
-            let named_env = NamedEnvironment { env_ptr, name };
-            let env = Environment {
-                inner: Arc::new(Mutex::new(named_env)),
-            };
-
-            Ok(env)
-        } else {
-            println!(
-                "Initialized environment found ({:?}), not initializing it.",
-                g_named_env.name
-            );
-
-            Ok(Environment {
-                inner: G_NAMED_ENV.clone(),
-            })
-        }
-    }
-}
-
-/// Wrapper around the ONNX environment singleton
-///
-/// **NOTE**: Since ONNX can only define one environment per process,
-/// creating multiple environments will
-/// end up re-using the same environment internally; a new one will _not_
-/// be created.
-#[derive(Debug)]
-pub struct Environment {
-    inner: Arc<Mutex<NamedEnvironment>>,
-}
-
-impl Environment {
-    /// Create a new environment builder using default values
-    /// (name: `default`, log level: [LoggingLevel::Warning](../enum.LoggingLevel.html#variant.Warning))
-    pub fn builder() -> EnvBuilder {
-        EnvBuilder {
-            name: "default".into(),
-            log_level: LoggingLevel::Warning,
-        }
-    }
-
-    /// Create a new [`SessionBuilder`](../session/struct.SessionBuilder.html)
-    /// used to create a new ONNX session.
-    pub fn new_session_builder(&self) -> Result<SessionBuilder> {
-        SessionBuilder::new(self.inner.clone())
+        Environment::new(self.name, self.log_level)
     }
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
+    use std::sync::{RwLock, RwLockWriteGuard};
+
+    impl G_ENV {
+        fn is_initialized(&self) -> bool {
+            Arc::strong_count(self) >= 2
+        }
+
+        // fn name(&self) -> String {
+        //     *self.lock().unwrap().name.clone()
+        // }
+
+        fn env_ptr(&self) -> *const sys::OrtEnv {
+            *self.lock().unwrap().env_ptr.get_mut()
+        }
+    }
+
+    struct ConcurrentTestRun {
+        lock: Arc<RwLock<()>>,
+    }
+
+    lazy_static! {
+        static ref CONCURRENT_TEST_RUN: ConcurrentTestRun = ConcurrentTestRun {
+            lock: Arc::new(RwLock::new(()))
+        };
+    }
+
+    impl CONCURRENT_TEST_RUN {
+        // fn run(&self) -> std::sync::RwLockReadGuard<()> {
+        //     self.lock.read().unwrap()
+        // }
+        fn single_test_run(&self) -> RwLockWriteGuard<()> {
+            self.lock.write().unwrap()
+        }
+    }
 
     #[test]
-    fn singleton_env() {
-        let env1 = Environment::builder().with_name("test1").build().unwrap();
+    fn env_is_initialized() {
+        let _run_lock = CONCURRENT_TEST_RUN.single_test_run();
 
-        assert_eq!(
-            G_NAMED_ENV.lock().unwrap().name,
-            CString::new("test1").unwrap()
-        );
-        assert_eq!(
-            env1.inner.lock().unwrap().name,
-            CString::new("test1").unwrap()
-        );
-        assert_eq!(
-            *G_NAMED_ENV.lock().unwrap().env_ptr.0.get_mut() as usize,
-            *env1.inner.lock().unwrap().env_ptr.0.get_mut() as usize
-        );
+        assert!(!G_ENV.is_initialized());
+        assert_eq!(G_ENV.env_ptr(), std::ptr::null_mut());
 
-        let env2 = Environment::builder().with_name("test2").build().unwrap();
+        let env = Environment::builder()
+            .with_name("env_is_initialized")
+            .with_log_level(LoggingLevel::Warning)
+            .build()
+            .unwrap();
+        assert!(G_ENV.is_initialized());
+        assert_ne!(G_ENV.env_ptr(), std::ptr::null_mut());
 
-        assert_eq!(
-            G_NAMED_ENV.lock().unwrap().name,
-            CString::new("test1").unwrap(),
-            "lazy_static must keep its name"
-        );
-        assert_eq!(
-            env2.inner.lock().unwrap().name,
-            CString::new("test1").unwrap(),
-            "Environment should contain information from first creation"
-        );
+        std::mem::drop(env);
+        assert!(!G_ENV.is_initialized());
+        assert_eq!(G_ENV.env_ptr(), std::ptr::null_mut());
+    }
 
-        let env3 = Environment::builder().with_name("test3").build().unwrap();
+    #[test]
+    fn sequential_environment_creation() {
+        let _concurrent_run_lock_guard = CONCURRENT_TEST_RUN.single_test_run();
 
-        assert_eq!(
-            G_NAMED_ENV.lock().unwrap().name,
-            CString::new("test1").unwrap(),
-            "lazy_static must keep its name"
-        );
-        assert_eq!(
-            env3.inner.lock().unwrap().name,
-            CString::new("test1").unwrap(),
-            "Environment should contain information from first creation"
-        );
+        let mut prev_env_ptr = G_ENV.env_ptr();
+
+        for i in 0..10 {
+            let name = format!("sequential_environment_creation: {}", i);
+            let env = Environment::builder()
+                .with_name(name.clone())
+                .with_log_level(LoggingLevel::Warning)
+                .build()
+                .unwrap();
+            let next_env_ptr = G_ENV.env_ptr();
+            assert_ne!(next_env_ptr, prev_env_ptr);
+            prev_env_ptr = next_env_ptr;
+
+            assert_eq!(env.name(), name);
+        }
+    }
+
+    #[test]
+    fn concurrent_environment_creations() {
+        let _concurrent_run_lock_guard = CONCURRENT_TEST_RUN.single_test_run();
+
+        let initial_name = String::from("concurrent_environment_creation");
+        let main_env = Environment::new(initial_name.clone(), LoggingLevel::Warning).unwrap();
+        let main_env_ptr = main_env.env_ptr() as u64;
+
+        let children: Vec<_> = (0..10)
+            .map(|t| {
+                let initial_name_cloned = initial_name.clone();
+                std::thread::spawn(move || {
+                    let name = format!("concurrent_environment_creation: {}", t);
+                    let env = Environment::builder()
+                        .with_name(name)
+                        .with_log_level(LoggingLevel::Warning)
+                        .build()
+                        .unwrap();
+
+                    assert_eq!(env.name(), initial_name_cloned);
+                    assert_eq!(env.env_ptr() as u64, main_env_ptr);
+                })
+            })
+            .collect();
+
+        assert_eq!(main_env.name(), initial_name);
+        assert_eq!(main_env.env_ptr() as u64, main_env_ptr);
+
+        let res: Vec<std::thread::Result<_>> =
+            children.into_iter().map(|child| child.join()).collect();
+        assert!(res.into_iter().all(|r| std::result::Result::is_ok(&r)));
     }
 }
