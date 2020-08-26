@@ -475,7 +475,7 @@ pub const EXIT_SUCCESS: u32 = 0;
 pub const RAND_MAX: u32 = 2147483647;
 pub const _USE_FORTIFY_LEVEL: u32 = 2;
 pub const __HAS_FIXED_CHK_PROTOTYPES: u32 = 1;
-pub const ORT_API_VERSION: u32 = 3;
+pub const ORT_API_VERSION: u32 = 4;
 pub type __int8_t = ::std::os::raw::c_schar;
 pub type __uint8_t = ::std::os::raw::c_uchar;
 pub type __int16_t = ::std::os::raw::c_short;
@@ -12168,12 +12168,24 @@ pub struct OrtApi {
             dim_value: i64,
         ) -> OrtStatusPtr,
     >,
+    pub GetAvailableProviders: ::std::option::Option<
+        unsafe extern "C" fn(
+            out_ptr: *mut *mut *mut ::std::os::raw::c_char,
+            provider_length: *mut ::std::os::raw::c_int,
+        ) -> OrtStatusPtr,
+    >,
+    pub ReleaseAvailableProviders: ::std::option::Option<
+        unsafe extern "C" fn(
+            ptr: *mut *mut ::std::os::raw::c_char,
+            providers_length: ::std::os::raw::c_int,
+        ) -> OrtStatusPtr,
+    >,
 }
 #[test]
 fn bindgen_test_layout_OrtApi() {
     assert_eq!(
         ::std::mem::size_of::<OrtApi>(),
-        1000usize,
+        1016usize,
         concat!("Size of: ", stringify!(OrtApi))
     );
     assert_eq!(
@@ -13502,6 +13514,28 @@ fn bindgen_test_layout_OrtApi() {
             stringify!(OrtApi),
             "::",
             stringify!(AddFreeDimensionOverrideByName)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(::std::ptr::null::<OrtApi>())).GetAvailableProviders as *const _ as usize },
+        1000usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(OrtApi),
+            "::",
+            stringify!(GetAvailableProviders)
+        )
+    );
+    assert_eq!(
+        unsafe {
+            &(*(::std::ptr::null::<OrtApi>())).ReleaseAvailableProviders as *const _ as usize
+        },
+        1008usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(OrtApi),
+            "::",
+            stringify!(ReleaseAvailableProviders)
         )
     );
 }
