@@ -6,7 +6,7 @@ use std::{
 };
 
 /// ONNX Runtime version
-const ORT_VERSION: &str = "1.3.0";
+const ORT_VERSION: &str = "1.4.0";
 
 /// Base Url from which to download pre-built releases/
 const ORT_RELEASE_BASE_URL: &str = "https://github.com/microsoft/onnxruntime/releases/download";
