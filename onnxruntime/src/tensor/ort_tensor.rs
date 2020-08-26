@@ -136,7 +136,8 @@ mod tests {
         let memory_info = MemoryInfo::new(AllocatorType::Arena, MemType::Default).unwrap();
         let array = arr0::<i32>(123);
         let tensor = OrtTensor::from_array(&memory_info, array).unwrap();
-        assert_eq!(tensor.shape(), &[]);
+        let expected_shape: &[usize] = &[];
+        assert_eq!(tensor.shape(), expected_shape);
     }
 
     #[test]
@@ -144,7 +145,8 @@ mod tests {
         let memory_info = MemoryInfo::new(AllocatorType::Arena, MemType::Default).unwrap();
         let array = arr1(&[1_i32, 2, 3, 4, 5, 6]);
         let tensor = OrtTensor::from_array(&memory_info, array).unwrap();
-        assert_eq!(tensor.shape(), &[6]);
+        let expected_shape: &[usize] = &[6];
+        assert_eq!(tensor.shape(), expected_shape);
     }
 
     #[test]
