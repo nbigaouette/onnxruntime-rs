@@ -12,6 +12,7 @@ use crate::{char_p_to_string, g_ort};
 pub type Result<T> = std::result::Result<T, OrtError>;
 
 /// Error type centralizing all possible errors
+#[non_exhaustive]
 #[derive(Error, Debug)]
 pub enum OrtError {
     /// The C API can message to the caller using a C `char *` which needs to be converted
@@ -98,6 +99,7 @@ pub enum OrtError {
 }
 
 /// Error details when ONNX C API fail
+#[non_exhaustive]
 #[derive(Error, Debug)]
 pub enum OrtApiError {
     /// Details as reported by the ONNX C API in case of error
@@ -109,6 +111,7 @@ pub enum OrtApiError {
 }
 
 /// Error from downloading pre-trained model from the [ONNX Model Zoo](https://github.com/onnx/models).
+#[non_exhaustive]
 #[derive(Error, Debug)]
 pub enum OrtDownloadError {
     /// Generic input/output error
