@@ -22,7 +22,7 @@ fn run() -> Result<(), Error> {
     // Setup the example's log level.
     // NOTE: ONNX Runtime's log level is controlled separately when building the environment.
     let subscriber = FmtSubscriber::builder()
-        .with_max_level(Level::DEBUG)
+        .with_max_level(Level::TRACE)
         .finish();
 
     tracing::subscriber::set_global_default(subscriber).expect("setting default subscriber failed");
@@ -30,7 +30,7 @@ fn run() -> Result<(), Error> {
     let environment = Environment::builder()
         .with_name("test")
         // The ONNX Runtime's log level can be different than the one of the wrapper crate or the application.
-        .with_log_level(LoggingLevel::Warning)
+        .with_log_level(LoggingLevel::Info)
         .build()?;
 
     let mut session = environment
