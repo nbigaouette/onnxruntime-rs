@@ -155,6 +155,12 @@ Dropping the environment.
 See also the integration tests ([`onnxruntime/tests/integration_tests.rs`](onnxruntime/tests/integration_tests.rs))
 that performs simple model download and inference, validating the results.
 
+## Conduct
+
+The [Rust Code of Conduct](https://www.rust-lang.org/conduct.html) shall be respected. For
+escalation or moderation issues please contact Nicolas (nbigaouette@gmail.com)
+instead of the Rust moderation team.
+
 ## License
 
 This project is licensed under either of
