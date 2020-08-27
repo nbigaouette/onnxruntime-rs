@@ -13,6 +13,7 @@ use onnxruntime_sys as sys;
 use crate::{
     error::{status_to_result, OrtError, Result},
     g_ort,
+    onnxruntime::custom_logger,
     session::SessionBuilder,
     LoggingLevel,
 };
@@ -91,11 +92,24 @@ impl Environment {
 
             let mut env_ptr: *mut sys::OrtEnv = std::ptr::null_mut();
 
-            let create_env = g_ort().CreateEnv.unwrap();
+            let logging_function: sys::OrtLoggingFunction = Some(custom_logger);
+            // FIXME: What should go here?
+            let logger_param: *mut std::ffi::c_void = std::ptr::null_mut();
 
             let cname = CString::new(name.clone()).unwrap();
 
-            let status = { unsafe { create_env(log_level as u32, cname.as_ptr(), &mut env_ptr) } };
+            let create_env_with_custom_logger = g_ort().CreateEnvWithCustomLogger.unwrap();
+            let status = {
+                unsafe {
+                    create_env_with_custom_logger(
+                        logging_function,
+                        logger_param,
+                        log_level as u32,
+                        cname.as_ptr(),
+                        &mut env_ptr,
+                    )
+                }
+            };
 
             status_to_result(status).map_err(OrtError::Environment)?;
 
