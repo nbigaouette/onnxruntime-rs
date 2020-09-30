@@ -31,8 +31,8 @@ fn main() {
     println!("{:#?}", session.inputs);
     println!("{:#?}", session.outputs);
 
-    let input_ids = Array2::<f32>::from_shape_vec((1, 3), vec![1f32, 2f32, 3f32]).unwrap();
-    let attention_mask = Array2::<f32>::from_shape_vec((1, 3), vec![1f32, 1f32, 1f32]).unwrap();
+    let input_ids = Array2::<i64>::from_shape_vec((1, 3), vec![1, 2, 3]).unwrap();
+    let attention_mask = Array2::<i64>::from_shape_vec((1, 3), vec![1, 1, 1]).unwrap();
 
     let outputs: Vec<OrtOwnedTensor<f32, _>> =
         session.run(vec![input_ids, attention_mask]).unwrap();
