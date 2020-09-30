@@ -296,12 +296,13 @@ impl Session {
     ///
     /// Note that ONNX models can have multiple inputs; a `Vec<_>` is thus
     /// used for the input data here.
-    pub fn run<'s, 't, 'm, T, D>(
+    pub fn run<'s, 't, 'm, TIn, TOut, D>(
         &'s mut self,
-        input_arrays: Vec<Array<T, D>>,
-    ) -> Result<Vec<OrtOwnedTensor<'t, 'm, T, ndarray::IxDyn>>>
+        input_arrays: Vec<Array<TIn, D>>,
+    ) -> Result<Vec<OrtOwnedTensor<'t, 'm, TOut, ndarray::IxDyn>>>
     where
-        T: TypeToTensorElementDataType + Debug + Clone,
+        TIn: TypeToTensorElementDataType + Debug + Clone,
+        TOut: TypeToTensorElementDataType + Debug + Clone,
         D: ndarray::Dimension,
         'm: 't, // 'm outlives 't (memory info outlives tensor)
         's: 'm, // 's outlives 'm (session outlives memory info)
