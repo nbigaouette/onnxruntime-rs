@@ -241,7 +241,7 @@ pub struct Input {
     /// Shape of the input layer
     ///
     /// C API uses a i64 for the dimensions. We use an unsigned of the same range of the positive values.
-    pub dimensions: Vec<u32>,
+    pub dimensions: Vec<Option<u32>>,
 }
 
 /// Information about an ONNX's output as stored in loaded file
@@ -254,7 +254,7 @@ pub struct Output {
     /// Shape of the output layer
     ///
     /// C API uses a i64 for the dimensions. We use an unsigned of the same range of the positive values.
-    pub dimensions: Vec<u32>,
+    pub dimensions: Vec<Option<u32>>,
 }
 
 impl Input {
@@ -263,8 +263,8 @@ impl Input {
     /// Note: The member [`Input::dimensions`](struct.Input.html#structfield.dimensions)
     /// stores `u32` (since ONNX uses `i64` but which cannot be negative) so the
     /// iterator converts to `usize`.
-    pub fn dimensions(&self) -> impl Iterator<Item = usize> + '_ {
-        self.dimensions.iter().map(|d| *d as usize)
+    pub fn dimensions(&self) -> impl Iterator<Item = Option<usize>> + '_ {
+        self.dimensions.iter().map(|d| d.map(|d2| d2 as usize))
     }
 }
 
@@ -274,8 +274,8 @@ impl Output {
     /// Note: The member [`Output::dimensions`](struct.Output.html#structfield.dimensions)
     /// stores `u32` (since ONNX uses `i64` but which cannot be negative) so the
     /// iterator converts to `usize`.
-    pub fn dimensions(&self) -> impl Iterator<Item = usize> + '_ {
-        self.dimensions.iter().map(|d| *d as usize)
+    pub fn dimensions(&self) -> impl Iterator<Item = Option<usize>> + '_ {
+        self.dimensions.iter().map(|d| d.map(|d2| d2 as usize))
     }
 }
 
@@ -529,7 +529,7 @@ mod dangerous {
         ) -> *mut sys::OrtStatus,
         session_ptr: *mut sys::OrtSession,
         i: u64,
-    ) -> Result<(TensorElementDataType, Vec<u32>)> {
+    ) -> Result<(TensorElementDataType, Vec<Option<u32>>)> {
         let mut typeinfo_ptr: *mut sys::OrtTypeInfo = std::ptr::null_mut();
 
         let status = unsafe { f(session_ptr, i as u64, &mut typeinfo_ptr) };
@@ -576,6 +576,12 @@ mod dangerous {
 
         unsafe { g_ort().ReleaseTypeInfo.unwrap()(typeinfo_ptr) };
 
-        Ok((io_type, node_dims.into_iter().map(|d| d as u32).collect()))
+        Ok((
+            io_type,
+            node_dims
+                .into_iter()
+                .map(|d| if d == -1 { None } else { Some(d as u32) })
+                .collect(),
+        ))
     }
 }

@@ -79,7 +79,7 @@ pub enum OrtError {
         /// Input data dimensions
         input: Vec<usize>,
         /// ONNX model dimensions
-        model: Vec<usize>,
+        model: Vec<Option<usize>>,
     },
     /// File does not exists
     #[error("File {filename:?} does not exists")]
