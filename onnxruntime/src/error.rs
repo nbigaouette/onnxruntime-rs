@@ -74,13 +74,8 @@ pub enum OrtError {
     DownloadError(#[from] OrtDownloadError),
 
     /// Dimensions of input data and ONNX model loaded from file do not match
-    #[error("Dimensions do not match: {input:?} for the input but model expects {model:?}")]
-    NonMatchingDimensions {
-        /// Input data dimensions
-        input: Vec<usize>,
-        /// ONNX model dimensions
-        model: Vec<Option<usize>>,
-    },
+    #[error("Dimensions do not match: {0:?}")]
+    NonMatchingDimensions(NonMatchingDimensionsError),
     /// File does not exists
     #[error("File {filename:?} does not exists")]
     FileDoesNotExists {
@@ -98,6 +93,17 @@ pub enum OrtError {
     CStringNulError(#[from] std::ffi::NulError),
 }
 
+#[non_exhaustive]
+#[derive(Error, Debug)]
+pub enum NonMatchingDimensionsError {
+    #[error("Non-matching number of inputs: {inference_input_count:?} for input vs {model_input_count:?} for model (inputs: {inference_input:?}, model: {model_input:?})")]
+    InputsCount {
+        inference_input_count: usize,
+        model_input_count: usize,
+        inference_input: Vec<Vec<usize>>,
+        model_input: Vec<Vec<Option<u32>>>,
+    },
+}
 /// Error details when ONNX C API fail
 #[non_exhaustive]
 #[derive(Error, Debug)]

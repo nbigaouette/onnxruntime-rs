@@ -13,7 +13,7 @@ use onnxruntime_sys as sys;
 use crate::{
     char_p_to_string,
     environment::Environment,
-    error::{status_to_result, OrtError, Result},
+    error::{status_to_result, NonMatchingDimensionsError, OrtError, Result},
     g_ort,
     memory::MemoryInfo,
     tensor::{
@@ -430,19 +430,25 @@ impl Session {
         // Verify length of inputs
         if input_arrays.len() != self.inputs.len() {
             error!(
-                "Non-matching number of inputs: {} vs {}",
+                "Non-matching number of inputs: {} (inference) vs {} (model)",
                 input_arrays.len(),
                 self.inputs.len()
             );
-            panic!(
-                "input_arrays.len() != self.inputs.len() ({} != {})",
-                input_arrays.len(),
-                self.inputs.len()
-            );
-            // return Err(OrtError::NonMatchingDimensions {
-            //     input: input_array.shape().to_vec(),
-            //     model: inputs_shape_as_usize,
-            // });
+            return Err(OrtError::NonMatchingDimensions(
+                NonMatchingDimensionsError::InputsCount {
+                    inference_input_count: 0,
+                    model_input_count: 0,
+                    inference_input: input_arrays
+                        .iter()
+                        .map(|input_array| input_array.shape().to_vec())
+                        .collect(),
+                    model_input: self
+                        .inputs
+                        .iter()
+                        .map(|input| input.dimensions.clone())
+                        .collect(),
+                },
+            ));
         }
 
         // Verify length of each individual inputs
