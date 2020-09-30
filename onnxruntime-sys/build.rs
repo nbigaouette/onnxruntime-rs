@@ -82,7 +82,6 @@ fn download<P: AsRef<Path>>(source_url: &str, target_file: P) {
         .timeout(std::time::Duration::from_secs(300))
         .call();
 
-    assert!(resp.has("Content-Length"));
     let len = resp
         .header("Content-Length")
         .and_then(|s| s.parse::<usize>().ok())
