@@ -306,20 +306,62 @@ impl Session {
         'm: 't, // 'm outlives 't (memory info outlives tensor)
         's: 'm, // 's outlives 'm (session outlives memory info)
     {
-        // Make sure all dimensions match
-        for (input_idx, input_array) in input_arrays.iter().enumerate() {
-            let inputs_shape_as_usize: Vec<usize> = self.inputs[input_idx]
-                .dimensions
-                .iter()
-                .map(|d| *d as usize)
-                .collect();
+        // ******************************************************************
+        // FIXME: Properly handle errors here
+        // Make sure all dimensions match (except dynamic ones)
 
-            if input_array.shape() != inputs_shape_as_usize.as_slice() {
-                return Err(OrtError::NonMatchingDimensions {
-                    input: input_array.shape().to_vec(),
-                    model: inputs_shape_as_usize,
-                });
-            }
+        // Verify length of inputs
+        if input_arrays.len() != self.inputs.len() {
+            error!(
+                "Non-matching number of inputs: {} vs {}",
+                input_arrays.len(),
+                self.inputs.len()
+            );
+            panic!(
+                "input_arrays.len() != self.inputs.len() ({} != {})",
+                input_arrays.len(),
+                self.inputs.len()
+            );
+            // return Err(OrtError::NonMatchingDimensions {
+            //     input: input_array.shape().to_vec(),
+            //     model: inputs_shape_as_usize,
+            // });
+        }
+
+        // Verify length of each individual inputs
+        let inputs_different_length = input_arrays
+            .iter()
+            .zip(self.inputs.iter())
+            .any(|(l, r)| l.shape().len() != r.dimensions.len());
+        if inputs_different_length {
+            error!(
+                "Different input lengths: {:?} vs {:?}",
+                self.inputs, input_arrays
+            );
+            panic!(
+                "Different input lengths: {:?} vs {:?}",
+                self.inputs, input_arrays
+            );
+        }
+
+        // Verify shape of each individual inputs
+        let inputs_different_shape = input_arrays.iter().zip(self.inputs.iter()).any(|(l, r)| {
+            let l_shape = l.shape();
+            let r_shape = r.dimensions.as_slice();
+            l_shape.iter().zip(r_shape.iter()).any(|(l2, r2)| match r2 {
+                Some(r3) => *r3 as usize != *l2,
+                None => false, // None means dynamic size; in that case shape always match
+            })
+        });
+        if inputs_different_shape {
+            error!(
+                "Different input lengths: {:?} vs {:?}",
+                self.inputs, input_arrays
+            );
+            panic!(
+                "Different input lengths: {:?} vs {:?}",
+                self.inputs, input_arrays
+            );
         }
 
         let input_names: Vec<String> = self.inputs.iter().map(|input| input.name.clone()).collect();
