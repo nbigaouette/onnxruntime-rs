@@ -82,6 +82,9 @@ fn download<P: AsRef<Path>>(source_url: &str, target_file: P) {
         .timeout(std::time::Duration::from_secs(300))
         .call();
 
+    if resp.error() {
+        panic!("ERROR: Failed to download {}: {:#?}", source_url, resp);
+    }
 
     let len = resp
         .header("Content-Length")
