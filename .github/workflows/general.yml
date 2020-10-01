@@ -32,6 +32,8 @@ jobs:
           profile: minimal
           toolchain: stable
           override: true
+      - name: Setup tmate session
+        uses: mxschmitt/action-tmate@v3
       # We want to test using '--features model-fetching', but this is not possible yet.
       # See https://github.com/actions-rs/cargo/issues/86
       - uses: actions-rs/cargo@v1
