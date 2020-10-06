@@ -40,8 +40,11 @@ mod download {
 
         let class_labels = get_imagenet_labels().unwrap();
 
-        let input0_shape: Vec<usize> = session.inputs[0].dimensions().collect();
-        let output0_shape: Vec<usize> = session.outputs[0].dimensions().collect();
+        let input0_shape: Vec<usize> = session.inputs[0].dimensions().map(|d| d.unwrap()).collect();
+        let output0_shape: Vec<usize> = session.outputs[0]
+            .dimensions()
+            .map(|d| d.unwrap())
+            .collect();
 
         assert_eq!(input0_shape, [1, 3, 224, 224]);
         assert_eq!(output0_shape, [1, 1000]);
@@ -145,8 +148,11 @@ mod download {
             .with_model_downloaded(DomainBasedImageClassification::Mnist)
             .expect("Could not download model from file");
 
-        let input0_shape: Vec<usize> = session.inputs[0].dimensions().collect();
-        let output0_shape: Vec<usize> = session.outputs[0].dimensions().collect();
+        let input0_shape: Vec<usize> = session.inputs[0].dimensions().map(|d| d.unwrap()).collect();
+        let output0_shape: Vec<usize> = session.outputs[0]
+            .dimensions()
+            .map(|d| d.unwrap())
+            .collect();
 
         assert_eq!(input0_shape, [1, 1, 28, 28]);
         assert_eq!(output0_shape, [1, 10]);
