@@ -3,8 +3,8 @@
 use ndarray::Array;
 
 use onnxruntime::{
-    download::vision::ImageClassification, environment::Environment, GraphOptimizationLevel,
-    LoggingLevel,
+    download::vision::ImageClassification, environment::Environment, tensor::OrtOwnedTensor,
+    GraphOptimizationLevel, LoggingLevel,
 };
 use tracing::Level;
 use tracing_subscriber::FmtSubscriber;
@@ -43,20 +43,27 @@ fn run() -> Result<(), Error> {
         //          curl -LO "https://github.com/onnx/models/raw/master/vision/classification/squeezenet/model/squeezenet1.0-8.onnx"
         .with_model_from_file("squeezenet1.0-8.onnx")?;
 
-    let input0_shape: Vec<usize> = session.inputs[0].dimensions().collect();
-    let output0_shape: Vec<usize> = session.outputs[0].dimensions().collect();
+    let input0_shape: Vec<usize> = session.inputs[0].dimensions().map(|d| d.unwrap()).collect();
+    let output0_shape: Vec<usize> = session.outputs[0]
+        .dimensions()
+        .map(|d| d.unwrap())
+        .collect();
 
     assert_eq!(input0_shape, [1, 3, 224, 224]);
     assert_eq!(output0_shape, [1, 1000, 1, 1]);
 
     // initialize input data with values in [0.0, 1.0]
-    let n: u32 = session.inputs[0].dimensions.iter().product();
+    let n: u32 = session.inputs[0]
+        .dimensions
+        .iter()
+        .map(|d| d.unwrap())
+        .product();
     let array = Array::linspace(0.0_f32, 1.0, n as usize)
         .into_shape(input0_shape)
         .unwrap();
     let input_tensor_values = vec![array];
 
-    let outputs = session.run(input_tensor_values)?;
+    let outputs: Vec<OrtOwnedTensor<f32, _>> = session.run(input_tensor_values)?;
 
     assert_eq!(outputs[0].shape(), output0_shape.as_slice());
     for i in 0..5 {

@@ -82,12 +82,14 @@ fn download<P: AsRef<Path>>(source_url: &str, target_file: P) {
         .timeout(std::time::Duration::from_secs(300))
         .call();
 
-    assert!(resp.has("Content-Length"));
+    if resp.error() {
+        panic!("ERROR: Failed to download {}: {:#?}", source_url, resp);
+    }
+
     let len = resp
         .header("Content-Length")
         .and_then(|s| s.parse::<usize>().ok())
         .unwrap();
-
     let mut reader = resp.into_reader();
     // FIXME: Save directly to the file
     let mut buffer = vec![];
