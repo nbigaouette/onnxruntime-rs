@@ -93,17 +93,25 @@ pub enum OrtError {
     CStringNulError(#[from] std::ffi::NulError),
 }
 
+/// Error used when dimensions of input (from model and from inference call)
+/// do not match (as they should).
 #[non_exhaustive]
 #[derive(Error, Debug)]
 pub enum NonMatchingDimensionsError {
+    /// Number of inputs from model does not match number of inputs from inference call
     #[error("Non-matching number of inputs: {inference_input_count:?} for input vs {model_input_count:?} for model (inputs: {inference_input:?}, model: {model_input:?})")]
     InputsCount {
+        /// Number of input dimensions used by inference call
         inference_input_count: usize,
+        /// Number of input dimensions defined in model
         model_input_count: usize,
+        /// Input dimensions used by inference call
         inference_input: Vec<Vec<usize>>,
+        /// Input dimensions defined in model
         model_input: Vec<Vec<Option<u32>>>,
     },
 }
+
 /// Error details when ONNX C API fail
 #[non_exhaustive]
 #[derive(Error, Debug)]

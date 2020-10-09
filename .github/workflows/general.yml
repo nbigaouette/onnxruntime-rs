@@ -6,21 +6,21 @@ env:
   CARGO_TERM_COLOR: always
 
 jobs:
-  # fmt:
-  #   name: Rustfmt
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - uses: actions/checkout@v2
-  #     - uses: actions-rs/toolchain@v1
-  #       with:
-  #         profile: minimal
-  #         toolchain: stable
-  #         override: true
-  #     - run: rustup component add rustfmt
-  #     - uses: actions-rs/cargo@v1
-  #       with:
-  #         command: fmt
-  #         args: --all -- --check
+  fmt:
+    name: Rustfmt
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions-rs/toolchain@v1
+        with:
+          profile: minimal
+          toolchain: stable
+          override: true
+      - run: rustup component add rustfmt
+      - uses: actions-rs/cargo@v1
+        with:
+          command: fmt
+          args: --all -- --check
 
   test:
     name: Test
@@ -47,49 +47,51 @@ jobs:
           # Use --manifest-path instead of --package. See https://github.com/actions-rs/cargo/issues/86
           command: test
           args: --manifest-path onnxruntime/Cargo.toml --features model-fetching -- --test-threads=1 --nocapture
-  # clippy:
-  #   name: Clippy
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - uses: actions/checkout@v2
-  #     - uses: actions-rs/toolchain@v1
-  #       with:
-  #         profile: minimal
-  #         toolchain: stable
-  #         override: true
-  #     - run: rustup component add clippy
-  #     - uses: actions-rs/cargo@v1
-  #       with:
-  #         command: clippy
-  #         args: --all-features -- -D warnings
-  # coverage:
-  #   name: Code coverage
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - name: Checkout repository
-  #       uses: actions/checkout@v2
-  #     - name: Install stable toolchain
-  #       uses: actions-rs/toolchain@v1
-  #       with:
-  #         toolchain: stable
-  #         override: true
-  #     - name: Build (required to download libonnxruntime)
-  #       uses: actions-rs/cargo@v1
-  #       with:
-  #         command: build
-  #         args: --package onnxruntime-sys
-  #     - name: Copy libonnxruntime.*.dylib to /usr/lib/
-  #       run: sudo cp -r target/debug/build/onnxruntime-sys-*/out/onnxruntime/onnxruntime-*/lib/libonnxruntime.* /usr/lib/
-  #     - name: Run cargo-tarpaulin
-  #       uses: actions-rs/tarpaulin@v0.1
-  #       with:
-  #         args: "--ignore-tests"
-  #     - name: Upload to codecov.io
-  #       uses: codecov/codecov-action@v1.0.2
-  #       with:
-  #         token: ${{secrets.CODECOV_TOKEN}}
-  #     - name: Archive code coverage results
-  #       uses: actions/upload-artifact@v1
-  #       with:
-  #         name: code-coverage-report
-  #         path: cobertura.xml
+
+  clippy:
+    name: Clippy
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions-rs/toolchain@v1
+        with:
+          profile: minimal
+          toolchain: stable
+          override: true
+      - run: rustup component add clippy
+      - uses: actions-rs/cargo@v1
+        with:
+          command: clippy
+          args: --all-features -- -D warnings
+
+  coverage:
+    name: Code coverage
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+      - name: Install stable toolchain
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          override: true
+      - name: Build (required to download libonnxruntime)
+        uses: actions-rs/cargo@v1
+        with:
+          command: build
+          args: --package onnxruntime-sys
+      - name: Copy libonnxruntime.*.dylib to /usr/lib/
+        run: sudo cp -r target/debug/build/onnxruntime-sys-*/out/onnxruntime/onnxruntime-*/lib/libonnxruntime.* /usr/lib/
+      - name: Run cargo-tarpaulin
+        uses: actions-rs/tarpaulin@v0.1
+        with:
+          args: "--ignore-tests"
+      - name: Upload to codecov.io
+        uses: codecov/codecov-action@v1.0.2
+        with:
+          token: ${{secrets.CODECOV_TOKEN}}
+      - name: Archive code coverage results
+        uses: actions/upload-artifact@v1
+        with:
+          name: code-coverage-report
+          path: cobertura.xml
