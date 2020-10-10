@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Added a changelog (#26)
 - Integrate Runtime's logging with rust's `tracing` logging (#21)
 - Update `ureq` used to download pre-trained models, fixing download problem (algesten/ureq#179).
 - Properly support inputs with dynamic dimensions (#23)
