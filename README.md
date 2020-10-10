@@ -14,6 +14,8 @@ This project consist on two crates:
 * [`onnxruntime-sys`](onnxruntime-sys): Low-level binding to the C API;
 * [`onnxruntime`](onnxruntime): High-level and safe API.
 
+[Changelog](CHANGELOG.md)
+
 ---
 
 **WARNING**:
