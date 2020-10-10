@@ -9,10 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Added a changelog (#26)
-- Integrate Runtime's logging with rust's `tracing` logging (#21)
-- Update `ureq` used to download pre-trained models, fixing download problem (algesten/ureq#179).
-- Properly support inputs with dynamic dimensions (#23)
+- Added a changelog ([#26](https://github.com/nbigaouette/onnxruntime-rs/pull/26))
+- Integrate Runtime's logging with rust's `tracing` logging ([#21](https://github.com/nbigaouette/onnxruntime-rs/pull/21))
+- Update `ureq` used to download pre-trained models, fixing download problem ([algesten/ureq#179](https://github.com/algesten/ureq/issues/179)).
+- Properly support inputs with dynamic dimensions ([#23](https://github.com/nbigaouette/onnxruntime-rs/pull/23))
 
 ## [0.0.8] - 2020-08-26
 
@@ -24,16 +24,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Use `tracing` crate instead of `log` (#19)
-- Add integration tests (#17)
-- Add possibility to download most pre-trained models available from [ONNX Zoo](https://github.com/onnx/models) (#16)
+- Use `tracing` crate instead of `log` ([#19](https://github.com/nbigaouette/onnxruntime-rs/pull/19))
+- Add integration tests ([#17](https://github.com/nbigaouette/onnxruntime-rs/pull/17))
+- Add possibility to download most pre-trained models available from [ONNX Zoo](https://github.com/onnx/models) ([#16](https://github.com/nbigaouette/onnxruntime-rs/pull/16))
 
 ## [0.0.6] - 2020-08-14
 
 ### Added
 
-- Add feature to download pre-trained pre-trained models available from [ONNX Zoo](https://github.com/onnx/models) (#15)
-- Add coded coverage measurement (#13)
+- Add feature to download pre-trained pre-trained models available from [ONNX Zoo](https://github.com/onnx/models) ([#15](https://github.com/nbigaouette/onnxruntime-rs/pull/15))
+- Add coded coverage measurement ([#13](https://github.com/nbigaouette/onnxruntime-rs/pull/13))
 - API renames and cleanups
 
 ## [0.0.5] - 2020-08-9
@@ -46,3 +46,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [0.0.8]: https://github.com/nbigaouette/onnxruntime-rs/compare/v0.0.7...v0.0.8
 [0.0.7]: https://github.com/nbigaouette/onnxruntime-rs/compare/v0.0.6...v0.0.7
 [0.0.6]: https://github.com/nbigaouette/onnxruntime-rs/compare/v0.0.5...v0.0.6
+[0.0.5]: https://github.com/nbigaouette/onnxruntime-rs/compare/v0.0.4...v0.0.5
