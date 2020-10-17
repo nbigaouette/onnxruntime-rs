@@ -475,7 +475,7 @@ pub const EXIT_SUCCESS: u32 = 0;
 pub const RAND_MAX: u32 = 2147483647;
 pub const _USE_FORTIFY_LEVEL: u32 = 2;
 pub const __HAS_FIXED_CHK_PROTOTYPES: u32 = 1;
-pub const ORT_API_VERSION: u32 = 4;
+pub const ORT_API_VERSION: u32 = 5;
 pub type __int8_t = ::std::os::raw::c_schar;
 pub type __uint8_t = ::std::os::raw::c_uchar;
 pub type __int16_t = ::std::os::raw::c_short;
@@ -11206,6 +11206,14 @@ extern "C" {
 extern "C" {
     pub fn flsll(arg1: ::std::os::raw::c_longlong) -> ::std::os::raw::c_int;
 }
+pub const kOrtSessionOptionsConfigDisablePrepacking: &'static [u8; 27usize] =
+    b"session.disable_prepacking\0";
+pub const kOrtSessionOptionsConfigUseEnvAllocators: &'static [u8; 27usize] =
+    b"session.use_env_allocators\0";
+pub const kOrtSessionOptionsConfigLoadModelFormat: &'static [u8; 26usize] =
+    b"session.load_model_format\0";
+pub const kOrtSessionOptionsConfigSaveModelFormat: &'static [u8; 26usize] =
+    b"session.save_model_format\0";
 pub const ONNXTensorElementDataType_ONNX_TENSOR_ELEMENT_DATA_TYPE_UNDEFINED:
     ONNXTensorElementDataType = 0;
 pub const ONNXTensorElementDataType_ONNX_TENSOR_ELEMENT_DATA_TYPE_FLOAT: ONNXTensorElementDataType =
@@ -11269,6 +11277,73 @@ pub const OrtErrorCode_ORT_EP_FAIL: OrtErrorCode = 11;
 pub type OrtErrorCode = ::std::os::raw::c_uint;
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
+pub struct OrtArenaCfg {
+    pub max_mem: size_t,
+    pub arena_extend_strategy: ::std::os::raw::c_int,
+    pub initial_chunk_size_bytes: ::std::os::raw::c_int,
+    pub max_dead_bytes_per_chunk: ::std::os::raw::c_int,
+}
+#[test]
+fn bindgen_test_layout_OrtArenaCfg() {
+    assert_eq!(
+        ::std::mem::size_of::<OrtArenaCfg>(),
+        24usize,
+        concat!("Size of: ", stringify!(OrtArenaCfg))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<OrtArenaCfg>(),
+        8usize,
+        concat!("Alignment of ", stringify!(OrtArenaCfg))
+    );
+    assert_eq!(
+        unsafe { &(*(::std::ptr::null::<OrtArenaCfg>())).max_mem as *const _ as usize },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(OrtArenaCfg),
+            "::",
+            stringify!(max_mem)
+        )
+    );
+    assert_eq!(
+        unsafe {
+            &(*(::std::ptr::null::<OrtArenaCfg>())).arena_extend_strategy as *const _ as usize
+        },
+        8usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(OrtArenaCfg),
+            "::",
+            stringify!(arena_extend_strategy)
+        )
+    );
+    assert_eq!(
+        unsafe {
+            &(*(::std::ptr::null::<OrtArenaCfg>())).initial_chunk_size_bytes as *const _ as usize
+        },
+        12usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(OrtArenaCfg),
+            "::",
+            stringify!(initial_chunk_size_bytes)
+        )
+    );
+    assert_eq!(
+        unsafe {
+            &(*(::std::ptr::null::<OrtArenaCfg>())).max_dead_bytes_per_chunk as *const _ as usize
+        },
+        16usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(OrtArenaCfg),
+            "::",
+            stringify!(max_dead_bytes_per_chunk)
+        )
+    );
+}
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
 pub struct OrtEnv {
     _unused: [u8; 0],
 }
@@ -11280,6 +11355,11 @@ pub struct OrtStatus {
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
 pub struct OrtMemoryInfo {
+    _unused: [u8; 0],
+}
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct OrtIoBinding {
     _unused: [u8; 0],
 }
 #[repr(C)]
@@ -11428,6 +11508,13 @@ pub type GraphOptimizationLevel = ::std::os::raw::c_uint;
 pub const ExecutionMode_ORT_SEQUENTIAL: ExecutionMode = 0;
 pub const ExecutionMode_ORT_PARALLEL: ExecutionMode = 1;
 pub type ExecutionMode = ::std::os::raw::c_uint;
+pub const OrtLanguageProjection_ORT_PROJECTION_C: OrtLanguageProjection = 0;
+pub const OrtLanguageProjection_ORT_PROJECTION_CPLUSPLUS: OrtLanguageProjection = 1;
+pub const OrtLanguageProjection_ORT_PROJECTION_CSHARP: OrtLanguageProjection = 2;
+pub const OrtLanguageProjection_ORT_PROJECTION_PYTHON: OrtLanguageProjection = 3;
+pub const OrtLanguageProjection_ORT_PROJECTION_JAVA: OrtLanguageProjection = 4;
+pub const OrtLanguageProjection_ORT_PROJECTION_WINML: OrtLanguageProjection = 5;
+pub type OrtLanguageProjection = ::std::os::raw::c_uint;
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
 pub struct OrtKernelInfo {
@@ -12180,12 +12267,145 @@ pub struct OrtApi {
             providers_length: ::std::os::raw::c_int,
         ) -> OrtStatusPtr,
     >,
+    pub GetStringTensorElementLength: ::std::option::Option<
+        unsafe extern "C" fn(
+            value: *const OrtValue,
+            index: size_t,
+            out: *mut size_t,
+        ) -> OrtStatusPtr,
+    >,
+    pub GetStringTensorElement: ::std::option::Option<
+        unsafe extern "C" fn(
+            value: *const OrtValue,
+            s_len: size_t,
+            index: size_t,
+            s: *mut ::std::os::raw::c_void,
+        ) -> OrtStatusPtr,
+    >,
+    pub FillStringTensorElement: ::std::option::Option<
+        unsafe extern "C" fn(
+            value: *mut OrtValue,
+            s: *const ::std::os::raw::c_char,
+            index: size_t,
+        ) -> OrtStatusPtr,
+    >,
+    pub AddSessionConfigEntry: ::std::option::Option<
+        unsafe extern "C" fn(
+            options: *mut OrtSessionOptions,
+            config_key: *const ::std::os::raw::c_char,
+            config_value: *const ::std::os::raw::c_char,
+        ) -> OrtStatusPtr,
+    >,
+    pub CreateAllocator: ::std::option::Option<
+        unsafe extern "C" fn(
+            sess: *const OrtSession,
+            mem_info: *const OrtMemoryInfo,
+            out: *mut *mut OrtAllocator,
+        ) -> OrtStatusPtr,
+    >,
+    pub ReleaseAllocator: ::std::option::Option<unsafe extern "C" fn(input: *mut OrtAllocator)>,
+    pub RunWithBinding: ::std::option::Option<
+        unsafe extern "C" fn(
+            sess: *mut OrtSession,
+            run_options: *const OrtRunOptions,
+            binding_ptr: *const OrtIoBinding,
+        ) -> OrtStatusPtr,
+    >,
+    pub CreateIoBinding: ::std::option::Option<
+        unsafe extern "C" fn(sess: *mut OrtSession, out: *mut *mut OrtIoBinding) -> OrtStatusPtr,
+    >,
+    pub ReleaseIoBinding: ::std::option::Option<unsafe extern "C" fn(input: *mut OrtIoBinding)>,
+    pub BindInput: ::std::option::Option<
+        unsafe extern "C" fn(
+            binding_ptr: *mut OrtIoBinding,
+            name: *const ::std::os::raw::c_char,
+            val_ptr: *const OrtValue,
+        ) -> OrtStatusPtr,
+    >,
+    pub BindOutput: ::std::option::Option<
+        unsafe extern "C" fn(
+            binding_ptr: *mut OrtIoBinding,
+            name: *const ::std::os::raw::c_char,
+            val_ptr: *const OrtValue,
+        ) -> OrtStatusPtr,
+    >,
+    pub BindOutputToDevice: ::std::option::Option<
+        unsafe extern "C" fn(
+            binding_ptr: *mut OrtIoBinding,
+            name: *const ::std::os::raw::c_char,
+            val_ptr: *const OrtMemoryInfo,
+        ) -> OrtStatusPtr,
+    >,
+    pub GetBoundOutputNames: ::std::option::Option<
+        unsafe extern "C" fn(
+            binding_ptr: *const OrtIoBinding,
+            allocator: *mut OrtAllocator,
+            buffer: *mut *mut ::std::os::raw::c_char,
+            lengths: *mut *mut size_t,
+            count: *mut size_t,
+        ) -> OrtStatusPtr,
+    >,
+    pub GetBoundOutputValues: ::std::option::Option<
+        unsafe extern "C" fn(
+            binding_ptr: *const OrtIoBinding,
+            allocator: *mut OrtAllocator,
+            output: *mut *mut *mut OrtValue,
+            output_count: *mut size_t,
+        ) -> OrtStatusPtr,
+    >,
+    #[doc = " Clears any previously specified bindings for inputs/outputs"]
+    pub ClearBoundInputs:
+        ::std::option::Option<unsafe extern "C" fn(binding_ptr: *mut OrtIoBinding)>,
+    pub ClearBoundOutputs:
+        ::std::option::Option<unsafe extern "C" fn(binding_ptr: *mut OrtIoBinding)>,
+    pub TensorAt: ::std::option::Option<
+        unsafe extern "C" fn(
+            value: *mut OrtValue,
+            location_values: *const i64,
+            location_values_count: size_t,
+            out: *mut *mut ::std::os::raw::c_void,
+        ) -> OrtStatusPtr,
+    >,
+    pub CreateAndRegisterAllocator: ::std::option::Option<
+        unsafe extern "C" fn(
+            env: *mut OrtEnv,
+            mem_info: *const OrtMemoryInfo,
+            arena_cfg: *const OrtArenaCfg,
+        ) -> OrtStatusPtr,
+    >,
+    pub SetLanguageProjection: ::std::option::Option<
+        unsafe extern "C" fn(
+            ort_env: *const OrtEnv,
+            projection: OrtLanguageProjection,
+        ) -> OrtStatusPtr,
+    >,
+    pub SessionGetProfilingStartTimeNs: ::std::option::Option<
+        unsafe extern "C" fn(sess: *const OrtSession, out: *mut u64) -> OrtStatusPtr,
+    >,
+    pub SetGlobalIntraOpNumThreads: ::std::option::Option<
+        unsafe extern "C" fn(
+            tp_options: *mut OrtThreadingOptions,
+            intra_op_num_threads: ::std::os::raw::c_int,
+        ) -> OrtStatusPtr,
+    >,
+    pub SetGlobalInterOpNumThreads: ::std::option::Option<
+        unsafe extern "C" fn(
+            tp_options: *mut OrtThreadingOptions,
+            inter_op_num_threads: ::std::os::raw::c_int,
+        ) -> OrtStatusPtr,
+    >,
+    pub SetGlobalSpinControl: ::std::option::Option<
+        unsafe extern "C" fn(
+            tp_options: *mut OrtThreadingOptions,
+            allow_spinning: ::std::os::raw::c_int,
+        ) -> OrtStatusPtr,
+    >,
 }
 #[test]
 fn bindgen_test_layout_OrtApi() {
     assert_eq!(
         ::std::mem::size_of::<OrtApi>(),
-        1016usize,
+        1200usize,
         concat!("Size of: ", stringify!(OrtApi))
     );
     assert_eq!(
@@ -13536,6 +13756,246 @@ fn bindgen_test_layout_OrtApi() {
             stringify!(OrtApi),
             "::",
             stringify!(ReleaseAvailableProviders)
+        )
+    );
+    assert_eq!(
+        unsafe {
+            &(*(::std::ptr::null::<OrtApi>())).GetStringTensorElementLength as *const _ as usize
+        },
+        1016usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(OrtApi),
+            "::",
+            stringify!(GetStringTensorElementLength)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(::std::ptr::null::<OrtApi>())).GetStringTensorElement as *const _ as usize },
+        1024usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(OrtApi),
+            "::",
+            stringify!(GetStringTensorElement)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(::std::ptr::null::<OrtApi>())).FillStringTensorElement as *const _ as usize },
+        1032usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(OrtApi),
+            "::",
+            stringify!(FillStringTensorElement)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(::std::ptr::null::<OrtApi>())).AddSessionConfigEntry as *const _ as usize },
+        1040usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(OrtApi),
+            "::",
+            stringify!(AddSessionConfigEntry)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(::std::ptr::null::<OrtApi>())).CreateAllocator as *const _ as usize },
+        1048usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(OrtApi),
+            "::",
+            stringify!(CreateAllocator)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(::std::ptr::null::<OrtApi>())).ReleaseAllocator as *const _ as usize },
+        1056usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(OrtApi),
+            "::",
+            stringify!(ReleaseAllocator)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(::std::ptr::null::<OrtApi>())).RunWithBinding as *const _ as usize },
+        1064usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(OrtApi),
+            "::",
+            stringify!(RunWithBinding)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(::std::ptr::null::<OrtApi>())).CreateIoBinding as *const _ as usize },
+        1072usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(OrtApi),
+            "::",
+            stringify!(CreateIoBinding)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(::std::ptr::null::<OrtApi>())).ReleaseIoBinding as *const _ as usize },
+        1080usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(OrtApi),
+            "::",
+            stringify!(ReleaseIoBinding)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(::std::ptr::null::<OrtApi>())).BindInput as *const _ as usize },
+        1088usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(OrtApi),
+            "::",
+            stringify!(BindInput)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(::std::ptr::null::<OrtApi>())).BindOutput as *const _ as usize },
+        1096usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(OrtApi),
+            "::",
+            stringify!(BindOutput)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(::std::ptr::null::<OrtApi>())).BindOutputToDevice as *const _ as usize },
+        1104usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(OrtApi),
+            "::",
+            stringify!(BindOutputToDevice)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(::std::ptr::null::<OrtApi>())).GetBoundOutputNames as *const _ as usize },
+        1112usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(OrtApi),
+            "::",
+            stringify!(GetBoundOutputNames)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(::std::ptr::null::<OrtApi>())).GetBoundOutputValues as *const _ as usize },
+        1120usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(OrtApi),
+            "::",
+            stringify!(GetBoundOutputValues)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(::std::ptr::null::<OrtApi>())).ClearBoundInputs as *const _ as usize },
+        1128usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(OrtApi),
+            "::",
+            stringify!(ClearBoundInputs)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(::std::ptr::null::<OrtApi>())).ClearBoundOutputs as *const _ as usize },
+        1136usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(OrtApi),
+            "::",
+            stringify!(ClearBoundOutputs)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(::std::ptr::null::<OrtApi>())).TensorAt as *const _ as usize },
+        1144usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(OrtApi),
+            "::",
+            stringify!(TensorAt)
+        )
+    );
+    assert_eq!(
+        unsafe {
+            &(*(::std::ptr::null::<OrtApi>())).CreateAndRegisterAllocator as *const _ as usize
+        },
+        1152usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(OrtApi),
+            "::",
+            stringify!(CreateAndRegisterAllocator)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(::std::ptr::null::<OrtApi>())).SetLanguageProjection as *const _ as usize },
+        1160usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(OrtApi),
+            "::",
+            stringify!(SetLanguageProjection)
+        )
+    );
+    assert_eq!(
+        unsafe {
+            &(*(::std::ptr::null::<OrtApi>())).SessionGetProfilingStartTimeNs as *const _ as usize
+        },
+        1168usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(OrtApi),
+            "::",
+            stringify!(SessionGetProfilingStartTimeNs)
+        )
+    );
+    assert_eq!(
+        unsafe {
+            &(*(::std::ptr::null::<OrtApi>())).SetGlobalIntraOpNumThreads as *const _ as usize
+        },
+        1176usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(OrtApi),
+            "::",
+            stringify!(SetGlobalIntraOpNumThreads)
+        )
+    );
+    assert_eq!(
+        unsafe {
+            &(*(::std::ptr::null::<OrtApi>())).SetGlobalInterOpNumThreads as *const _ as usize
+        },
+        1184usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(OrtApi),
+            "::",
+            stringify!(SetGlobalInterOpNumThreads)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(::std::ptr::null::<OrtApi>())).SetGlobalSpinControl as *const _ as usize },
+        1192usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(OrtApi),
+            "::",
+            stringify!(SetGlobalSpinControl)
         )
     );
 }
