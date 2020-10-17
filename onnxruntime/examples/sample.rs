@@ -3,8 +3,7 @@
 use ndarray::Array;
 
 use onnxruntime::{
-    download::vision::ImageClassification, environment::Environment, tensor::OrtOwnedTensor,
-    GraphOptimizationLevel, LoggingLevel,
+    environment::Environment, tensor::OrtOwnedTensor, GraphOptimizationLevel, LoggingLevel,
 };
 use tracing::Level;
 use tracing_subscriber::FmtSubscriber;
