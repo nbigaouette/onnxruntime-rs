@@ -269,11 +269,11 @@ fn main() {
         .collect();
     let output_node_names_ptr_ptr: *const *const i8 = output_node_names_ptr.as_ptr();
 
-    let input_node_names_cstring =
+    let _input_node_names_cstring =
         unsafe { std::ffi::CString::from_raw(input_node_names_ptr[0] as *mut i8) };
     let run_options_ptr: *const OrtRunOptions = std::ptr::null();
     let mut output_tensor_ptr: *mut OrtValue = std::ptr::null_mut();
-    let mut output_tensor_ptr_ptr: *mut *mut OrtValue = &mut output_tensor_ptr;
+    let output_tensor_ptr_ptr: *mut *mut OrtValue = &mut output_tensor_ptr;
 
     let status = unsafe {
         g_ort.as_ref().unwrap().Run.unwrap()(

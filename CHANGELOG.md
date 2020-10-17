@@ -7,7 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### Added
+### Changed
+
+- Update ONNX Runtime to 1.5.2 from 1.4.0  ([#30](https://github.com/nbigaouette/onnxruntime-rs/pull/30))
 
 ## [0.0.9] - 2020-10-13
 
