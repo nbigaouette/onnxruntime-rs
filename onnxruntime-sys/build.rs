@@ -67,12 +67,20 @@ fn main() {
             .expect("Unable to generate bindings");
 
         // Write the bindings to (source controlled) src/generated/bindings.rs
-        let out_path = PathBuf::from(env::var("CARGO_MANIFEST_DIR").unwrap())
+        let generated_file = PathBuf::from(env::var("CARGO_MANIFEST_DIR").unwrap())
             .join("src")
-            .join("generated");
+            .join("generated")
+            .join(env::var("CARGO_CFG_TARGET_OS").unwrap())
+            .join(env::var("CARGO_CFG_TARGET_ARCH").unwrap())
+            .join("bindings.rs");
+        let generated_file_generic = PathBuf::from(env::var("CARGO_MANIFEST_DIR").unwrap())
+            .join("src")
+            .join("generated")
+            .join("bindings.rs");
         bindings
-            .write_to_file(out_path.join("bindings.rs"))
+            .write_to_file(&generated_file)
             .expect("Couldn't write bindings!");
+        fs::copy(generated_file, generated_file_generic).unwrap();
     }
 }
 
