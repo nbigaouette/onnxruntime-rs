@@ -17,7 +17,7 @@ keywords = ["neuralnetworks", "onnx", "bindings"]
 [dependencies]
 
 [build-dependencies]
-bindgen = "0.55"
+bindgen = {version = "0.55", optional = true}
 ureq = "1.5.1"
 
 [target.'cfg(windows)'.build-dependencies]
@@ -28,8 +28,10 @@ flate2 = "1.0"
 tar = "0.4"
 
 [features]
-# Disable build script; used by https://docs.rs
-disable-bindgen = []
+default = []
+
+disable-sys-build-script = []
+generate-bindings = ["bindgen"]
 
 [package.metadata.docs.rs]
-features = ["disable-bindgen"]
+features = ["disable-sys-build-script"]

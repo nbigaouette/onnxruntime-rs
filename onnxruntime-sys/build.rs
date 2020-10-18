@@ -1,7 +1,9 @@
+#![allow(dead_code)]
+
 use io::Write;
 use std::{
     env, fs,
-    io::{self, Read},
+    io::{self, BufWriter, Read},
     path::{Path, PathBuf},
 };
 
@@ -27,61 +29,109 @@ const ORT_ENV_GPU: &str = "ORT_USE_CUDA";
 /// Subdirectory (of the 'target' directory) into which to extract the prebuilt library.
 const ORT_PREBUILT_EXTRACT_DIR: &str = "onnxruntime";
 
+#[cfg(feature = "disable-sys-build-script")]
 fn main() {
-    if !cfg!(feature = "disable-bindgen") {
-        let libort_install_dir = prepare_libort_dir();
+    println!("Build script disabled!");
 
-        let lib_dir = libort_install_dir.join("lib");
-        let include_dir = libort_install_dir.join("include");
-        let clang_arg = format!("-I{}", include_dir.display());
+    include_platform_bindings().unwrap();
+}
 
-        println!("Include directory: {:?}", include_dir);
-        println!("Lib directory: {:?}", lib_dir);
+#[cfg(not(feature = "disable-sys-build-script"))]
+fn main() {
+    let libort_install_dir = prepare_libort_dir();
+    let include_dir = libort_install_dir.join("include");
+    let lib_dir = libort_install_dir.join("lib");
 
-        // Tell cargo to tell rustc to link onnxruntime shared library.
-        println!("cargo:rustc-link-lib=onnxruntime");
-        println!("cargo:rustc-link-search=native={}", lib_dir.display());
+    println!("Include directory: {:?}", include_dir);
+    println!("Lib directory: {:?}", lib_dir);
 
-        // Tell cargo to invalidate the built crate whenever the wrapper changes
-        println!("cargo:rerun-if-changed=wrapper.h");
+    // Tell cargo to tell rustc to link onnxruntime shared library.
+    println!("cargo:rustc-link-lib=onnxruntime");
+    println!("cargo:rustc-link-search=native={}", lib_dir.display());
 
-        println!("cargo:rerun-if-env-changed={}", ORT_ENV_STRATEGY);
-        println!("cargo:rerun-if-env-changed={}", ORT_ENV_GPU);
-        println!("cargo:rerun-if-env-changed={}", ORT_ENV_SYSTEM_LIB_LOCATION);
+    println!("cargo:rerun-if-env-changed={}", ORT_ENV_STRATEGY);
+    println!("cargo:rerun-if-env-changed={}", ORT_ENV_GPU);
+    println!("cargo:rerun-if-env-changed={}", ORT_ENV_SYSTEM_LIB_LOCATION);
 
-        // The bindgen::Builder is the main entry point
-        // to bindgen, and lets you build up options for
-        // the resulting bindings.
-        let bindings = bindgen::Builder::default()
-            // The input header we would like to generate
-            // bindings for.
-            .header("wrapper.h")
-            // The current working directory is 'onnxruntime-sys'
-            .clang_arg(clang_arg)
-            // Tell cargo to invalidate the built crate whenever any of the
-            // included header files changed.
-            .parse_callbacks(Box::new(bindgen::CargoCallbacks))
-            // Finish the builder and generate the bindings.
-            .generate()
-            // Unwrap the Result and panic on failure.
-            .expect("Unable to generate bindings");
+    generate_bindings();
 
-        // Write the bindings to (source controlled) src/generated/bindings.rs
-        let generated_file = PathBuf::from(env::var("CARGO_MANIFEST_DIR").unwrap())
-            .join("src")
-            .join("generated")
-            .join(env::var("CARGO_CFG_TARGET_OS").unwrap())
-            .join(env::var("CARGO_CFG_TARGET_ARCH").unwrap())
-            .join("bindings.rs");
-        let generated_file_generic = PathBuf::from(env::var("CARGO_MANIFEST_DIR").unwrap())
-            .join("src")
-            .join("generated")
-            .join("bindings.rs");
-        bindings
-            .write_to_file(&generated_file)
-            .expect("Couldn't write bindings!");
-        fs::copy(generated_file, generated_file_generic).unwrap();
-    }
+    include_platform_bindings().unwrap();
+}
+
+#[cfg(not(feature = "generate-bindings"))]
+fn generate_bindings() {
+    println!("Bindings not generated automatically, using committed files instead.");
+    println!("Enable with the 'bindgen' cargo feature.");
+}
+
+#[cfg(feature = "generate-bindings")]
+fn generate_bindings() {
+    let clang_arg = format!("-I{}", include_dir.display());
+
+    let generated_file_generic = PathBuf::from(env::var("CARGO_MANIFEST_DIR").unwrap())
+        .join("src")
+        .join("generated")
+        .join("bindings.rs");
+
+    // Tell cargo to invalidate the built crate whenever the wrapper changes
+    println!("cargo:rerun-if-changed=wrapper.h");
+
+    // The bindgen::Builder is the main entry point
+    // to bindgen, and lets you build up options for
+    // the resulting bindings.
+    let bindings = bindgen::Builder::default()
+        // The input header we would like to generate
+        // bindings for.
+        .header("wrapper.h")
+        // The current working directory is 'onnxruntime-sys'
+        .clang_arg(clang_arg)
+        // Tell cargo to invalidate the built crate whenever any of the
+        // included header files changed.
+        .parse_callbacks(Box::new(bindgen::CargoCallbacks))
+        // Finish the builder and generate the bindings.
+        .generate()
+        // Unwrap the Result and panic on failure.
+        .expect("Unable to generate bindings");
+
+    // Write the bindings to (source controlled) src/generated/<os>/<arch>/bindings.rs
+    let generated_file = PathBuf::from(env::var("CARGO_MANIFEST_DIR").unwrap())
+        .join("src")
+        .join("generated")
+        .join(env::var("CARGO_CFG_TARGET_OS").unwrap())
+        .join(env::var("CARGO_CFG_TARGET_ARCH").unwrap())
+        .join("bindings.rs");
+    bindings
+        .write_to_file(&generated_file)
+        .expect("Couldn't write bindings!");
+}
+
+fn include_platform_bindings() -> Result<(), std::io::Error> {
+    let generic_binding_path = PathBuf::from(env::var("CARGO_MANIFEST_DIR").unwrap())
+        .join("src")
+        .join("generated")
+        .join("bindings.rs");
+
+    let mut fh = BufWriter::new(fs::File::create(&generic_binding_path)?);
+
+    let platform_bindings = PathBuf::from("src")
+        .join("generated")
+        .join(env::var("CARGO_CFG_TARGET_OS").unwrap())
+        .join(env::var("CARGO_CFG_TARGET_ARCH").unwrap())
+        .join("bindings.rs");
+
+    fh.write_all(
+        format!(
+            r#"include!(concat!(
+    env!("CARGO_MANIFEST_DIR"),
+    "{}{}"
+));"#,
+            std::path::MAIN_SEPARATOR,
+            platform_bindings.display()
+        )
+        .as_bytes(),
+    )?;
+
+    Ok(())
 }
 
 fn download<P: AsRef<Path>>(source_url: &str, target_file: P) {
