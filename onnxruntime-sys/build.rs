@@ -33,7 +33,7 @@ const ORT_PREBUILT_EXTRACT_DIR: &str = "onnxruntime";
 fn main() {
     println!("Build script disabled!");
 
-    include_platform_bindings().unwrap();
+    generate_file_including_platform_bindings().unwrap();
 }
 
 #[cfg(not(feature = "disable-sys-build-script"))]
@@ -55,7 +55,7 @@ fn main() {
 
     generate_bindings();
 
-    include_platform_bindings().unwrap();
+    generate_file_including_platform_bindings().unwrap();
 }
 
 #[cfg(not(feature = "generate-bindings"))]
@@ -67,11 +67,6 @@ fn generate_bindings() {
 #[cfg(feature = "generate-bindings")]
 fn generate_bindings() {
     let clang_arg = format!("-I{}", include_dir.display());
-
-    let generated_file_generic = PathBuf::from(env::var("CARGO_MANIFEST_DIR").unwrap())
-        .join("src")
-        .join("generated")
-        .join("bindings.rs");
 
     // Tell cargo to invalidate the built crate whenever the wrapper changes
     println!("cargo:rerun-if-changed=wrapper.h");
@@ -105,7 +100,7 @@ fn generate_bindings() {
         .expect("Couldn't write bindings!");
 }
 
-fn include_platform_bindings() -> Result<(), std::io::Error> {
+fn generate_file_including_platform_bindings() -> Result<(), std::io::Error> {
     let generic_binding_path = PathBuf::from(env::var("CARGO_MANIFEST_DIR").unwrap())
         .join("src")
         .join("generated")
