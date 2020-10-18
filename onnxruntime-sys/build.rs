@@ -8,6 +8,10 @@ use std::{
 };
 
 /// ONNX Runtime version
+///
+/// WARNING: If version is changed, bindings for all platforms will have to be re-generated.
+///          To do so, run this:
+///              cargo build --package onnxruntime-sys --features generate-bindings
 const ORT_VERSION: &str = "1.5.2";
 
 /// Base Url from which to download pre-built releases/
