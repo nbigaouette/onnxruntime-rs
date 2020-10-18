@@ -39,6 +39,7 @@ fn main() {
 #[cfg(not(feature = "disable-sys-build-script"))]
 fn main() {
     let libort_install_dir = prepare_libort_dir();
+
     let include_dir = libort_install_dir.join("include");
     let lib_dir = libort_install_dir.join("lib");
 
@@ -53,19 +54,19 @@ fn main() {
     println!("cargo:rerun-if-env-changed={}", ORT_ENV_GPU);
     println!("cargo:rerun-if-env-changed={}", ORT_ENV_SYSTEM_LIB_LOCATION);
 
-    generate_bindings();
+    generate_bindings(&include_dir);
 
     generate_file_including_platform_bindings().unwrap();
 }
 
 #[cfg(not(feature = "generate-bindings"))]
-fn generate_bindings() {
+fn generate_bindings(_include_dir: &Path) {
     println!("Bindings not generated automatically, using committed files instead.");
     println!("Enable with the 'bindgen' cargo feature.");
 }
 
 #[cfg(feature = "generate-bindings")]
-fn generate_bindings() {
+fn generate_bindings(include_dir: &Path) {
     let clang_arg = format!("-I{}", include_dir.display());
 
     // Tell cargo to invalidate the built crate whenever the wrapper changes
