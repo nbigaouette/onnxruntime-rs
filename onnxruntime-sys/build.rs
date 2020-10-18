@@ -119,14 +119,22 @@ fn generate_file_including_platform_bindings() -> Result<(), std::io::Error> {
         .join(env::var("CARGO_CFG_TARGET_ARCH").unwrap())
         .join("bindings.rs");
 
+    // Build a (relative) path, as a string, to the platform-specific bindings.
+    // Required so that we can escape backslash (Windows path separators) before
+    // writing to the file.
+    let include_path = format!(
+        "{}{}",
+        std::path::MAIN_SEPARATOR,
+        platform_bindings.display()
+    )
+    .replace(r#"\"#, r#"\\"#);
     fh.write_all(
         format!(
             r#"include!(concat!(
     env!("CARGO_MANIFEST_DIR"),
-    "{}{}"
+    "{}"
 ));"#,
-            std::path::MAIN_SEPARATOR,
-            platform_bindings.display()
+            include_path
         )
         .as_bytes(),
     )?;
