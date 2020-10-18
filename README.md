@@ -157,6 +157,18 @@ Dropping the environment.
 See also the integration tests ([`onnxruntime/tests/integration_tests.rs`](onnxruntime/tests/integration_tests.rs))
 that performs simple model download and inference, validating the results.
 
+## Bindings Generation
+
+Bindings (the basis of `onnxruntime-sys`) are committed to the git repository. This means `bindgen` is not
+a dependency anymore on every build (it was made optional) and thus build times are better.
+
+To generate new bindings (for example if they don't exists for your platform or if a version bump occurred), run the
+following on all platforms and commit the changes:
+
+```sh
+cargo build --package onnxruntime-sys --features generate-bindings
+```
+
 ## Conduct
 
 The [Rust Code of Conduct](https://www.rust-lang.org/conduct.html) shall be respected. For
