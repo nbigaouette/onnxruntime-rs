@@ -2,7 +2,7 @@
 authors = ["Nicolas Bigaouette <nbigaouette@gmail.com>"]
 edition = "2018"
 name = "onnxruntime"
-version = "0.0.9"
+version = "0.0.10"
 
 description = "Wrapper around Microsoft's ONNX Runtime"
 documentation = "https://docs.rs/onnxruntime"
@@ -19,7 +19,7 @@ name = "integration_tests"
 required-features = ["model-fetching"]
 
 [dependencies]
-onnxruntime-sys = {version = "0.0.9", path = "../onnxruntime-sys"}
+onnxruntime-sys = {version = "0.0.10", path = "../onnxruntime-sys"}
 
 lazy_static = "1.4"
 ndarray = "0.13"
@@ -38,8 +38,9 @@ ureq = "1.5.1"
 [features]
 # Fetch model from ONNX Model Zoo (https://github.com/onnx/models)
 model-fetching = ["ureq"]
-# Disable build script; used by https://docs.rs
-disable-bindgen = ["onnxruntime-sys/disable-bindgen"]
+# Disable build script; used for https://docs.rs
+disable-sys-build-script = ["onnxruntime-sys/disable-sys-build-script"]
+generate-bindings = ["onnxruntime-sys/generate-bindings"]
 
 [package.metadata.docs.rs]
-features = ["disable-bindgen", "model-fetching"]
+features = ["disable-sys-build-script", "model-fetching"]
