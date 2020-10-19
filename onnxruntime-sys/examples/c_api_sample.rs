@@ -82,7 +82,7 @@ fn main() {
     assert_ne!(allocator_ptr, std::ptr::null_mut());
 
     // print number of model input nodes
-    let mut num_input_nodes: u64 = 0;
+    let mut num_input_nodes: onnxruntime_sys::size_t = 0;
     let status = unsafe {
         g_ort.as_ref().unwrap().SessionGetInputCount.unwrap()(session_ptr, &mut num_input_nodes)
     };
