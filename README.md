@@ -166,7 +166,22 @@ To generate new bindings (for example if they don't exists for your platform or 
 following on all platforms and commit the changes:
 
 ```sh
-cargo build --package onnxruntime-sys --features generate-bindings
+❯ cd onnxruntime-sys
+❯ cargo build --features generate-bindings
+```
+
+### Generating Bindings for Linux With Docker
+
+```sh
+❯ docker run -it --rm --name rustbuilder -v "$PWD":/usr/src/myapp -w /usr/src/myapp rust:1.47.0 /bin/bash
+❯ apt-get update
+❯ apt-get install clang
+```
+
+```sh
+❯ docker exec -it --user "$(id -u)":"$(id -g)" rustbuilder /bin/bash
+❯ cd onnxruntime-sys
+❯ cargo build --features generate-bindings
 ```
 
 ## Conduct
