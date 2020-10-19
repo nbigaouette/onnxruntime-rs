@@ -212,6 +212,7 @@ fn extract_zip(filename: &Path, outpath: &Path) {
 
 fn prebuilt_archive_url() -> (PathBuf, String) {
     let os = env::var("CARGO_CFG_TARGET_OS").expect("Unable to get TARGET_OS");
+    let arch = env::var("CARGO_CFG_TARGET_ARCH").expect("Unable to get TARGET_ARCH");
 
     let gpu_str = match env::var(ORT_ENV_GPU) {
         Ok(cuda_env) => {
@@ -232,16 +233,20 @@ fn prebuilt_archive_url() -> (PathBuf, String) {
         Err(_) => "",
     };
 
-    let arch_str = match os.as_str() {
-        "windows" => {
-            if gpu_str.is_empty() {
-                "x86"
-            } else {
-                "x64"
-            }
-        }
-        _ => "x64",
+    let arch_str = match arch.as_str() {
+        "x86_64" => "x64",
+        "x86" => "x86",
+        unsupported => panic!("Unsupported architecture {:?}", unsupported),
     };
+
+    // Only Windows and Linux x64 support GPU
+    if !gpu_str.is_empty() {
+        if arch_str == "x64" && (os == "windows" || os == "linux") {
+            println!("Supported GPU platform: {} {}", os, arch_str);
+        } else {
+            panic!("Unsupported GPU platform: {} {}", os, arch_str);
+        }
+    }
 
     let (os_str, archive_extension) = match os.as_str() {
         "windows" => ("win", "zip"),
