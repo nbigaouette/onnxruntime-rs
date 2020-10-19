@@ -1,5 +1,10 @@
 #![allow(non_snake_case)]
 
+#[cfg(not(target_family = "windows"))]
+use std::os::unix::ffi::OsStrExt;
+#[cfg(target_family = "windows")]
+use std::os::windows::ffi::OsStrExt;
+
 use onnxruntime_sys::*;
 
 // https://github.com/microsoft/onnxruntime/blob/v1.4.0/csharp/test/Microsoft.ML.OnnxRuntime.EndToEndTests.Capi/C_Api_Sample.cpp
@@ -51,7 +56,20 @@ fn main() {
     //       Download it:
     //           curl -LO "https://github.com/onnx/models/raw/master/vision/classification/squeezenet/model/squeezenet1.0-8.onnx"
     //       Reference: https://github.com/onnx/models/tree/master/vision/classification/squeezenet#model
-    let model_path = std::ffi::CString::new("squeezenet1.0-8.onnx").unwrap();
+    let model_path = std::ffi::OsString::from("squeezenet1.0-8.onnx");
+
+    #[cfg(target_family = "windows")]
+    let model_path: Vec<u16> = model_path
+        .encode_wide()
+        .chain(std::iter::once(0)) // Make sure we have a null terminated string
+        .collect();
+    #[cfg(not(target_family = "windows"))]
+    let model_path: Vec<std::os::raw::c_char> = model_path
+        .as_bytes()
+        .iter()
+        .chain(std::iter::once(&b'\0')) // Make sure we have a null terminated string
+        .map(|b| *b as std::os::raw::c_char)
+        .collect();
 
     let mut session_ptr: *mut OrtSession = std::ptr::null_mut();
 
