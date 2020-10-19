@@ -226,7 +226,7 @@ fn main() {
             .unwrap()(
             memory_info_ptr,
             input_tensor_values_ptr,
-            (input_tensor_size * std::mem::size_of::<f32>()) as u64,
+            (input_tensor_size * std::mem::size_of::<f32>()) as onnxruntime_sys::size_t,
             shape,
             4,
             ONNXTensorElementDataType_ONNX_TENSOR_ELEMENT_DATA_TYPE_FLOAT,
