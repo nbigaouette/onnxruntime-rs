@@ -162,8 +162,15 @@ that performs simple model download and inference, validating the results.
 Bindings (the basis of `onnxruntime-sys`) are committed to the git repository. This means `bindgen` is not
 a dependency anymore on every build (it was made optional) and thus build times are better.
 
-To generate new bindings (for example if they don't exists for your platform or if a version bump occurred), run the
-following on all platforms and commit the changes:
+To generate new bindings (for example if they don't exists for your platform or if a version bump occurred), build the crate with the `generate-bindings` feature.
+
+NOTE: Make sure to have the `rustfmt` rustup component present so that bindings are formatted:
+
+```sh
+rustup component add rustfmt
+```
+
+Then on each platform build with the proper feature flag:
 
 ```sh
 ❯ cd onnxruntime-sys
@@ -172,17 +179,27 @@ following on all platforms and commit the changes:
 
 ### Generating Bindings for Linux With Docker
 
+Prepare the container:
+
 ```sh
 ❯ docker run -it --rm --name rustbuilder -v "$PWD":/usr/src/myapp -w /usr/src/myapp rust:1.47.0 /bin/bash
 ❯ apt-get update
 ❯ apt-get install clang
+❯ rustup component add rustfmt
 ```
+
+Generate the bindings:
 
 ```sh
 ❯ docker exec -it --user "$(id -u)":"$(id -g)" rustbuilder /bin/bash
 ❯ cd onnxruntime-sys
 ❯ cargo build --features generate-bindings
 ```
+
+### Generating Bindings for Windows With Vagrant
+
+You can use [nbigaouette/windows_vagrant_rust](https://github.com/nbigaouette/windows_vagrant_rust)
+to provision a Windows VM that can build the project and generate the bindings.
 
 ## Conduct
 
