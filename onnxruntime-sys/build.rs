@@ -71,6 +71,7 @@ fn generate_bindings(include_dir: &Path) {
 
     // Tell cargo to invalidate the built crate whenever the wrapper changes
     println!("cargo:rerun-if-changed=wrapper.h");
+    println!("cargo:rerun-if-changed=src/generated/bindings.rs");
 
     // The bindgen::Builder is the main entry point
     // to bindgen, and lets you build up options for
