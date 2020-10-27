@@ -107,7 +107,7 @@ fn main() {
     CheckStatus(g_ort, status).unwrap();
     assert_ne!(num_input_nodes, 0);
     println!("Number of inputs = {:?}", num_input_nodes);
-    let mut input_node_names: Vec<String> = Vec::new();
+    let mut input_node_names: Vec<&str> = Vec::new();
     let mut input_node_dims: Vec<i64> = Vec::new(); // simplify... this model has only 1 input node {1, 3, 224, 224}.
                                                     // Otherwise need vector<vector<>>
 
@@ -125,7 +125,11 @@ fn main() {
         };
         CheckStatus(g_ort, status).unwrap();
         assert_ne!(input_name, std::ptr::null_mut());
-        let input_name = char_p_to_string(input_name).unwrap();
+
+        // WARNING: The C function SessionGetInputName allocates memory for the string.
+        //          We cannot let Rust free that string, the C side must free the string.
+        //          We thus convert the pointer to a string slice (&str).
+        let input_name = char_p_to_str(input_name).unwrap();
         println!("Input {} : name={}", i, input_name);
         input_node_names.push(input_name);
 
@@ -354,13 +358,13 @@ fn main() {
 fn CheckStatus(g_ort: *const OrtApi, status: *const OrtStatus) -> Result<(), String> {
     if status != std::ptr::null() {
         let raw = unsafe { g_ort.as_ref().unwrap().GetErrorMessage.unwrap()(status) };
-        Err(char_p_to_string(raw).unwrap())
+        Err(char_p_to_str(raw).unwrap().to_string())
     } else {
         Ok(())
     }
 }
 
-fn char_p_to_string(raw: *const i8) -> Result<String, std::ffi::IntoStringError> {
-    let c_string = unsafe { std::ffi::CString::from_raw(raw as *mut i8) };
-    c_string.into_string()
+fn char_p_to_str<'a>(raw: *const i8) -> Result<&'a str, std::str::Utf8Error> {
+    let c_str = unsafe { std::ffi::CStr::from_ptr(raw as *mut i8) };
+    c_str.to_str()
 }
