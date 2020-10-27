@@ -36,8 +36,6 @@ const ORT_PREBUILT_EXTRACT_DIR: &str = "onnxruntime";
 #[cfg(feature = "disable-sys-build-script")]
 fn main() {
     println!("Build script disabled!");
-
-    generate_file_including_platform_bindings().unwrap();
 }
 
 #[cfg(not(feature = "disable-sys-build-script"))]
@@ -59,8 +57,6 @@ fn main() {
     println!("cargo:rerun-if-env-changed={}", ORT_ENV_SYSTEM_LIB_LOCATION);
 
     generate_bindings(&include_dir);
-
-    generate_file_including_platform_bindings().unwrap();
 }
 
 #[cfg(not(feature = "generate-bindings"))]
@@ -103,43 +99,6 @@ fn generate_bindings(include_dir: &Path) {
     bindings
         .write_to_file(&generated_file)
         .expect("Couldn't write bindings!");
-}
-
-fn generate_file_including_platform_bindings() -> Result<(), std::io::Error> {
-    let generic_binding_path = PathBuf::from(env::var("CARGO_MANIFEST_DIR").unwrap())
-        .join("src")
-        .join("generated")
-        .join("bindings.rs");
-
-    let mut fh = BufWriter::new(fs::File::create(&generic_binding_path)?);
-
-    let platform_bindings = PathBuf::from("src")
-        .join("generated")
-        .join(env::var("CARGO_CFG_TARGET_OS").unwrap())
-        .join(env::var("CARGO_CFG_TARGET_ARCH").unwrap())
-        .join("bindings.rs");
-
-    // Build a (relative) path, as a string, to the platform-specific bindings.
-    // Required so that we can escape backslash (Windows path separators) before
-    // writing to the file.
-    let include_path = format!(
-        "{}{}",
-        std::path::MAIN_SEPARATOR,
-        platform_bindings.display()
-    )
-    .replace(r#"\"#, r#"\\"#);
-    fh.write_all(
-        format!(
-            r#"include!(concat!(
-    env!("CARGO_MANIFEST_DIR"),
-    "{}"
-));"#,
-            include_path
-        )
-        .as_bytes(),
-    )?;
-
-    Ok(())
 }
 
 fn download<P: AsRef<Path>>(source_url: &str, target_file: P) {

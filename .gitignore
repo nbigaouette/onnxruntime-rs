@@ -5,5 +5,3 @@
 onnxruntime.git
 Cargo.lock
 **/synset.txt
-
-onnxruntime-sys/src/generated/bindings.rs
