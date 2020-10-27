@@ -200,6 +200,13 @@ fn prebuilt_archive_url() -> (PathBuf, String) {
         unsupported => panic!("Unsupported architecture {:?}", unsupported),
     };
 
+    if arch.as_str() == "x86" && os.as_str() != "windows" {
+        panic!(
+            "ONNX Runtime only supports x86 (i686) architecture on Windows (not {:?}).",
+            os
+        );
+    }
+
     // Only Windows and Linux x64 support GPU
     if !gpu_str.is_empty() {
         if arch_str == "x64" && (os == "windows" || os == "linux") {
