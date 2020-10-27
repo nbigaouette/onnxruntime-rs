@@ -169,13 +169,13 @@ fn download<P: AsRef<Path>>(source_url: &str, target_file: P) {
 }
 
 fn extract_archive(filename: &Path, output: &Path) {
-    #[cfg(target_family = "unix")]
-    extract_tgz(filename, output);
-    #[cfg(target_family = "windows")]
-    extract_zip(filename, output);
+    match filename.extension().map(|e| e.to_str()) {
+        Some(Some("zip")) => extract_zip(filename, output),
+        Some(Some("tgz")) => extract_tgz(filename, output),
+        _ => unimplemented!(),
+    }
 }
 
-#[cfg(target_family = "unix")]
 fn extract_tgz(filename: &Path, output: &Path) {
     let file = fs::File::open(&filename).unwrap();
     let buf = io::BufReader::new(file);
@@ -184,7 +184,6 @@ fn extract_tgz(filename: &Path, output: &Path) {
     archive.unpack(output).unwrap();
 }
 
-#[cfg(target_family = "windows")]
 fn extract_zip(filename: &Path, outpath: &Path) {
     let file = fs::File::open(&filename).unwrap();
     let buf = io::BufReader::new(file);

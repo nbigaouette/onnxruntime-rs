@@ -20,10 +20,10 @@ keywords = ["neuralnetworks", "onnx", "bindings"]
 bindgen = {version = "0.55", optional = true}
 ureq = "1.5.1"
 
-[target.'cfg(windows)'.build-dependencies]
+# Used on Windows
 zip = "0.5"
 
-[target.'cfg(unix)'.build-dependencies]
+# Used on unix
 flate2 = "1.0"
 tar = "0.4"
 
