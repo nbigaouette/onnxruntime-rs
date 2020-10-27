@@ -1,9 +1,11 @@
 #![allow(dead_code)]
 
 use io::Write;
+#[cfg(feature = "generate-bindings")]
+use std::io::BufWriter;
 use std::{
     env, fs,
-    io::{self, BufWriter, Read},
+    io::{self, Read},
     path::{Path, PathBuf},
 };
 
