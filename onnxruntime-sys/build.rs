@@ -101,6 +101,7 @@ fn generate_bindings(include_dir: &Path) {
         .join(env::var("CARGO_CFG_TARGET_OS").unwrap())
         .join(env::var("CARGO_CFG_TARGET_ARCH").unwrap())
         .join("bindings.rs");
+    println!("cargo:rerun-if-changed={:?}", generated_file);
     bindings
         .write_to_file(&generated_file)
         .expect("Couldn't write bindings!");
