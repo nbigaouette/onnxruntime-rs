@@ -24,6 +24,61 @@ jobs:
           command: fmt
           args: --all -- --check
 
+  download:
+    name: Download prebuilt ONNX Runtime archive from build.rs
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions-rs/toolchain@v1
+        with:
+          profile: minimal
+          toolchain: stable
+          override: true
+      - run: rustup target install x86_64-unknown-linux-gnu
+      - run: rustup target install x86_64-apple-darwin
+      - run: rustup target install i686-pc-windows-msvc
+      - run: rustup target install x86_64-pc-windows-msvc
+      # ******************************************************************
+      - name: Download - CPU, x86_64-unknown-linux-gnu
+        uses: actions-rs/cargo@v1
+        with:
+          command: build
+          args: --target x86_64-unknown-linux-gnu
+      # ******************************************************************
+      - name: Download - CPU, x86_64-apple-darwin
+        uses: actions-rs/cargo@v1
+        with:
+          command: build
+          args: --target x86_64-apple-darwin
+      # ******************************************************************
+      - name: Download - CPU, i686-pc-windows-msvc
+        uses: actions-rs/cargo@v1
+        with:
+          command: build
+          args: --target i686-pc-windows-msvc
+      # ******************************************************************
+      - name: Download - CPU, x86_64-pc-windows-msvc
+        uses: actions-rs/cargo@v1
+        with:
+          command: build
+          args: --target x86_64-pc-windows-msvc
+      # ******************************************************************
+      - name: Download - GPU, x86_64-unknown-linux-gnu
+        uses: actions-rs/cargo@v1
+        env:
+          ORT_USE_CUDA: "yes"
+        with:
+          command: build
+          args: --target x86_64-unknown-linux-gnu
+      # ******************************************************************
+      - name: Download - GPU, x86_64-pc-windows-msvc
+        uses: actions-rs/cargo@v1
+        env:
+          ORT_USE_CUDA: "yes"
+        with:
+          command: build
+          args: --target x86_64-pc-windows-msvc
+
   test:
     name: Test Suite
     runs-on: ${{ matrix.os }}
