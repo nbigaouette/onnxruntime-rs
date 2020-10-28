@@ -50,12 +50,12 @@ jobs:
         with:
           command: build
           args: --target x86_64-apple-darwin
-      # ******************************************************************
-      - name: Download - CPU, i686-pc-windows-msvc
-        uses: actions-rs/cargo@v1
-        with:
-          command: build
-          args: --target i686-pc-windows-msvc
+      # # ******************************************************************
+      # - name: Download - CPU, i686-pc-windows-msvc
+      #   uses: actions-rs/cargo@v1
+      #   with:
+      #     command: build
+      #     args: --target i686-pc-windows-msvc
       # ******************************************************************
       - name: Download - CPU, x86_64-pc-windows-msvc
         uses: actions-rs/cargo@v1
