@@ -62,9 +62,6 @@ jobs:
           toolchain: ${{ matrix.rust }}
           target: ${{ matrix.target }}
           override: true
-      - name: Install additional packages (linux-musl)
-        if: contains(matrix.target, 'x86_64-unknown-linux-musl')
-        run: sudo apt-get install musl-tools
       - name: Build (cargo build)
         uses: actions-rs/cargo@v1
         with:
