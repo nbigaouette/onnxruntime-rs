@@ -39,56 +39,56 @@ jobs:
       - run: rustup target install i686-pc-windows-msvc
       - run: rustup target install x86_64-pc-windows-msvc
       # ******************************************************************
-      - name: Download - CPU, x86_64-unknown-linux-gnu
+      - name: Download prebuilt archive (CPU, x86_64-unknown-linux-gnu)
         uses: actions-rs/cargo@v1
         with:
           command: build
           args: --target x86_64-unknown-linux-gnu
-      - name: Verify - CPU, x86_64-unknown-linux-gnu
+      - name: Verify prebuilt archive downloaded (CPU, x86_64-unknown-linux-gnu)
         run: ls -lh target/x86_64-unknown-linux-gnu/debug/build/onnxruntime-sys-*/out/onnxruntime-linux-x64-1.*.tgz
       # ******************************************************************
-      - name: Download - CPU, x86_64-apple-darwin
+      - name: Download prebuilt archive (CPU, x86_64-apple-darwin)
         uses: actions-rs/cargo@v1
         with:
           command: build
           args: --target x86_64-apple-darwin
-      - name: Verify - CPU, x86_64-apple-darwin
+      - name: Verify prebuilt archive downloaded (CPU, x86_64-apple-darwin)
         run: ls -lh target/x86_64-apple-darwin/debug/build/onnxruntime-sys-*/out/onnxruntime-osx-x64-1.*.tgz
       # # ******************************************************************
-      # - name: Download - CPU, i686-pc-windows-msvc
+      # - name: Download prebuilt archive (CPU, i686-pc-windows-msvc)
       #   uses: actions-rs/cargo@v1
       #   with:
       #     command: build
       #     args: --target i686-pc-windows-msvc
-      # - name: Verify - CPU, i686-pc-windows-msvc
+      # - name: Verify prebuilt archive downloaded (CPU, i686-pc-windows-msvc)
       #   run: ls -lh target/i686-pc-windows-msvc/debug/build/onnxruntime-sys-*/out/onnxruntime-win-x86-1.*.zip
       # ******************************************************************
-      - name: Download - CPU, x86_64-pc-windows-msvc
+      - name: Download prebuilt archive (CPU, x86_64-pc-windows-msvc)
         uses: actions-rs/cargo@v1
         with:
           command: build
           args: --target x86_64-pc-windows-msvc
-      - name: Verify - CPU, x86_64-pc-windows-msvc
+      - name: Verify prebuilt archive downloaded (CPU, x86_64-pc-windows-msvc)
         run: ls -lh target/x86_64-pc-windows-msvc/debug/build/onnxruntime-sys-*/out/onnxruntime-win-x64-1.*.zip
       # ******************************************************************
-      - name: Download - GPU, x86_64-unknown-linux-gnu
+      - name: Download prebuilt archive (GPU, x86_64-unknown-linux-gnu)
         uses: actions-rs/cargo@v1
         env:
           ORT_USE_CUDA: "yes"
         with:
           command: build
           args: --target x86_64-unknown-linux-gnu
-      - name: Verify - CPU, x86_64-unknown-linux-gnu
+      - name: Verify prebuilt archive downloaded (CPU, x86_64-unknown-linux-gnu)
         run: ls -lh target/x86_64-unknown-linux-gnu/debug/build/onnxruntime-sys-*/out/onnxruntime-win-linux-gpu-1.*.zip
       # ******************************************************************
-      - name: Download - GPU, x86_64-pc-windows-msvc
+      - name: Download prebuilt archive (GPU, x86_64-pc-windows-msvc)
         uses: actions-rs/cargo@v1
         env:
           ORT_USE_CUDA: "yes"
         with:
           command: build
           args: --target x86_64-pc-windows-msvc
-      - name: Verify - CPU, x86_64-pc-windows-msvc
+      - name: Verify prebuilt archive downloaded (CPU, x86_64-pc-windows-msvc)
         run: ls -lh target/x86_64-pc-windows-msvc/debug/build/onnxruntime-sys-*/out/onnxruntime-win-x64-gpu-1.*.zip
 
   test:
