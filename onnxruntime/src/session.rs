@@ -110,9 +110,11 @@ impl SessionBuilder {
         opt_level: GraphOptimizationLevel,
     ) -> Result<SessionBuilder> {
         // Sets graph optimization level
-        let opt_level = opt_level as u32;
         unsafe {
-            g_ort().SetSessionGraphOptimizationLevel.unwrap()(self.session_options_ptr, opt_level)
+            g_ort().SetSessionGraphOptimizationLevel.unwrap()(
+                self.session_options_ptr,
+                opt_level.into(),
+            )
         };
         Ok(self)
     }
