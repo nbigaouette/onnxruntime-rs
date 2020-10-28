@@ -4,6 +4,8 @@ on: [pull_request]
 
 env:
   CARGO_TERM_COLOR: always
+  RUST_LOG: onnxruntime=debug,onnxruntime-sys=debug
+  RUST_BACKTRACE: 1
 
 jobs:
   fmt:
