@@ -25,29 +25,71 @@ jobs:
           args: --all -- --check
 
   test:
-    name: Test
-    runs-on: ubuntu-latest
+    name: Test Suite
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        build:
+          - linux-gnu
+          - macos
+          - win-msvc
+        include:
+          - build: linux-gnu
+            os: ubuntu-latest
+            rust: stable
+            target: x86_64-unknown-linux-gnu
+          - build: macos
+            os: macOS-latest
+            rust: stable
+            target: x86_64-apple-darwin
+          - build: win-msvc
+            os: windows-2019
+            rust: stable
+            target: x86_64-pc-windows-msvc
+          - build: win-msvc
+            os: windows-2019
+            rust: stable
+            target: i686-pc-windows-msvc
+    env:
+      CARGO_BUILD_TARGET: ${{ matrix.target }}
     steps:
       - uses: actions/checkout@v2
       - uses: actions-rs/toolchain@v1
         with:
           profile: minimal
-          toolchain: stable
+          toolchain: ${{ matrix.rust }}
+          target: ${{ matrix.target }}
           override: true
-      # We want to test using '--features model-fetching', but this is not possible yet.
-      # See https://github.com/actions-rs/cargo/issues/86
-      - uses: actions-rs/cargo@v1
-        name: Test onnxruntime-sys
+      - name: Install additional packages (linux-musl)
+        if: contains(matrix.target, 'x86_64-unknown-linux-musl')
+        run: sudo apt-get install musl-tools
+      - name: Build (cargo build)
+        uses: actions-rs/cargo@v1
+        with:
+          command: build
+          args: --all
+      - name: Build tests (cargo test)
+        uses: actions-rs/cargo@v1
         with:
           command: test
-          args: --package onnxruntime-sys
-      - uses: actions-rs/cargo@v1
-        name: Test onnxruntime
-        env:
-          RUST_LOG: onnxruntime=debug
+          args: --no-run
+      - name: Build onnxruntime with 'model-fetching' feature
+        uses: actions-rs/cargo@v1
         with:
+          command: build
           # Use --manifest-path instead of --package. See https://github.com/actions-rs/cargo/issues/86
+          args: --manifest-path onnxruntime/Cargo.toml --features model-fetching
+      - name: Test onnxruntime-sys
+        uses: actions-rs/cargo@v1
+        with:
           command: test
+          args: --package onnxruntime-sys -- --test-threads=1 --nocapture
+      - name: Test onnxruntime
+        uses: actions-rs/cargo@v1
+        with:
+          command: test
+          # Use --manifest-path instead of --package. See https://github.com/actions-rs/cargo/issues/86
           args: --manifest-path onnxruntime/Cargo.toml --features model-fetching -- --test-threads=1 --nocapture
 
   clippy:
