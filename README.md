@@ -201,6 +201,15 @@ Generate the bindings:
 You can use [nbigaouette/windows_vagrant_rust](https://github.com/nbigaouette/windows_vagrant_rust)
 to provision a Windows VM that can build the project and generate the bindings.
 
+Windows can build both x86 and x86_64 bindings:
+
+```sh
+❯ rustup target add i686-pc-windows-msvc x86_64-pc-windows-msvc
+❯ cd onnxruntime-sys
+❯ cargo build --features generate-bindings --target i686-pc-windows-msvc
+❯ cargo build --features generate-bindings --target x86_64-pc-windows-msvc
+```
+
 ## Conduct
 
 The [Rust Code of Conduct](https://www.rust-lang.org/conduct.html) shall be respected. For
