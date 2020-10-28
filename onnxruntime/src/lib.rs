@@ -277,6 +277,18 @@ pub enum LoggingLevel {
     Fatal = sys::OrtLoggingLevel::ORT_LOGGING_LEVEL_FATAL as OnnxEnumInt,
 }
 
+impl Into<sys::OrtLoggingLevel> for LoggingLevel {
+    fn into(self) -> sys::OrtLoggingLevel {
+        match self {
+            LoggingLevel::Verbose => sys::OrtLoggingLevel::ORT_LOGGING_LEVEL_VERBOSE,
+            LoggingLevel::Info => sys::OrtLoggingLevel::ORT_LOGGING_LEVEL_INFO,
+            LoggingLevel::Warning => sys::OrtLoggingLevel::ORT_LOGGING_LEVEL_WARNING,
+            LoggingLevel::Error => sys::OrtLoggingLevel::ORT_LOGGING_LEVEL_ERROR,
+            LoggingLevel::Fatal => sys::OrtLoggingLevel::ORT_LOGGING_LEVEL_FATAL,
+        }
+    }
+}
+
 /// Optimization level performed by ONNX Runtime of the loaded graph
 ///
 /// See the [official documentation](https://github.com/microsoft/onnxruntime/blob/master/docs/ONNX_Runtime_Graph_Optimizations.md)
@@ -293,6 +305,18 @@ pub enum GraphOptimizationLevel {
     Extended = sys::GraphOptimizationLevel::ORT_ENABLE_EXTENDED as OnnxEnumInt,
     /// Add optimization
     All = sys::GraphOptimizationLevel::ORT_ENABLE_ALL as OnnxEnumInt,
+}
+
+impl Into<sys::GraphOptimizationLevel> for GraphOptimizationLevel {
+    fn into(self) -> sys::GraphOptimizationLevel {
+        use GraphOptimizationLevel::*;
+        match self {
+            DisableAll => sys::GraphOptimizationLevel::ORT_DISABLE_ALL,
+            Basic => sys::GraphOptimizationLevel::ORT_ENABLE_BASIC,
+            Extended => sys::GraphOptimizationLevel::ORT_ENABLE_EXTENDED,
+            All => sys::GraphOptimizationLevel::ORT_ENABLE_ALL,
+        }
+    }
 }
 
 // FIXME: Use https://docs.rs/bindgen/0.54.1/bindgen/struct.Builder.html#method.rustified_enum
@@ -334,6 +358,42 @@ pub enum TensorElementDataType {
     // Complex128 = sys::ONNXTensorElementDataType::ONNX_TENSOR_ELEMENT_DATA_TYPE_COMPLEX128 as OnnxEnumInt,
     // /// Brain 16-bit floating point
     // Bfloat16 = sys::ONNXTensorElementDataType::ONNX_TENSOR_ELEMENT_DATA_TYPE_BFLOAT16 as OnnxEnumInt,
+}
+
+impl Into<sys::ONNXTensorElementDataType> for TensorElementDataType {
+    fn into(self) -> sys::ONNXTensorElementDataType {
+        use TensorElementDataType::*;
+        match self {
+            Float => sys::ONNXTensorElementDataType::ONNX_TENSOR_ELEMENT_DATA_TYPE_FLOAT,
+            Uint8 => sys::ONNXTensorElementDataType::ONNX_TENSOR_ELEMENT_DATA_TYPE_UINT8,
+            Int8 => sys::ONNXTensorElementDataType::ONNX_TENSOR_ELEMENT_DATA_TYPE_INT8,
+            Uint16 => sys::ONNXTensorElementDataType::ONNX_TENSOR_ELEMENT_DATA_TYPE_UINT16,
+            Int16 => sys::ONNXTensorElementDataType::ONNX_TENSOR_ELEMENT_DATA_TYPE_INT16,
+            Int32 => sys::ONNXTensorElementDataType::ONNX_TENSOR_ELEMENT_DATA_TYPE_INT32,
+            Int64 => sys::ONNXTensorElementDataType::ONNX_TENSOR_ELEMENT_DATA_TYPE_INT64,
+            // String => {
+            //     sys::ONNXTensorElementDataType::ONNX_TENSOR_ELEMENT_DATA_TYPE_STRING
+            // }
+            // Bool => {
+            //     sys::ONNXTensorElementDataType::ONNX_TENSOR_ELEMENT_DATA_TYPE_BOOL
+            // }
+            // Float16 => {
+            //     sys::ONNXTensorElementDataType::ONNX_TENSOR_ELEMENT_DATA_TYPE_FLOAT16
+            // }
+            Double => sys::ONNXTensorElementDataType::ONNX_TENSOR_ELEMENT_DATA_TYPE_DOUBLE,
+            Uint32 => sys::ONNXTensorElementDataType::ONNX_TENSOR_ELEMENT_DATA_TYPE_UINT32,
+            Uint64 => sys::ONNXTensorElementDataType::ONNX_TENSOR_ELEMENT_DATA_TYPE_UINT64,
+            // Complex64 => {
+            //     sys::ONNXTensorElementDataType::ONNX_TENSOR_ELEMENT_DATA_TYPE_COMPLEX64
+            // }
+            // Complex128 => {
+            //     sys::ONNXTensorElementDataType::ONNX_TENSOR_ELEMENT_DATA_TYPE_COMPLEX128
+            // }
+            // Bfloat16 => {
+            //     sys::ONNXTensorElementDataType::ONNX_TENSOR_ELEMENT_DATA_TYPE_BFLOAT16
+            // }
+        }
+    }
 }
 
 /// Trait used to map Rust types (for example `f32`) to ONNX types (for example `Float`)
@@ -381,6 +441,17 @@ pub enum AllocatorType {
     Arena = sys::OrtAllocatorType::OrtArenaAllocator as i32,
 }
 
+impl Into<sys::OrtAllocatorType> for AllocatorType {
+    fn into(self) -> sys::OrtAllocatorType {
+        use AllocatorType::*;
+        match self {
+            // Invalid => sys::OrtAllocatorType::Invalid,
+            Device => sys::OrtAllocatorType::OrtDeviceAllocator,
+            Arena => sys::OrtAllocatorType::OrtArenaAllocator,
+        }
+    }
+}
+
 /// Memory type
 ///
 /// Only support ONNX's default type for now.
@@ -393,4 +464,16 @@ pub enum MemType {
     // CPU = sys::OrtMemType::OrtMemTypeCPU as i32,
     /// Default memory type
     Default = sys::OrtMemType::OrtMemTypeDefault as i32,
+}
+
+impl Into<sys::OrtMemType> for MemType {
+    fn into(self) -> sys::OrtMemType {
+        use MemType::*;
+        match self {
+            // CPUInput => sys::OrtMemType::OrtMemTypeCPUInput,
+            // CPUOutput => sys::OrtMemType::OrtMemTypeCPUOutput,
+            // CPU => sys::OrtMemType::OrtMemTypeCPU,
+            Default => sys::OrtMemType::OrtMemTypeDefault,
+        }
+    }
 }
