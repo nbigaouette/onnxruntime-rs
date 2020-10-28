@@ -1,9 +1,8 @@
 #![allow(dead_code)]
 
-use io::Write;
 use std::{
     env, fs,
-    io::{self, BufWriter, Read},
+    io::{self, Read, Write},
     path::{Path, PathBuf},
 };
 
@@ -36,8 +35,6 @@ const ORT_PREBUILT_EXTRACT_DIR: &str = "onnxruntime";
 #[cfg(feature = "disable-sys-build-script")]
 fn main() {
     println!("Build script disabled!");
-
-    generate_file_including_platform_bindings().unwrap();
 }
 
 #[cfg(not(feature = "disable-sys-build-script"))]
@@ -59,8 +56,6 @@ fn main() {
     println!("cargo:rerun-if-env-changed={}", ORT_ENV_SYSTEM_LIB_LOCATION);
 
     generate_bindings(&include_dir);
-
-    generate_file_including_platform_bindings().unwrap();
 }
 
 #[cfg(not(feature = "generate-bindings"))]
@@ -75,6 +70,7 @@ fn generate_bindings(include_dir: &Path) {
 
     // Tell cargo to invalidate the built crate whenever the wrapper changes
     println!("cargo:rerun-if-changed=wrapper.h");
+    println!("cargo:rerun-if-changed=src/generated/bindings.rs");
 
     // The bindgen::Builder is the main entry point
     // to bindgen, and lets you build up options for
@@ -88,6 +84,9 @@ fn generate_bindings(include_dir: &Path) {
         // Tell cargo to invalidate the built crate whenever any of the
         // included header files changed.
         .parse_callbacks(Box::new(bindgen::CargoCallbacks))
+        // Format using rustfmt
+        .rustfmt_bindings(true)
+        .rustified_enum("*")
         // Finish the builder and generate the bindings.
         .generate()
         // Unwrap the Result and panic on failure.
@@ -100,46 +99,10 @@ fn generate_bindings(include_dir: &Path) {
         .join(env::var("CARGO_CFG_TARGET_OS").unwrap())
         .join(env::var("CARGO_CFG_TARGET_ARCH").unwrap())
         .join("bindings.rs");
+    println!("cargo:rerun-if-changed={:?}", generated_file);
     bindings
         .write_to_file(&generated_file)
         .expect("Couldn't write bindings!");
-}
-
-fn generate_file_including_platform_bindings() -> Result<(), std::io::Error> {
-    let generic_binding_path = PathBuf::from(env::var("CARGO_MANIFEST_DIR").unwrap())
-        .join("src")
-        .join("generated")
-        .join("bindings.rs");
-
-    let mut fh = BufWriter::new(fs::File::create(&generic_binding_path)?);
-
-    let platform_bindings = PathBuf::from("src")
-        .join("generated")
-        .join(env::var("CARGO_CFG_TARGET_OS").unwrap())
-        .join(env::var("CARGO_CFG_TARGET_ARCH").unwrap())
-        .join("bindings.rs");
-
-    // Build a (relative) path, as a string, to the platform-specific bindings.
-    // Required so that we can escape backslash (Windows path separators) before
-    // writing to the file.
-    let include_path = format!(
-        "{}{}",
-        std::path::MAIN_SEPARATOR,
-        platform_bindings.display()
-    )
-    .replace(r#"\"#, r#"\\"#);
-    fh.write_all(
-        format!(
-            r#"include!(concat!(
-    env!("CARGO_MANIFEST_DIR"),
-    "{}"
-));"#,
-            include_path
-        )
-        .as_bytes(),
-    )?;
-
-    Ok(())
 }
 
 fn download<P: AsRef<Path>>(source_url: &str, target_file: P) {
@@ -169,13 +132,13 @@ fn download<P: AsRef<Path>>(source_url: &str, target_file: P) {
 }
 
 fn extract_archive(filename: &Path, output: &Path) {
-    #[cfg(target_family = "unix")]
-    extract_tgz(filename, output);
-    #[cfg(target_family = "windows")]
-    extract_zip(filename, output);
+    match filename.extension().map(|e| e.to_str()) {
+        Some(Some("zip")) => extract_zip(filename, output),
+        Some(Some("tgz")) => extract_tgz(filename, output),
+        _ => unimplemented!(),
+    }
 }
 
-#[cfg(target_family = "unix")]
 fn extract_tgz(filename: &Path, output: &Path) {
     let file = fs::File::open(&filename).unwrap();
     let buf = io::BufReader::new(file);
@@ -184,13 +147,13 @@ fn extract_tgz(filename: &Path, output: &Path) {
     archive.unpack(output).unwrap();
 }
 
-#[cfg(target_family = "windows")]
 fn extract_zip(filename: &Path, outpath: &Path) {
     let file = fs::File::open(&filename).unwrap();
     let buf = io::BufReader::new(file);
     let mut archive = zip::ZipArchive::new(buf).unwrap();
     for i in 0..archive.len() {
         let mut file = archive.by_index(i).unwrap();
+        #[allow(deprecated)]
         let outpath = outpath.join(file.sanitized_name());
         if !(&*file.name()).ends_with('/') {
             println!(
@@ -212,6 +175,7 @@ fn extract_zip(filename: &Path, outpath: &Path) {
 
 fn prebuilt_archive_url() -> (PathBuf, String) {
     let os = env::var("CARGO_CFG_TARGET_OS").expect("Unable to get TARGET_OS");
+    let arch = env::var("CARGO_CFG_TARGET_ARCH").expect("Unable to get TARGET_ARCH");
 
     let gpu_str = match env::var(ORT_ENV_GPU) {
         Ok(cuda_env) => {
@@ -232,16 +196,27 @@ fn prebuilt_archive_url() -> (PathBuf, String) {
         Err(_) => "",
     };
 
-    let arch_str = match os.as_str() {
-        "windows" => {
-            if gpu_str.is_empty() {
-                "x86"
-            } else {
-                "x64"
-            }
-        }
-        _ => "x64",
+    let arch_str = match arch.as_str() {
+        "x86_64" => "x64",
+        "x86" => "x86",
+        unsupported => panic!("Unsupported architecture {:?}", unsupported),
     };
+
+    if arch.as_str() == "x86" && os.as_str() != "windows" {
+        panic!(
+            "ONNX Runtime only supports x86 (i686) architecture on Windows (not {:?}).",
+            os
+        );
+    }
+
+    // Only Windows and Linux x64 support GPU
+    if !gpu_str.is_empty() {
+        if arch_str == "x64" && (os == "windows" || os == "linux") {
+            println!("Supported GPU platform: {} {}", os, arch_str);
+        } else {
+            panic!("Unsupported GPU platform: {} {}", os, arch_str);
+        }
+    }
 
     let (os_str, archive_extension) = match os.as_str() {
         "windows" => ("win", "zip"),

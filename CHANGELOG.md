@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Update ONNX Runtime to 1.5.2 from 1.4.0 ([#30](https://github.com/nbigaouette/onnxruntime-rs/pull/30))
 - Refactor feature flags and how bindings are generated ([#31](https://github.com/nbigaouette/onnxruntime-rs/pull/31))
+- Refactor build script for better cross-platform support, including Windows support ([#33](https://github.com/nbigaouette/onnxruntime-rs/pull/33))
 
 ## [0.0.9] - 2020-10-13
 

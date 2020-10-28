@@ -58,7 +58,7 @@ where
                 (array.len() * std::mem::size_of::<T>()) as u64,
                 shape_ptr,
                 shape_len,
-                T::tensor_element_data_type() as u32,
+                T::tensor_element_data_type(),
                 tensor_ptr_ptr,
             )
         };

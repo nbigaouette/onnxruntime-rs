@@ -2,6 +2,11 @@
 
 use std::{ffi::CString, fmt::Debug, path::Path};
 
+#[cfg(not(target_family = "windows"))]
+use std::os::unix::ffi::OsStrExt;
+#[cfg(target_family = "windows")]
+use std::os::windows::ffi::OsStrExt;
+
 #[cfg(feature = "model-fetching")]
 use std::env;
 
@@ -110,9 +115,11 @@ impl SessionBuilder {
         opt_level: GraphOptimizationLevel,
     ) -> Result<SessionBuilder> {
         // Sets graph optimization level
-        let opt_level = opt_level as u32;
         unsafe {
-            g_ort().SetSessionGraphOptimizationLevel.unwrap()(self.session_options_ptr, opt_level)
+            g_ort().SetSessionGraphOptimizationLevel.unwrap()(
+                self.session_options_ptr,
+                opt_level.into(),
+            )
         };
         Ok(self)
     }
@@ -168,14 +175,21 @@ impl SessionBuilder {
                 filename: model_filepath.to_path_buf(),
             });
         }
-        let model_path: CString =
-            CString::new(
-                model_filepath
-                    .to_str()
-                    .ok_or_else(|| OrtError::NonUtf8Path {
-                        path: model_filepath.to_path_buf(),
-                    })?,
-            )?;
+
+        // Build an OsString than a vector of bytes to pass to C
+        let model_path = std::ffi::OsString::from(model_filepath);
+        #[cfg(target_family = "windows")]
+        let model_path: Vec<u16> = model_path
+            .encode_wide()
+            .chain(std::iter::once(0)) // Make sure we have a null terminated string
+            .collect();
+        #[cfg(not(target_family = "windows"))]
+        let model_path: Vec<std::os::raw::c_char> = model_path
+            .as_bytes()
+            .iter()
+            .chain(std::iter::once(&b'\0')) // Make sure we have a null terminated string
+            .map(|b| *b as std::os::raw::c_char)
+            .collect();
 
         let env_ptr: *const sys::OrtEnv = self.env.env_ptr();
 
@@ -612,11 +626,14 @@ mod dangerous {
         status_to_result(status).map_err(OrtError::CastTypeInfoToTensorInfo)?;
         assert_ne!(tensor_info_ptr, std::ptr::null_mut());
 
-        let mut type_sys: sys::ONNXTensorElementDataType = 0;
+        let mut type_sys = sys::ONNXTensorElementDataType::ONNX_TENSOR_ELEMENT_DATA_TYPE_UNDEFINED;
         let status =
             unsafe { g_ort().GetTensorElementType.unwrap()(tensor_info_ptr, &mut type_sys) };
         status_to_result(status).map_err(OrtError::TensorElementType)?;
-        assert_ne!(type_sys, 0);
+        assert_ne!(
+            type_sys,
+            sys::ONNXTensorElementDataType::ONNX_TENSOR_ELEMENT_DATA_TYPE_UNDEFINED
+        );
         // This transmute should be safe since its value is read from GetTensorElementType which we must trust.
         let io_type: TensorElementDataType = unsafe { std::mem::transmute(type_sys) };
 

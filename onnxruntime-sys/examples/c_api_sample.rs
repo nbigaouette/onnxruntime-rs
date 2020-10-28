@@ -1,5 +1,10 @@
 #![allow(non_snake_case)]
 
+#[cfg(not(target_family = "windows"))]
+use std::os::unix::ffi::OsStrExt;
+#[cfg(target_family = "windows")]
+use std::os::windows::ffi::OsStrExt;
+
 use onnxruntime_sys::*;
 
 // https://github.com/microsoft/onnxruntime/blob/v1.4.0/csharp/test/Microsoft.ML.OnnxRuntime.EndToEndTests.Capi/C_Api_Sample.cpp
@@ -15,7 +20,7 @@ fn main() {
     let env_name = std::ffi::CString::new("test").unwrap();
     let status = unsafe {
         g_ort.as_ref().unwrap().CreateEnv.unwrap()(
-            OrtLoggingLevel_ORT_LOGGING_LEVEL_VERBOSE,
+            OrtLoggingLevel::ORT_LOGGING_LEVEL_VERBOSE,
             env_name.as_ptr(),
             &mut env_ptr,
         )
@@ -37,7 +42,10 @@ fn main() {
             .as_ref()
             .unwrap()
             .SetSessionGraphOptimizationLevel
-            .unwrap()(session_options_ptr, GraphOptimizationLevel_ORT_ENABLE_BASIC)
+            .unwrap()(
+            session_options_ptr,
+            GraphOptimizationLevel::ORT_ENABLE_BASIC,
+        )
     };
 
     // Optionally add more execution providers via session_options
@@ -51,7 +59,20 @@ fn main() {
     //       Download it:
     //           curl -LO "https://github.com/onnx/models/raw/master/vision/classification/squeezenet/model/squeezenet1.0-8.onnx"
     //       Reference: https://github.com/onnx/models/tree/master/vision/classification/squeezenet#model
-    let model_path = std::ffi::CString::new("squeezenet1.0-8.onnx").unwrap();
+    let model_path = std::ffi::OsString::from("squeezenet1.0-8.onnx");
+
+    #[cfg(target_family = "windows")]
+    let model_path: Vec<u16> = model_path
+        .encode_wide()
+        .chain(std::iter::once(0)) // Make sure we have a null terminated string
+        .collect();
+    #[cfg(not(target_family = "windows"))]
+    let model_path: Vec<std::os::raw::c_char> = model_path
+        .as_bytes()
+        .iter()
+        .chain(std::iter::once(&b'\0')) // Make sure we have a null terminated string
+        .map(|b| *b as std::os::raw::c_char)
+        .collect();
 
     let mut session_ptr: *mut OrtSession = std::ptr::null_mut();
 
@@ -82,14 +103,14 @@ fn main() {
     assert_ne!(allocator_ptr, std::ptr::null_mut());
 
     // print number of model input nodes
-    let mut num_input_nodes: u64 = 0;
+    let mut num_input_nodes: onnxruntime_sys::size_t = 0;
     let status = unsafe {
         g_ort.as_ref().unwrap().SessionGetInputCount.unwrap()(session_ptr, &mut num_input_nodes)
     };
     CheckStatus(g_ort, status).unwrap();
     assert_ne!(num_input_nodes, 0);
     println!("Number of inputs = {:?}", num_input_nodes);
-    let mut input_node_names: Vec<String> = Vec::new();
+    let mut input_node_names: Vec<&str> = Vec::new();
     let mut input_node_dims: Vec<i64> = Vec::new(); // simplify... this model has only 1 input node {1, 3, 224, 224}.
                                                     // Otherwise need vector<vector<>>
 
@@ -107,7 +128,11 @@ fn main() {
         };
         CheckStatus(g_ort, status).unwrap();
         assert_ne!(input_name, std::ptr::null_mut());
-        let input_name = char_p_to_string(input_name).unwrap();
+
+        // WARNING: The C function SessionGetInputName allocates memory for the string.
+        //          We cannot let Rust free that string, the C side must free the string.
+        //          We thus convert the pointer to a string slice (&str).
+        let input_name = char_p_to_str(input_name).unwrap();
         println!("Input {} : name={}", i, input_name);
         input_node_names.push(input_name);
 
@@ -133,14 +158,18 @@ fn main() {
         CheckStatus(g_ort, status).unwrap();
         assert_ne!(tensor_info_ptr, std::ptr::null_mut());
 
-        let mut type_: ONNXTensorElementDataType = 0;
+        let mut type_: ONNXTensorElementDataType =
+            ONNXTensorElementDataType::ONNX_TENSOR_ELEMENT_DATA_TYPE_UNDEFINED;
         let status = unsafe {
             g_ort.as_ref().unwrap().GetTensorElementType.unwrap()(tensor_info_ptr, &mut type_)
         };
         CheckStatus(g_ort, status).unwrap();
-        assert_ne!(type_, 0);
+        assert_ne!(
+            type_,
+            ONNXTensorElementDataType::ONNX_TENSOR_ELEMENT_DATA_TYPE_UNDEFINED
+        );
 
-        println!("Input {} : type={}", i, type_);
+        println!("Input {} : type={}", i, type_ as i32);
 
         // print input shapes/dims
         let mut num_dims = 0;
@@ -200,8 +229,8 @@ fn main() {
     let mut memory_info_ptr: *mut OrtMemoryInfo = std::ptr::null_mut();
     let status = unsafe {
         g_ort.as_ref().unwrap().CreateCpuMemoryInfo.unwrap()(
-            OrtAllocatorType_OrtArenaAllocator,
-            OrtMemType_OrtMemTypeDefault,
+            OrtAllocatorType::OrtArenaAllocator,
+            OrtMemType::OrtMemTypeDefault,
             &mut memory_info_ptr,
         )
     };
@@ -226,10 +255,10 @@ fn main() {
             .unwrap()(
             memory_info_ptr,
             input_tensor_values_ptr,
-            (input_tensor_size * std::mem::size_of::<f32>()) as u64,
+            (input_tensor_size * std::mem::size_of::<f32>()) as onnxruntime_sys::size_t,
             shape,
             4,
-            ONNXTensorElementDataType_ONNX_TENSOR_ELEMENT_DATA_TYPE_FLOAT,
+            ONNXTensorElementDataType::ONNX_TENSOR_ELEMENT_DATA_TYPE_FLOAT,
             input_tensor_ptr_ptr,
         )
     };
@@ -336,13 +365,13 @@ fn main() {
 fn CheckStatus(g_ort: *const OrtApi, status: *const OrtStatus) -> Result<(), String> {
     if status != std::ptr::null() {
         let raw = unsafe { g_ort.as_ref().unwrap().GetErrorMessage.unwrap()(status) };
-        Err(char_p_to_string(raw).unwrap())
+        Err(char_p_to_str(raw).unwrap().to_string())
     } else {
         Ok(())
     }
 }
 
-fn char_p_to_string(raw: *const i8) -> Result<String, std::ffi::IntoStringError> {
-    let c_string = unsafe { std::ffi::CString::from_raw(raw as *mut i8) };
-    c_string.into_string()
+fn char_p_to_str<'a>(raw: *const i8) -> Result<&'a str, std::str::Utf8Error> {
+    let c_str = unsafe { std::ffi::CStr::from_ptr(raw as *mut i8) };
+    c_str.to_str()
 }

@@ -104,7 +104,7 @@ impl Environment {
                     create_env_with_custom_logger(
                         logging_function,
                         logger_param,
-                        log_level as u32,
+                        log_level.into(),
                         cname.as_ptr(),
                         &mut env_ptr,
                     )

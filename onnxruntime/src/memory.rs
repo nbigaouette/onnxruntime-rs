@@ -19,8 +19,8 @@ impl MemoryInfo {
         let mut memory_info_ptr: *mut sys::OrtMemoryInfo = std::ptr::null_mut();
         let status = unsafe {
             g_ort().CreateCpuMemoryInfo.unwrap()(
-                allocator as i32,
-                memory_type as i32,
+                allocator.into(),
+                memory_type.into(),
                 &mut memory_info_ptr,
             )
         };
