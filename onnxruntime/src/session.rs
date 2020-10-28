@@ -2,6 +2,11 @@
 
 use std::{ffi::CString, fmt::Debug, path::Path};
 
+#[cfg(not(target_family = "windows"))]
+use std::os::unix::ffi::OsStrExt;
+#[cfg(target_family = "windows")]
+use std::os::windows::ffi::OsStrExt;
+
 #[cfg(feature = "model-fetching")]
 use std::env;
 
@@ -170,14 +175,21 @@ impl SessionBuilder {
                 filename: model_filepath.to_path_buf(),
             });
         }
-        let model_path: CString =
-            CString::new(
-                model_filepath
-                    .to_str()
-                    .ok_or_else(|| OrtError::NonUtf8Path {
-                        path: model_filepath.to_path_buf(),
-                    })?,
-            )?;
+
+        // Build an OsString than a vector of bytes to pass to C
+        let model_path = std::ffi::OsString::from(model_filepath);
+        #[cfg(target_family = "windows")]
+        let model_path: Vec<u16> = model_path
+            .encode_wide()
+            .chain(std::iter::once(0)) // Make sure we have a null terminated string
+            .collect();
+        #[cfg(not(target_family = "windows"))]
+        let model_path: Vec<std::os::raw::c_char> = model_path
+            .as_bytes()
+            .iter()
+            .chain(std::iter::once(&b'\0')) // Make sure we have a null terminated string
+            .map(|b| *b as std::os::raw::c_char)
+            .collect();
 
         let env_ptr: *const sys::OrtEnv = self.env.env_ptr();
 
