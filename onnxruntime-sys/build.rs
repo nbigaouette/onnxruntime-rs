@@ -178,21 +178,17 @@ fn prebuilt_archive_url() -> (PathBuf, String) {
     let arch = env::var("CARGO_CFG_TARGET_ARCH").expect("Unable to get TARGET_ARCH");
 
     let gpu_str = match env::var(ORT_ENV_GPU) {
-        Ok(cuda_env) => {
-            match cuda_env.as_str() {
-                "1" | "yes"  | "Yes" | "YES" | "on" | "On" | "ON" => {
-                    match os.as_str() {
-                        "linux" | "windows" => "-gpu",
-                        os_str => panic!(
-                            "Use of CUDA was specified with `ORT_USE_CUDA` environment variable, but pre-built \
+        Ok(cuda_env) => match cuda_env.to_lowercase().as_str() {
+            "1" | "yes" | "true" | "on" => match os.as_str() {
+                "linux" | "windows" => "-gpu",
+                os_str => panic!(
+                    "Use of CUDA was specified with `{}` environment variable, but pre-built \
                              binaries with CUDA are only available for Linux and Windows, not: {}.",
-                            os_str
-                        ),
-                    }
-                },
-                _ => "",
-            }
-        }
+                    ORT_ENV_GPU, os_str
+                ),
+            },
+            _ => "",
+        },
         Err(_) => "",
     };
 
