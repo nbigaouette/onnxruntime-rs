@@ -16,6 +16,21 @@ This project consist on two crates:
 
 [Changelog](CHANGELOG.md)
 
+The `build.rs` script supports downloading pre-built versions of the Microsoft ONNX Runtime,
+which provides the following targets:
+
+CPU:
+
+* Linux x86_64
+* macOS x86_64
+* Windows i686
+* Windows x86_64
+
+GPU:
+
+* Linux x86_64
+* Windows x86_64
+
 ---
 
 **WARNING**:
