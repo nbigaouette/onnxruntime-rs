@@ -47,10 +47,10 @@ jobs:
             os: windows-2019
             rust: stable
             target: x86_64-pc-windows-msvc
-          - build: win-msvc
-            os: windows-2019
-            rust: stable
-            target: i686-pc-windows-msvc
+          # - build: win-msvc
+          #   os: windows-2019
+          #   rust: stable
+          #   target: i686-pc-windows-msvc
     env:
       CARGO_BUILD_TARGET: ${{ matrix.target }}
     steps:
