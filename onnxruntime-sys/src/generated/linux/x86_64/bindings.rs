@@ -167,10 +167,13 @@ pub const _STRINGS_H: u32 = 1;
 pub const ORT_API_VERSION: u32 = 5;
 pub type size_t = ::std::os::raw::c_ulong;
 pub type wchar_t = ::std::os::raw::c_int;
-pub const idtype_t_P_ALL: idtype_t = 0;
-pub const idtype_t_P_PID: idtype_t = 1;
-pub const idtype_t_P_PGID: idtype_t = 2;
-pub type idtype_t = ::std::os::raw::c_uint;
+#[repr(u32)]
+#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
+pub enum idtype_t {
+    P_ALL = 0,
+    P_PID = 1,
+    P_PGID = 2,
+}
 pub type _Float32 = f32;
 pub type _Float64 = f64;
 pub type _Float32x = f64;
@@ -2603,67 +2606,62 @@ pub const kOrtSessionOptionsConfigLoadModelFormat: &'static [u8; 26usize] =
     b"session.load_model_format\0";
 pub const kOrtSessionOptionsConfigSaveModelFormat: &'static [u8; 26usize] =
     b"session.save_model_format\0";
-pub const ONNXTensorElementDataType_ONNX_TENSOR_ELEMENT_DATA_TYPE_UNDEFINED:
-    ONNXTensorElementDataType = 0;
-pub const ONNXTensorElementDataType_ONNX_TENSOR_ELEMENT_DATA_TYPE_FLOAT: ONNXTensorElementDataType =
-    1;
-pub const ONNXTensorElementDataType_ONNX_TENSOR_ELEMENT_DATA_TYPE_UINT8: ONNXTensorElementDataType =
-    2;
-pub const ONNXTensorElementDataType_ONNX_TENSOR_ELEMENT_DATA_TYPE_INT8: ONNXTensorElementDataType =
-    3;
-pub const ONNXTensorElementDataType_ONNX_TENSOR_ELEMENT_DATA_TYPE_UINT16:
-    ONNXTensorElementDataType = 4;
-pub const ONNXTensorElementDataType_ONNX_TENSOR_ELEMENT_DATA_TYPE_INT16: ONNXTensorElementDataType =
-    5;
-pub const ONNXTensorElementDataType_ONNX_TENSOR_ELEMENT_DATA_TYPE_INT32: ONNXTensorElementDataType =
-    6;
-pub const ONNXTensorElementDataType_ONNX_TENSOR_ELEMENT_DATA_TYPE_INT64: ONNXTensorElementDataType =
-    7;
-pub const ONNXTensorElementDataType_ONNX_TENSOR_ELEMENT_DATA_TYPE_STRING:
-    ONNXTensorElementDataType = 8;
-pub const ONNXTensorElementDataType_ONNX_TENSOR_ELEMENT_DATA_TYPE_BOOL: ONNXTensorElementDataType =
-    9;
-pub const ONNXTensorElementDataType_ONNX_TENSOR_ELEMENT_DATA_TYPE_FLOAT16:
-    ONNXTensorElementDataType = 10;
-pub const ONNXTensorElementDataType_ONNX_TENSOR_ELEMENT_DATA_TYPE_DOUBLE:
-    ONNXTensorElementDataType = 11;
-pub const ONNXTensorElementDataType_ONNX_TENSOR_ELEMENT_DATA_TYPE_UINT32:
-    ONNXTensorElementDataType = 12;
-pub const ONNXTensorElementDataType_ONNX_TENSOR_ELEMENT_DATA_TYPE_UINT64:
-    ONNXTensorElementDataType = 13;
-pub const ONNXTensorElementDataType_ONNX_TENSOR_ELEMENT_DATA_TYPE_COMPLEX64:
-    ONNXTensorElementDataType = 14;
-pub const ONNXTensorElementDataType_ONNX_TENSOR_ELEMENT_DATA_TYPE_COMPLEX128:
-    ONNXTensorElementDataType = 15;
-pub const ONNXTensorElementDataType_ONNX_TENSOR_ELEMENT_DATA_TYPE_BFLOAT16:
-    ONNXTensorElementDataType = 16;
-pub type ONNXTensorElementDataType = ::std::os::raw::c_uint;
-pub const ONNXType_ONNX_TYPE_UNKNOWN: ONNXType = 0;
-pub const ONNXType_ONNX_TYPE_TENSOR: ONNXType = 1;
-pub const ONNXType_ONNX_TYPE_SEQUENCE: ONNXType = 2;
-pub const ONNXType_ONNX_TYPE_MAP: ONNXType = 3;
-pub const ONNXType_ONNX_TYPE_OPAQUE: ONNXType = 4;
-pub const ONNXType_ONNX_TYPE_SPARSETENSOR: ONNXType = 5;
-pub type ONNXType = ::std::os::raw::c_uint;
-pub const OrtLoggingLevel_ORT_LOGGING_LEVEL_VERBOSE: OrtLoggingLevel = 0;
-pub const OrtLoggingLevel_ORT_LOGGING_LEVEL_INFO: OrtLoggingLevel = 1;
-pub const OrtLoggingLevel_ORT_LOGGING_LEVEL_WARNING: OrtLoggingLevel = 2;
-pub const OrtLoggingLevel_ORT_LOGGING_LEVEL_ERROR: OrtLoggingLevel = 3;
-pub const OrtLoggingLevel_ORT_LOGGING_LEVEL_FATAL: OrtLoggingLevel = 4;
-pub type OrtLoggingLevel = ::std::os::raw::c_uint;
-pub const OrtErrorCode_ORT_OK: OrtErrorCode = 0;
-pub const OrtErrorCode_ORT_FAIL: OrtErrorCode = 1;
-pub const OrtErrorCode_ORT_INVALID_ARGUMENT: OrtErrorCode = 2;
-pub const OrtErrorCode_ORT_NO_SUCHFILE: OrtErrorCode = 3;
-pub const OrtErrorCode_ORT_NO_MODEL: OrtErrorCode = 4;
-pub const OrtErrorCode_ORT_ENGINE_ERROR: OrtErrorCode = 5;
-pub const OrtErrorCode_ORT_RUNTIME_EXCEPTION: OrtErrorCode = 6;
-pub const OrtErrorCode_ORT_INVALID_PROTOBUF: OrtErrorCode = 7;
-pub const OrtErrorCode_ORT_MODEL_LOADED: OrtErrorCode = 8;
-pub const OrtErrorCode_ORT_NOT_IMPLEMENTED: OrtErrorCode = 9;
-pub const OrtErrorCode_ORT_INVALID_GRAPH: OrtErrorCode = 10;
-pub const OrtErrorCode_ORT_EP_FAIL: OrtErrorCode = 11;
-pub type OrtErrorCode = ::std::os::raw::c_uint;
+#[repr(u32)]
+#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
+pub enum ONNXTensorElementDataType {
+    ONNX_TENSOR_ELEMENT_DATA_TYPE_UNDEFINED = 0,
+    ONNX_TENSOR_ELEMENT_DATA_TYPE_FLOAT = 1,
+    ONNX_TENSOR_ELEMENT_DATA_TYPE_UINT8 = 2,
+    ONNX_TENSOR_ELEMENT_DATA_TYPE_INT8 = 3,
+    ONNX_TENSOR_ELEMENT_DATA_TYPE_UINT16 = 4,
+    ONNX_TENSOR_ELEMENT_DATA_TYPE_INT16 = 5,
+    ONNX_TENSOR_ELEMENT_DATA_TYPE_INT32 = 6,
+    ONNX_TENSOR_ELEMENT_DATA_TYPE_INT64 = 7,
+    ONNX_TENSOR_ELEMENT_DATA_TYPE_STRING = 8,
+    ONNX_TENSOR_ELEMENT_DATA_TYPE_BOOL = 9,
+    ONNX_TENSOR_ELEMENT_DATA_TYPE_FLOAT16 = 10,
+    ONNX_TENSOR_ELEMENT_DATA_TYPE_DOUBLE = 11,
+    ONNX_TENSOR_ELEMENT_DATA_TYPE_UINT32 = 12,
+    ONNX_TENSOR_ELEMENT_DATA_TYPE_UINT64 = 13,
+    ONNX_TENSOR_ELEMENT_DATA_TYPE_COMPLEX64 = 14,
+    ONNX_TENSOR_ELEMENT_DATA_TYPE_COMPLEX128 = 15,
+    ONNX_TENSOR_ELEMENT_DATA_TYPE_BFLOAT16 = 16,
+}
+#[repr(u32)]
+#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
+pub enum ONNXType {
+    ONNX_TYPE_UNKNOWN = 0,
+    ONNX_TYPE_TENSOR = 1,
+    ONNX_TYPE_SEQUENCE = 2,
+    ONNX_TYPE_MAP = 3,
+    ONNX_TYPE_OPAQUE = 4,
+    ONNX_TYPE_SPARSETENSOR = 5,
+}
+#[repr(u32)]
+#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
+pub enum OrtLoggingLevel {
+    ORT_LOGGING_LEVEL_VERBOSE = 0,
+    ORT_LOGGING_LEVEL_INFO = 1,
+    ORT_LOGGING_LEVEL_WARNING = 2,
+    ORT_LOGGING_LEVEL_ERROR = 3,
+    ORT_LOGGING_LEVEL_FATAL = 4,
+}
+#[repr(u32)]
+#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
+pub enum OrtErrorCode {
+    ORT_OK = 0,
+    ORT_FAIL = 1,
+    ORT_INVALID_ARGUMENT = 2,
+    ORT_NO_SUCHFILE = 3,
+    ORT_NO_MODEL = 4,
+    ORT_ENGINE_ERROR = 5,
+    ORT_RUNTIME_EXCEPTION = 6,
+    ORT_INVALID_PROTOBUF = 7,
+    ORT_MODEL_LOADED = 8,
+    ORT_NOT_IMPLEMENTED = 9,
+    ORT_INVALID_GRAPH = 10,
+    ORT_EP_FAIL = 11,
+}
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
 pub struct OrtArenaCfg {
@@ -2889,21 +2887,30 @@ pub type OrtLoggingFunction = ::std::option::Option<
         message: *const ::std::os::raw::c_char,
     ),
 >;
-pub const GraphOptimizationLevel_ORT_DISABLE_ALL: GraphOptimizationLevel = 0;
-pub const GraphOptimizationLevel_ORT_ENABLE_BASIC: GraphOptimizationLevel = 1;
-pub const GraphOptimizationLevel_ORT_ENABLE_EXTENDED: GraphOptimizationLevel = 2;
-pub const GraphOptimizationLevel_ORT_ENABLE_ALL: GraphOptimizationLevel = 99;
-pub type GraphOptimizationLevel = ::std::os::raw::c_uint;
-pub const ExecutionMode_ORT_SEQUENTIAL: ExecutionMode = 0;
-pub const ExecutionMode_ORT_PARALLEL: ExecutionMode = 1;
-pub type ExecutionMode = ::std::os::raw::c_uint;
-pub const OrtLanguageProjection_ORT_PROJECTION_C: OrtLanguageProjection = 0;
-pub const OrtLanguageProjection_ORT_PROJECTION_CPLUSPLUS: OrtLanguageProjection = 1;
-pub const OrtLanguageProjection_ORT_PROJECTION_CSHARP: OrtLanguageProjection = 2;
-pub const OrtLanguageProjection_ORT_PROJECTION_PYTHON: OrtLanguageProjection = 3;
-pub const OrtLanguageProjection_ORT_PROJECTION_JAVA: OrtLanguageProjection = 4;
-pub const OrtLanguageProjection_ORT_PROJECTION_WINML: OrtLanguageProjection = 5;
-pub type OrtLanguageProjection = ::std::os::raw::c_uint;
+#[repr(u32)]
+#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
+pub enum GraphOptimizationLevel {
+    ORT_DISABLE_ALL = 0,
+    ORT_ENABLE_BASIC = 1,
+    ORT_ENABLE_EXTENDED = 2,
+    ORT_ENABLE_ALL = 99,
+}
+#[repr(u32)]
+#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
+pub enum ExecutionMode {
+    ORT_SEQUENTIAL = 0,
+    ORT_PARALLEL = 1,
+}
+#[repr(u32)]
+#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
+pub enum OrtLanguageProjection {
+    ORT_PROJECTION_C = 0,
+    ORT_PROJECTION_CPLUSPLUS = 1,
+    ORT_PROJECTION_CSHARP = 2,
+    ORT_PROJECTION_PYTHON = 3,
+    ORT_PROJECTION_JAVA = 4,
+    ORT_PROJECTION_WINML = 5,
+}
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
 pub struct OrtKernelInfo {
@@ -2914,17 +2921,25 @@ pub struct OrtKernelInfo {
 pub struct OrtKernelContext {
     _unused: [u8; 0],
 }
-pub const OrtAllocatorType_Invalid: OrtAllocatorType = -1;
-pub const OrtAllocatorType_OrtDeviceAllocator: OrtAllocatorType = 0;
-pub const OrtAllocatorType_OrtArenaAllocator: OrtAllocatorType = 1;
-pub type OrtAllocatorType = ::std::os::raw::c_int;
-pub const OrtMemType_OrtMemTypeCPUInput: OrtMemType = -2;
-pub const OrtMemType_OrtMemTypeCPUOutput: OrtMemType = -1;
-pub const OrtMemType_OrtMemTypeCPU: OrtMemType = -1;
-pub const OrtMemType_OrtMemTypeDefault: OrtMemType = 0;
+#[repr(i32)]
+#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
+pub enum OrtAllocatorType {
+    Invalid = -1,
+    OrtDeviceAllocator = 0,
+    OrtArenaAllocator = 1,
+}
+impl OrtMemType {
+    pub const OrtMemTypeCPU: OrtMemType = OrtMemType::OrtMemTypeCPUOutput;
+}
+#[repr(i32)]
 #[doc = " memory types for allocator, exec provider specific types should be extended in each provider"]
 #[doc = " Whenever this struct is updated, please also update the MakeKey function in onnxruntime/core/framework/execution_provider.cc"]
-pub type OrtMemType = ::std::os::raw::c_int;
+#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
+pub enum OrtMemType {
+    OrtMemTypeCPUInput = -2,
+    OrtMemTypeCPUOutput = -1,
+    OrtMemTypeDefault = 0,
+}
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
 pub struct OrtApiBase {

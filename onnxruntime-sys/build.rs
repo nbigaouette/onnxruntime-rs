@@ -86,6 +86,7 @@ fn generate_bindings(include_dir: &Path) {
         .parse_callbacks(Box::new(bindgen::CargoCallbacks))
         // Format using rustfmt
         .rustfmt_bindings(true)
+        .rustified_enum("*")
         // Finish the builder and generate the bindings.
         .generate()
         // Unwrap the Result and panic on failure.
