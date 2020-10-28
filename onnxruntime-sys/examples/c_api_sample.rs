@@ -20,7 +20,7 @@ fn main() {
     let env_name = std::ffi::CString::new("test").unwrap();
     let status = unsafe {
         g_ort.as_ref().unwrap().CreateEnv.unwrap()(
-            OrtLoggingLevel_ORT_LOGGING_LEVEL_VERBOSE,
+            OrtLoggingLevel::ORT_LOGGING_LEVEL_VERBOSE,
             env_name.as_ptr(),
             &mut env_ptr,
         )
@@ -42,7 +42,10 @@ fn main() {
             .as_ref()
             .unwrap()
             .SetSessionGraphOptimizationLevel
-            .unwrap()(session_options_ptr, GraphOptimizationLevel_ORT_ENABLE_BASIC)
+            .unwrap()(
+            session_options_ptr,
+            GraphOptimizationLevel::ORT_ENABLE_BASIC,
+        )
     };
 
     // Optionally add more execution providers via session_options
@@ -155,14 +158,18 @@ fn main() {
         CheckStatus(g_ort, status).unwrap();
         assert_ne!(tensor_info_ptr, std::ptr::null_mut());
 
-        let mut type_: ONNXTensorElementDataType = 0;
+        let mut type_: ONNXTensorElementDataType =
+            ONNXTensorElementDataType::ONNX_TENSOR_ELEMENT_DATA_TYPE_UNDEFINED;
         let status = unsafe {
             g_ort.as_ref().unwrap().GetTensorElementType.unwrap()(tensor_info_ptr, &mut type_)
         };
         CheckStatus(g_ort, status).unwrap();
-        assert_ne!(type_, 0);
+        assert_ne!(
+            type_,
+            ONNXTensorElementDataType::ONNX_TENSOR_ELEMENT_DATA_TYPE_UNDEFINED
+        );
 
-        println!("Input {} : type={}", i, type_);
+        println!("Input {} : type={}", i, type_ as i32);
 
         // print input shapes/dims
         let mut num_dims = 0;
@@ -222,8 +229,8 @@ fn main() {
     let mut memory_info_ptr: *mut OrtMemoryInfo = std::ptr::null_mut();
     let status = unsafe {
         g_ort.as_ref().unwrap().CreateCpuMemoryInfo.unwrap()(
-            OrtAllocatorType_OrtArenaAllocator,
-            OrtMemType_OrtMemTypeDefault,
+            OrtAllocatorType::OrtArenaAllocator,
+            OrtMemType::OrtMemTypeDefault,
             &mut memory_info_ptr,
         )
     };
@@ -251,7 +258,7 @@ fn main() {
             (input_tensor_size * std::mem::size_of::<f32>()) as onnxruntime_sys::size_t,
             shape,
             4,
-            ONNXTensorElementDataType_ONNX_TENSOR_ELEMENT_DATA_TYPE_FLOAT,
+            ONNXTensorElementDataType::ONNX_TENSOR_ELEMENT_DATA_TYPE_FLOAT,
             input_tensor_ptr_ptr,
         )
     };
