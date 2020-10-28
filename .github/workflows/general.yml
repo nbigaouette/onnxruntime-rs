@@ -79,7 +79,7 @@ jobs:
           command: build
           args: --target x86_64-unknown-linux-gnu
       - name: Verify prebuilt archive downloaded (GPU, x86_64-unknown-linux-gnu)
-        run: ls -lh target/x86_64-unknown-linux-gnu/debug/build/onnxruntime-sys-*/out/onnxruntime-linux-gpu-1.*.tgz
+        run: ls -lh target/x86_64-unknown-linux-gnu/debug/build/onnxruntime-sys-*/out/onnxruntime-linux-x64-gpu-1.*.tgz
       # ******************************************************************
       - name: Download prebuilt archive (GPU, x86_64-pc-windows-msvc)
         uses: actions-rs/cargo@v1
