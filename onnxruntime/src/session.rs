@@ -235,7 +235,7 @@ impl SessionBuilder {
     /// Load an ONNX graph from memory and commit the session
     pub fn with_model_from_memory<B>(self, model_bytes: B) -> Result<Session>
     where
-        B: AsRef<[u8]>
+        B: AsRef<[u8]>,
     {
         self.with_model_from_memory_monomorphized(model_bytes.as_ref())
     }
