@@ -5,3 +5,4 @@
 onnxruntime.git
 Cargo.lock
 **/synset.txt
+.idea/
