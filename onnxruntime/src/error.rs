@@ -4,6 +4,7 @@ use std::{io, path::PathBuf};
 
 use thiserror::Error;
 
+use ndarray::ShapeError;
 use onnxruntime_sys as sys;
 
 use crate::{char_p_to_string, g_ort};
@@ -91,6 +92,9 @@ pub enum OrtError {
     /// Attempt to build a Rust `CString` from a null pointer
     #[error("Failed to build CString when original contains null: {0}")]
     CStringNulError(#[from] std::ffi::NulError),
+    /// Output dimensionality mismatch
+    #[error("Output dimensionality mismatch: {0}")]
+    OutputDimensionalityMismatch(#[from] ShapeError),
 }
 
 /// Error used when dimensions of input (from model and from inference call)
