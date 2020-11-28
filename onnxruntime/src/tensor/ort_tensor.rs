@@ -1,6 +1,6 @@
 //! Module containing tensor with memory owned by Rust
 
-use std::{fmt::Debug, ops::Deref};
+use std::{fmt::Debug, ops::Deref, ops::DerefMut};
 
 use ndarray::Array;
 use tracing::{error, trace};
@@ -87,6 +87,16 @@ where
 
     fn deref(&self) -> &Self::Target {
         &self.array
+    }
+}
+
+impl<'t, T, D> DerefMut for OrtTensor<'t, T, D>
+where
+    T: TypeToTensorElementDataType + Debug + Clone,
+    D: ndarray::Dimension,
+{
+    fn deref_mut(&mut self) -> &mut <Self as Deref>::Target {
+        &mut self.array
     }
 }
 
