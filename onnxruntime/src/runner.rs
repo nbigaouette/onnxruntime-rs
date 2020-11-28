@@ -229,3 +229,16 @@ impl<'s, TIn: Element, DIn: Dimension, TOut: Element, DOut: Dimension>
         .map_err(OrtError::Run)?)
     }
 }
+
+impl<TIn: Element, DIn: Dimension, TOut: Element, DOut: Dimension> Drop
+    for Runner<'_, TIn, DIn, TOut, DOut>
+{
+    fn drop(&mut self) {
+        for ptr in &self.input_names_ptr {
+            let _s = unsafe { CString::from_raw(*ptr as _) };
+        }
+        for ptr in &self.output_names_ptr {
+            let _s = unsafe { CString::from_raw(*ptr as _) };
+        }
+    }
+}
