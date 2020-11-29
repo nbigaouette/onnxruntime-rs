@@ -110,10 +110,11 @@ jobs:
             os: macOS-latest
             rust: stable
             target: x86_64-apple-darwin
-          - build: win-msvc
-            os: windows-2019
-            rust: stable
-            target: x86_64-pc-windows-msvc
+          # FIXME: Re-enable CI for Windows: https://github.com/nbigaouette/onnxruntime-rs/issues/43
+          # - build: win-msvc
+          #   os: windows-2019
+          #   rust: stable
+          #   target: x86_64-pc-windows-msvc
           # - build: win-msvc
           #   os: windows-2019
           #   rust: stable
