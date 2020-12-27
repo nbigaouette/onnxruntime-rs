@@ -135,7 +135,7 @@ impl Environment {
     /// Create a new [`SessionBuilder`](../session/struct.SessionBuilder.html)
     /// used to create a new ONNX session.
     pub fn new_session_builder(&self) -> Result<SessionBuilder> {
-        SessionBuilder::new(self.clone())
+        SessionBuilder::new(self)
     }
 }
 
