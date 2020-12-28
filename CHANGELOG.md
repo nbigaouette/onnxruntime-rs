@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- Prevent session from being built a temporary environment resulting in segfault ([#46](https://github.com/nbigaouette/onnxruntime-rs/pull/46))
+
+### Added
+
+- Run CI on more platforms ([#34](https://github.com/nbigaouette/onnxruntime-rs/pull/34))
+- Re-export `ndarray` for better ergonomics ([#45](https://github.com/nbigaouette/onnxruntime-rs/pull/45))
+- Add `with_model_from_memory()` to load a model from memory ([#36](https://github.com/nbigaouette/onnxruntime-rs/pull/36))
+
 ## [0.0.10] - 2020-10-28
 
 ### Changed
