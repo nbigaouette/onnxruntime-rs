@@ -130,15 +130,15 @@ impl<T: Element, D: Dimension> Index<usize> for Outputs<'_, '_, T, D> {
     }
 }
 
-pub struct RunnerBuilder<'s, TIn: Element, DIn: Dimension> {
-    session: &'s Session,
+pub struct RunnerBuilder<'s, 'a, TIn: Element, DIn: Dimension> {
+    session: &'s Session<'a>,
     input_arrays: Vec<Array<TIn, DIn>>,
 }
 
-impl<'s, TIn: Element, DIn: Dimension> RunnerBuilder<'s, TIn, DIn> {
+impl<'s, 'a, TIn: Element, DIn: Dimension> RunnerBuilder<'s, 'a, TIn, DIn> {
     #[inline]
     pub fn new(
-        session: &'s Session,
+        session: &'s Session<'a>,
         input_arrays: impl IntoIterator<Item = Array<TIn, DIn>>,
     ) -> Self {
         Self {
@@ -150,18 +150,18 @@ impl<'s, TIn: Element, DIn: Dimension> RunnerBuilder<'s, TIn, DIn> {
     #[inline]
     pub fn with_output<TOut: Element, DOut: Dimension>(
         self,
-    ) -> Result<Runner<'s, TIn, DIn, TOut, DOut>> {
+    ) -> Result<Runner<'s, 'a, TIn, DIn, TOut, DOut>> {
         Runner::new(self.session, self.input_arrays)
     }
 
     #[inline]
-    pub fn with_output_dyn<TOut: Element>(self) -> Result<Runner<'s, TIn, DIn, TOut, IxDyn>> {
+    pub fn with_output_dyn<TOut: Element>(self) -> Result<Runner<'s, 'a, TIn, DIn, TOut, IxDyn>> {
         Runner::new(self.session, self.input_arrays)
     }
 }
 
-pub struct Runner<'s, TIn: Element, DIn: Dimension, TOut: Element, DOut: Dimension> {
-    session: &'s Session,
+pub struct Runner<'s, 'a, TIn: Element, DIn: Dimension, TOut: Element, DOut: Dimension> {
+    session: &'s Session<'a>,
     input_names_ptr: Vec<*const i8>,
     output_names_ptr: Vec<*const i8>,
     input_ort_tensors: Vec<OrtTensor<'s, TIn, DIn>>,
@@ -170,11 +170,11 @@ pub struct Runner<'s, TIn: Element, DIn: Dimension, TOut: Element, DOut: Dimensi
     output_ort_values_ptr: Vec<*mut sys::OrtValue>,
 }
 
-impl<'s, TIn: Element, DIn: Dimension, TOut: Element, DOut: Dimension>
-    Runner<'s, TIn, DIn, TOut, DOut>
+impl<'s, 'a, TIn: Element, DIn: Dimension, TOut: Element, DOut: Dimension>
+    Runner<'s, 'a, TIn, DIn, TOut, DOut>
 {
     pub fn new(
-        session: &'s Session,
+        session: &'s Session<'a>,
         input_arrays: impl IntoIterator<Item = Array<TIn, DIn>>,
     ) -> Result<Self> {
         let input_names_ptr = names_to_ptrs(session.inputs.iter().map(|i| i.name.clone()));
@@ -231,7 +231,7 @@ impl<'s, TIn: Element, DIn: Dimension, TOut: Element, DOut: Dimension>
 }
 
 impl<TIn: Element, DIn: Dimension, TOut: Element, DOut: Dimension> Drop
-    for Runner<'_, TIn, DIn, TOut, DOut>
+    for Runner<'_, '_, TIn, DIn, TOut, DOut>
 {
     fn drop(&mut self) {
         for ptr in &self.input_names_ptr {

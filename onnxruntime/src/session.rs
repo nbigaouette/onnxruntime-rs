@@ -365,7 +365,7 @@ impl<'a> Session<'a> {
     pub fn make_runner<T: Element, D: Dimension, I: IntoIterator<Item = Array<T, D>>>(
         &self,
         input_arrays: I,
-    ) -> RunnerBuilder<'_, T, D> {
+    ) -> RunnerBuilder<'_, 'a, T, D> {
         RunnerBuilder::new(self, input_arrays)
     }
 
