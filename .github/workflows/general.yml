@@ -4,6 +4,8 @@ on: [pull_request]
 
 env:
   CARGO_TERM_COLOR: always
+  RUST_LOG: onnxruntime=debug,onnxruntime-sys=debug
+  RUST_BACKTRACE: 1
 
 jobs:
   fmt:
@@ -22,8 +24,8 @@ jobs:
           command: fmt
           args: --all -- --check
 
-  test:
-    name: Test
+  download:
+    name: Download prebuilt ONNX Runtime archive from build.rs
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -32,20 +34,131 @@ jobs:
           profile: minimal
           toolchain: stable
           override: true
-      # We want to test using '--features model-fetching', but this is not possible yet.
-      # See https://github.com/actions-rs/cargo/issues/86
-      - uses: actions-rs/cargo@v1
-        name: Test onnxruntime-sys
+      - run: rustup target install x86_64-unknown-linux-gnu
+      - run: rustup target install x86_64-apple-darwin
+      - run: rustup target install i686-pc-windows-msvc
+      - run: rustup target install x86_64-pc-windows-msvc
+      # ******************************************************************
+      - name: Download prebuilt archive (CPU, x86_64-unknown-linux-gnu)
+        uses: actions-rs/cargo@v1
         with:
-          command: test
-          args: --package onnxruntime-sys
-      - uses: actions-rs/cargo@v1
-        name: Test onnxruntime
+          command: build
+          args: --target x86_64-unknown-linux-gnu
+      - name: Verify prebuilt archive downloaded (CPU, x86_64-unknown-linux-gnu)
+        run: ls -lh target/x86_64-unknown-linux-gnu/debug/build/onnxruntime-sys-*/out/onnxruntime-linux-x64-1.*.tgz
+      # ******************************************************************
+      - name: Download prebuilt archive (CPU, x86_64-apple-darwin)
+        uses: actions-rs/cargo@v1
+        with:
+          command: build
+          args: --target x86_64-apple-darwin
+      - name: Verify prebuilt archive downloaded (CPU, x86_64-apple-darwin)
+        run: ls -lh target/x86_64-apple-darwin/debug/build/onnxruntime-sys-*/out/onnxruntime-osx-x64-1.*.tgz
+      # # ******************************************************************
+      # - name: Download prebuilt archive (CPU, i686-pc-windows-msvc)
+      #   uses: actions-rs/cargo@v1
+      #   with:
+      #     command: build
+      #     args: --target i686-pc-windows-msvc
+      # - name: Verify prebuilt archive downloaded (CPU, i686-pc-windows-msvc)
+      #   run: ls -lh target/i686-pc-windows-msvc/debug/build/onnxruntime-sys-*/out/onnxruntime-win-x86-1.*.zip
+      # ******************************************************************
+      - name: Download prebuilt archive (CPU, x86_64-pc-windows-msvc)
+        uses: actions-rs/cargo@v1
+        with:
+          command: build
+          args: --target x86_64-pc-windows-msvc
+      - name: Verify prebuilt archive downloaded (CPU, x86_64-pc-windows-msvc)
+        run: ls -lh target/x86_64-pc-windows-msvc/debug/build/onnxruntime-sys-*/out/onnxruntime-win-x64-1.*.zip
+      # ******************************************************************
+      - name: Download prebuilt archive (GPU, x86_64-unknown-linux-gnu)
+        uses: actions-rs/cargo@v1
         env:
-          RUST_LOG: onnxruntime=debug
+          ORT_USE_CUDA: "yes"
         with:
-          # Use --manifest-path instead of --package. See https://github.com/actions-rs/cargo/issues/86
+          command: build
+          args: --target x86_64-unknown-linux-gnu
+      - name: Verify prebuilt archive downloaded (GPU, x86_64-unknown-linux-gnu)
+        run: ls -lh target/x86_64-unknown-linux-gnu/debug/build/onnxruntime-sys-*/out/onnxruntime-linux-x64-gpu-1.*.tgz
+      # ******************************************************************
+      - name: Download prebuilt archive (GPU, x86_64-pc-windows-msvc)
+        uses: actions-rs/cargo@v1
+        env:
+          ORT_USE_CUDA: "yes"
+        with:
+          command: build
+          args: --target x86_64-pc-windows-msvc
+      - name: Verify prebuilt archive downloaded (GPU, x86_64-pc-windows-msvc)
+        run: ls -lh target/x86_64-pc-windows-msvc/debug/build/onnxruntime-sys-*/out/onnxruntime-win-x64-gpu-1.*.zip
+
+  test:
+    name: Test Suite
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        build:
+          - linux-gnu
+          - macos
+          - win-msvc
+        include:
+          - build: linux-gnu
+            os: ubuntu-latest
+            rust: stable
+            target: x86_64-unknown-linux-gnu
+          - build: macos
+            os: macOS-latest
+            rust: stable
+            target: x86_64-apple-darwin
+          # FIXME: Re-enable CI for Windows: https://github.com/nbigaouette/onnxruntime-rs/issues/43
+          # - build: win-msvc
+          #   os: windows-2019
+          #   rust: stable
+          #   target: x86_64-pc-windows-msvc
+          # - build: win-msvc
+          #   os: windows-2019
+          #   rust: stable
+          #   target: i686-pc-windows-msvc
+    env:
+      CARGO_BUILD_TARGET: ${{ matrix.target }}
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install Rust
+        uses: actions-rs/toolchain@v1
+        with:
+          profile: minimal
+          toolchain: ${{ matrix.rust }}
+          target: ${{ matrix.target }}
+          override: true
+      - name: Install additional packages (macOS)
+        if: contains(matrix.target, 'x86_64-apple-darwin')
+        run: brew install libomp
+      - name: Build (cargo build)
+        uses: actions-rs/cargo@v1
+        with:
+          command: build
+          args: --all
+      - name: Build tests (cargo test)
+        uses: actions-rs/cargo@v1
+        with:
           command: test
+          args: --no-run
+      - name: Build onnxruntime with 'model-fetching' feature
+        uses: actions-rs/cargo@v1
+        with:
+          command: build
+          # Use --manifest-path instead of --package. See https://github.com/actions-rs/cargo/issues/86
+          args: --manifest-path onnxruntime/Cargo.toml --features model-fetching
+      - name: Test onnxruntime-sys
+        uses: actions-rs/cargo@v1
+        with:
+          command: test
+          args: --package onnxruntime-sys -- --test-threads=1 --nocapture
+      - name: Test onnxruntime
+        uses: actions-rs/cargo@v1
+        with:
+          command: test
+          # Use --manifest-path instead of --package. See https://github.com/actions-rs/cargo/issues/86
           args: --manifest-path onnxruntime/Cargo.toml --features model-fetching -- --test-threads=1 --nocapture
 
   clippy:

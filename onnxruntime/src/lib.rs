@@ -133,6 +133,9 @@ pub mod tensor;
 pub use error::{OrtApiError, OrtError, Result};
 use sys::OnnxEnumInt;
 
+// Re-export ndarray as it's part of the public API anyway
+pub use ndarray;
+
 lazy_static! {
     // static ref G_ORT: Arc<Mutex<AtomicPtr<sys::OrtApi>>> =
     //     Arc::new(Mutex::new(AtomicPtr::new(unsafe {

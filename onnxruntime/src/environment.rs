@@ -83,6 +83,10 @@ impl Environment {
 
     #[tracing::instrument]
     fn new(name: String, log_level: LoggingLevel) -> Result<Environment> {
+        // NOTE: Because 'G_ENV' is a lazy_static, locking it will, initially, create
+        //      a new Arc<Mutex<EnvironmentSingleton>> with a strong count of 1.
+        //      Cloning it to embed it inside the 'Environment' to return
+        //      will thus increase the strong count to 2.
         let mut environment_guard = G_ENV
             .lock()
             .expect("Failed to acquire lock: another thread panicked?");
@@ -121,6 +125,11 @@ impl Environment {
             *g_env_ptr = env_ptr;
             environment_guard.name = name;
 
+            // NOTE: Cloning the lazy_static 'G_ENV' will increase its strong count by one.
+            //       If this 'Environment' is the only one in the process, the strong count
+            //       will be 2:
+            //          * one lazy_static 'G_ENV'
+            //          * one inside the 'Environment' returned
             Ok(Environment { env: G_ENV.clone() })
         } else {
             warn!(
@@ -128,6 +137,12 @@ impl Environment {
                 env_ptr = format!("{:?}", environment_guard.env_ptr).as_str(),
                 "Environment already initialized, reusing it.",
             );
+
+            // NOTE: Cloning the lazy_static 'G_ENV' will increase its strong count by one.
+            //       If this 'Environment' is the only one in the process, the strong count
+            //       will be 2:
+            //          * one lazy_static 'G_ENV'
+            //          * one inside the 'Environment' returned
             Ok(Environment { env: G_ENV.clone() })
         }
     }
@@ -135,7 +150,7 @@ impl Environment {
     /// Create a new [`SessionBuilder`](../session/struct.SessionBuilder.html)
     /// used to create a new ONNX session.
     pub fn new_session_builder(&self) -> Result<SessionBuilder> {
-        SessionBuilder::new(self.clone())
+        SessionBuilder::new(self)
     }
 }
 
@@ -152,6 +167,11 @@ impl Drop for Environment {
             .lock()
             .expect("Failed to acquire lock: another thread panicked?");
 
+        // NOTE: If we drop an 'Environment' we (obviously) have _at least_
+        //       one 'G_ENV' strong count (the one in the 'env' member).
+        //       There is also the "original" 'G_ENV' which is a the lazy_static global.
+        //       If there is no other environment, the strong count should be two and we
+        //       can properly free the sys::OrtEnv pointer.
         if Arc::strong_count(&G_ENV) == 2 {
             let release_env = g_ort().ReleaseEnv.unwrap();
             let env_ptr: *mut sys::OrtEnv = *environment_guard.env_ptr.get_mut();
