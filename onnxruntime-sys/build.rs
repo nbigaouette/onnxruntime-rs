@@ -14,8 +14,7 @@ use std::{
 const ORT_VERSION: &str = "1.6.0";
 
 /// Base Url from which to download pre-built releases/
-/// https://github.wuyanzheshui.workers.dev/microsoft/onnxruntime/releases/download/v1.6.0/onnxruntime-osx-x64-1.6.0.tgz
-const ORT_RELEASE_BASE_URL: &str = "https://github.wuyanzheshui.workers.dev/microsoft/onnxruntime/releases/download";
+const ORT_RELEASE_BASE_URL: &str = "https://github.com/microsoft/onnxruntime/releases/download";
 
 /// Environment variable selecting which strategy to use for finding the library
 /// Possibilities:
