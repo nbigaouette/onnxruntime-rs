@@ -17,8 +17,8 @@ keywords = ["neuralnetworks", "onnx", "bindings"]
 [dependencies]
 
 [build-dependencies]
-bindgen = {version = "0.55", optional = true}
-ureq = "1.5.1"
+bindgen = { version = "0.56", optional = true }
+ureq = "2"
 
 # Used on Windows
 zip = "0.5"

@@ -11,10 +11,11 @@ use std::{
 /// WARNING: If version is changed, bindings for all platforms will have to be re-generated.
 ///          To do so, run this:
 ///              cargo build --package onnxruntime-sys --features generate-bindings
-const ORT_VERSION: &str = "1.5.2";
+const ORT_VERSION: &str = "1.6.0";
 
 /// Base Url from which to download pre-built releases/
-const ORT_RELEASE_BASE_URL: &str = "https://github.com/microsoft/onnxruntime/releases/download";
+/// https://github.wuyanzheshui.workers.dev/microsoft/onnxruntime/releases/download/v1.6.0/onnxruntime-osx-x64-1.6.0.tgz
+const ORT_RELEASE_BASE_URL: &str = "https://github.wuyanzheshui.workers.dev/microsoft/onnxruntime/releases/download";
 
 /// Environment variable selecting which strategy to use for finding the library
 /// Possibilities:
@@ -106,14 +107,18 @@ fn generate_bindings(include_dir: &Path) {
 }
 
 fn download<P: AsRef<Path>>(source_url: &str, target_file: P) {
-    let resp = ureq::get(source_url)
-        .timeout_connect(1_000) // 1 second
+    let agent = ureq::AgentBuilder::new()
+        .timeout_read(std::time::Duration::from_secs(1)) // 1 second
         .timeout(std::time::Duration::from_secs(300))
-        .call();
+        .build();
 
-    if resp.error() {
+    let resp = agent.get(source_url).call();
+
+    if resp.is_err() {
         panic!("ERROR: Failed to download {}: {:#?}", source_url, resp);
     }
+
+    let resp = resp.unwrap();
 
     let len = resp
         .header("Content-Length")
@@ -154,7 +159,7 @@ fn extract_zip(filename: &Path, outpath: &Path) {
     for i in 0..archive.len() {
         let mut file = archive.by_index(i).unwrap();
         #[allow(deprecated)]
-        let outpath = outpath.join(file.sanitized_name());
+            let outpath = outpath.join(file.sanitized_name());
         if !(&*file.name()).ends_with('/') {
             println!(
                 "File {} extracted to \"{}\" ({} bytes)",
