@@ -6,11 +6,8 @@
 #![allow(improper_ctypes)]
 
 #[allow(clippy::all)]
-
-include!(concat!(
-    env!("CARGO_MANIFEST_DIR"),
-    "/src/generated/bindings.rs"
-));
+mod bindings;
+pub use bindings::*;
 
 #[cfg(target_os = "windows")]
 pub type OnnxEnumInt = i32;

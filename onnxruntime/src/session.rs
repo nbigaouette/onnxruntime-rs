@@ -405,18 +405,37 @@ impl<'a> Session<'a> {
             .map(|n| n.as_ptr() as *const i8)
             .collect();
 
-        let output_shapes: Vec<Vec<usize>> = {
+        let output_shapes: Vec<Vec<usize>> = unsafe {
             let mut tmp = Vec::new();
-            for (idx, output) in self.outputs.iter().enumerate() {
-                let v: Vec<_> = output
-                    .dimensions
-                    .iter()
-                    .enumerate()
-                    .map(|(jdx, dim)| match dim {
-                        None => input_arrays[idx].shape()[jdx],
-                        Some(d) => *d as usize,
-                    })
-                    .collect();
+            for output in output_tensor_extractors_ptrs.iter() {
+                let mut tensor_info: *mut sys::OrtTensorTypeAndShapeInfo = std::ptr::null_mut();
+                let status = g_ort().GetTensorTypeAndShape.unwrap()(
+                    *output,
+                    &mut tensor_info as *mut *mut sys::OrtTensorTypeAndShapeInfo,
+                );
+                status_to_result(status).map_err(OrtError::Run)?;
+
+                let mut dim_size: sys::size_t = 0;
+                let status = g_ort().GetDimensionsCount.unwrap()(
+                    tensor_info,
+                    &mut dim_size as *mut sys::size_t,
+                );
+                if !status.is_null() {
+                    g_ort().ReleaseTensorTypeAndShapeInfo.unwrap()(tensor_info);
+                }
+                status_to_result(status).map_err(OrtError::Run)?;
+
+                let mut v = vec![0usize; dim_size as usize];
+                let status = g_ort().GetDimensions.unwrap()(
+                    tensor_info,
+                    v.as_mut_ptr() as *mut i64,
+                    dim_size,
+                );
+                if !status.is_null() {
+                    g_ort().ReleaseTensorTypeAndShapeInfo.unwrap()(tensor_info);
+                }
+                status_to_result(status).map_err(OrtError::Run)?;
+                g_ort().ReleaseTensorTypeAndShapeInfo.unwrap()(tensor_info);
                 tmp.push(v);
             }
             tmp

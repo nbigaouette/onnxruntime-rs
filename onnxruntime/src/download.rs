@@ -78,10 +78,15 @@ impl AvailableOnnxModel {
                 "Downloading file, please wait....",
             );
 
-            let resp = ureq::get(url)
-                .timeout_connect(1_000) // 1 second
-                .timeout(Duration::from_secs(180)) // 3 minutes
-                .call();
+            let agent = ureq::AgentBuilder::new()
+                .timeout_connect(1_000) // 1 second	                .timeout_read(std::time::Duration::from_secs(1)) // 1 second
+                .timeout(Duration::from_secs(180)) // 3 minutes	                .timeout(std::time::Duration::from_secs(180))// 3 minutes
+                .build();
+
+            let resp = agent
+                .get(url)
+                .call()
+                .map_err(OrtDownloadError::DownloadError)?;
 
             assert!(resp.has("Content-Length"));
             let len = resp

@@ -128,6 +128,9 @@ pub enum OrtApiError {
 #[non_exhaustive]
 #[derive(Error, Debug)]
 pub enum OrtDownloadError {
+    /// Generic download error
+    #[error("Error downloading data")]
+    DownloadError(#[from] ureq::Error),
     /// Generic input/output error
     #[error("Error downloading data to file: {0}")]
     IoError(#[from] io::Error),
