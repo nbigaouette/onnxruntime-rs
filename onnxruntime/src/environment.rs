@@ -294,6 +294,7 @@ mod tests {
         assert_eq!(G_ENV.env_ptr(), std::ptr::null_mut());
     }
 
+    #[ignore]
     #[test]
     fn sequential_environment_creation() {
         let _concurrent_run_lock_guard = CONCURRENT_TEST_RUN.single_test_run();
