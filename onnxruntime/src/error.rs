@@ -62,6 +62,9 @@ pub enum OrtError {
     /// Error occurred when checking if ONNX tensor was properly initialized
     #[error("Failed to check if tensor: {0}")]
     IsTensor(OrtApiError),
+    /// Error occurred when getting tensor type and shape
+    #[error("Failed to get tensor type and shape: {0}")]
+    GetTensorTypeAndShape(OrtApiError),
     /// Error occurred when ONNX inference operation was called
     #[error("Failed to run: {0}")]
     Run(OrtApiError),
