@@ -117,7 +117,7 @@ pub enum NonMatchingDimensionsError {
 #[derive(Error, Debug)]
 pub enum OrtApiError {
     /// Details as reported by the ONNX C API in case of error
-    #[error("Error calling ONNX Runtime C function")]
+    #[error("Error calling ONNX Runtime C function: {0}")]
     Msg(String),
     /// Details as reported by the ONNX C API in case of error cannot be converted to UTF-8
     #[error("Error calling ONNX Runtime C function and failed to convert error message to UTF-8")]
