@@ -1,9 +1,9 @@
 //! Module containing tensor with memory owned by Rust
 
-use std::{fmt::Debug, ops::Deref};
+use std::{fmt::Debug, ops::Deref, ops::DerefMut};
 
 use ndarray::Array;
-use tracing::{debug, error};
+use tracing::{error, trace};
 
 use onnxruntime_sys as sys;
 
@@ -90,15 +90,25 @@ where
     }
 }
 
+impl<'t, T, D> DerefMut for OrtTensor<'t, T, D>
+where
+    T: TypeToTensorElementDataType + Debug + Clone,
+    D: ndarray::Dimension,
+{
+    fn deref_mut(&mut self) -> &mut <Self as Deref>::Target {
+        &mut self.array
+    }
+}
+
 impl<'t, T, D> Drop for OrtTensor<'t, T, D>
 where
     T: TypeToTensorElementDataType + Debug + Clone,
     D: ndarray::Dimension,
 {
-    #[tracing::instrument]
+    #[tracing::instrument(level = "trace")]
     fn drop(&mut self) {
         // We need to let the C part free
-        debug!("Dropping Tensor.");
+        trace!("Dropping Tensor.");
         if self.c_ptr.is_null() {
             error!("Null pointer, not calling free.");
         } else {

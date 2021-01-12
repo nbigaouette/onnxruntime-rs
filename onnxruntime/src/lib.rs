@@ -125,6 +125,7 @@ pub mod download;
 pub mod environment;
 pub mod error;
 mod memory;
+pub mod runner;
 pub mod session;
 pub mod tensor;
 

@@ -1,8 +1,11 @@
 #![forbid(unsafe_code)]
 
 use onnxruntime::{
-    environment::Environment, ndarray::Array, tensor::OrtOwnedTensor, GraphOptimizationLevel,
-    LoggingLevel,
+    environment::Environment,
+    ndarray::{Array, Ix4, IxDyn},
+    runner::{Outputs, Runner},
+    tensor::OrtOwnedTensor,
+    GraphOptimizationLevel, LoggingLevel,
 };
 use tracing::Level;
 use tracing_subscriber::FmtSubscriber;
@@ -61,12 +64,31 @@ fn run() -> Result<(), Error> {
         .unwrap();
     let input_tensor_values = vec![array];
 
-    let outputs: Vec<OrtOwnedTensor<f32, _>> = session.run(input_tensor_values)?;
+    // You can simply run the session with the input to get the output...
+    // let outputs: Vec<OrtOwnedTensor<f32, _>> = session.run(input_tensor_values)?;
 
-    assert_eq!(outputs[0].shape(), output0_shape.as_slice());
-    for i in 0..5 {
-        println!("Score for class [{}] =  {}", i, outputs[0][[0, i, 0, 0]]);
-    }
+    // Or, you can build a runner to pre-allocate the output
+    let mut runner = session
+        .make_runner(input_tensor_values)
+        .with_output::<f32, Ix4>()?;
+    runner.execute()?;
+
+    print_runner_outputs(&runner);
+
+    // Since the runner now owns the input and keep it alive, we can access it
+    // and modify it without reallocation.
+    *(&mut runner.inputs()[0]) *= 2.0f32;
+    runner.execute()?;
+
+    print_runner_outputs(&runner);
 
     Ok(())
+}
+
+fn print_runner_outputs(runner: &Runner<f32, IxDyn, f32, Ix4>) {
+    let outputs: Outputs<f32, Ix4> = runner.outputs();
+    let output = &outputs[0];
+    for i in 0..5 {
+        println!("Score for class [{}] =  {}", i, output[[0, i, 0, 0]]);
+    }
 }

@@ -10,7 +10,7 @@ use std::os::windows::ffi::OsStrExt;
 #[cfg(feature = "model-fetching")]
 use std::env;
 
-use ndarray::Array;
+use ndarray::{Array, Dimension};
 use tracing::{debug, error};
 
 use onnxruntime_sys as sys;
@@ -21,6 +21,7 @@ use crate::{
     error::{status_to_result, NonMatchingDimensionsError, OrtError, Result},
     g_ort,
     memory::MemoryInfo,
+    runner::{Element, RunnerBuilder},
     tensor::{
         ort_owned_tensor::{OrtOwnedTensor, OrtOwnedTensorExtractor},
         OrtTensor,
@@ -291,9 +292,9 @@ impl<'a> SessionBuilder<'a> {
 #[derive(Debug)]
 pub struct Session<'a> {
     env: &'a Environment,
-    session_ptr: *mut sys::OrtSession,
+    pub(crate) session_ptr: *mut sys::OrtSession,
     allocator_ptr: *mut sys::OrtAllocator,
-    memory_info: MemoryInfo,
+    pub(crate) memory_info: MemoryInfo,
     /// Information about the ONNX's inputs as stored in loaded file
     pub inputs: Vec<Input>,
     /// Information about the ONNX's outputs as stored in loaded file
@@ -361,6 +362,13 @@ impl<'a> Drop for Session<'a> {
 }
 
 impl<'a> Session<'a> {
+    pub fn make_runner<T: Element, D: Dimension, I: IntoIterator<Item = Array<T, D>>>(
+        &self,
+        input_arrays: I,
+    ) -> RunnerBuilder<'_, 'a, T, D> {
+        RunnerBuilder::new(self, input_arrays)
+    }
+
     /// Run the input data through the ONNX graph, performing inference.
     ///
     /// Note that ONNX models can have multiple inputs; a `Vec<_>` is thus
@@ -475,7 +483,7 @@ impl<'a> Session<'a> {
     //     Tensor::from_array(self, array)
     // }
 
-    fn validate_input_shapes<TIn, D>(&mut self, input_arrays: &[Array<TIn, D>]) -> Result<()>
+    pub(crate) fn validate_input_shapes<TIn, D>(&self, input_arrays: &[Array<TIn, D>]) -> Result<()>
     where
         TIn: TypeToTensorElementDataType + Debug + Clone,
         D: ndarray::Dimension,
