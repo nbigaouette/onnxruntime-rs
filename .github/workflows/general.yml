@@ -109,8 +109,8 @@ jobs:
             target: x86_64-apple-darwin
           - os: windows-latest
             target: x86_64-pc-windows-msvc
-          - os: windows-latest
-            target: i686-pc-windows-msvc
+          # - os: windows-latest
+          #   target: i686-pc-windows-msvc
     env:
       CARGO_BUILD_TARGET: ${{ matrix.target }}
     steps:
