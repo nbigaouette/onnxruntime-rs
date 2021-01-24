@@ -406,7 +406,7 @@ impl<'a> Session<'a> {
             .collect();
 
         let mut output_tensor_extractors_ptrs: Vec<*mut sys::OrtValue> =
-            vec![std::ptr::null_mut(); output_names_ptr.len()];
+            vec![std::ptr::null_mut(); self.outputs.len()];
 
         // The C API expects pointers for the arrays (pointers to C-arrays)
         let input_ort_tensors: Vec<OrtTensor<TIn, D>> = input_arrays
@@ -434,54 +434,23 @@ impl<'a> Session<'a> {
         };
         status_to_result(status).map_err(OrtError::Run)?;
 
-        let output_shapes: Vec<Vec<usize>> = unsafe {
-            let mut tmp = Vec::new();
-            for output in output_tensor_extractors_ptrs.iter() {
-                let mut tensor_info: *mut sys::OrtTensorTypeAndShapeInfo = std::ptr::null_mut();
-                let status = g_ort().GetTensorTypeAndShape.unwrap()(
-                    *output,
-                    &mut tensor_info as *mut *mut sys::OrtTensorTypeAndShapeInfo,
-                );
-                status_to_result(status).map_err(OrtError::Run)?;
-
-                let mut dim_size: sys::size_t = 0;
-                let status = g_ort().GetDimensionsCount.unwrap()(
-                    tensor_info,
-                    &mut dim_size as *mut sys::size_t,
-                );
-                if !status.is_null() {
-                    g_ort().ReleaseTensorTypeAndShapeInfo.unwrap()(tensor_info);
-                }
-                status_to_result(status).map_err(OrtError::Run)?;
-
-                let mut v = vec![0usize; dim_size as usize];
-                let status = g_ort().GetDimensions.unwrap()(
-                    tensor_info,
-                    v.as_mut_ptr() as *mut i64,
-                    dim_size,
-                );
-                if !status.is_null() {
-                    g_ort().ReleaseTensorTypeAndShapeInfo.unwrap()(tensor_info);
-                }
-                status_to_result(status).map_err(OrtError::Run)?;
-                g_ort().ReleaseTensorTypeAndShapeInfo.unwrap()(tensor_info);
-                tmp.push(v);
-            }
-            tmp
-        };
         let memory_info_ref = &self.memory_info;
-        let output_tensor_extractors: Vec<OrtOwnedTensorExtractor<ndarray::IxDyn>> = output_shapes
-            .iter()
-            .map(|output_shape| {
-                OrtOwnedTensorExtractor::new(memory_info_ref, ndarray::IxDyn(output_shape))
-            })
-            .collect();
-
         let outputs: Result<Vec<OrtOwnedTensor<TOut, ndarray::Dim<ndarray::IxDynImpl>>>> =
-            output_tensor_extractors
+            output_tensor_extractors_ptrs
                 .into_iter()
-                .zip(output_tensor_extractors_ptrs.into_iter())
-                .map(|(mut output_tensor_extractor, ptr)| {
+                .map(|ptr| {
+                    let mut tensor_info_ptr: *mut sys::OrtTensorTypeAndShapeInfo =
+                        std::ptr::null_mut();
+                    let status = unsafe {
+                        g_ort().GetTensorTypeAndShape.unwrap()(ptr, &mut tensor_info_ptr as _)
+                    };
+                    status_to_result(status).map_err(OrtError::GetTensorTypeAndShape)?;
+                    let dims = unsafe { get_tensor_dimensions(tensor_info_ptr) };
+                    unsafe { g_ort().ReleaseTensorTypeAndShapeInfo.unwrap()(tensor_info_ptr) };
+                    let dims: Vec<_> = dims?.iter().map(|&n| n as usize).collect();
+
+                    let mut output_tensor_extractor =
+                        OrtOwnedTensorExtractor::new(memory_info_ref, ndarray::IxDyn(&dims));
                     output_tensor_extractor.tensor_ptr = ptr;
                     output_tensor_extractor.extract::<TOut>()
                 })
@@ -577,6 +546,24 @@ impl<'a> Session<'a> {
 
         Ok(())
     }
+}
+
+unsafe fn get_tensor_dimensions(
+    tensor_info_ptr: *const sys::OrtTensorTypeAndShapeInfo,
+) -> Result<Vec<i64>> {
+    let mut num_dims = 0;
+    let status = g_ort().GetDimensionsCount.unwrap()(tensor_info_ptr, &mut num_dims);
+    status_to_result(status).map_err(OrtError::GetDimensionsCount)?;
+    assert_ne!(num_dims, 0);
+
+    let mut node_dims: Vec<i64> = vec![0; num_dims as usize];
+    let status = g_ort().GetDimensions.unwrap()(
+        tensor_info_ptr,
+        node_dims.as_mut_ptr(), // FIXME: UB?
+        num_dims,
+    );
+    status_to_result(status).map_err(OrtError::GetDimensions)?;
+    Ok(node_dims)
 }
 
 /// This module contains dangerous functions working on raw pointers.
@@ -713,22 +700,7 @@ mod dangerous {
 
         // info!("{} : type={}", i, type_);
 
-        // print input shapes/dims
-        let mut num_dims = 0;
-        let status = unsafe { g_ort().GetDimensionsCount.unwrap()(tensor_info_ptr, &mut num_dims) };
-        status_to_result(status).map_err(OrtError::GetDimensionsCount)?;
-        assert_ne!(num_dims, 0);
-
-        // info!("{} : num_dims={}", i, num_dims);
-        let mut node_dims: Vec<i64> = vec![0; num_dims as usize];
-        let status = unsafe {
-            g_ort().GetDimensions.unwrap()(
-                tensor_info_ptr,
-                node_dims.as_mut_ptr(), // FIXME: UB?
-                num_dims,
-            )
-        };
-        status_to_result(status).map_err(OrtError::GetDimensions)?;
+        let node_dims = unsafe { get_tensor_dimensions(tensor_info_ptr)? };
 
         // for j in 0..num_dims {
         //     info!("{} : dim {}={}", i, j, node_dims[j as usize]);

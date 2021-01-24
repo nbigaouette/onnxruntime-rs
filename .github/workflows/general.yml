@@ -97,27 +97,19 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        build:
-          - linux-gnu
-          - macos
-          - win-msvc
+        os: [
+          ubuntu-latest,
+          macos-latest,
+          windows-latest
+        ]
         include:
-          - build: linux-gnu
-            os: ubuntu-latest
-            rust: stable
+          - os: ubuntu-latest
             target: x86_64-unknown-linux-gnu
-          - build: macos
-            os: macOS-latest
-            rust: stable
+          - os: macos-latest
             target: x86_64-apple-darwin
-          # FIXME: Re-enable CI for Windows: https://github.com/nbigaouette/onnxruntime-rs/issues/43
-          # - build: win-msvc
-          #   os: windows-2019
-          #   rust: stable
-          #   target: x86_64-pc-windows-msvc
-          # - build: win-msvc
-          #   os: windows-2019
-          #   rust: stable
+          - os: windows-latest
+            target: x86_64-pc-windows-msvc
+          # - os: windows-latest
           #   target: i686-pc-windows-msvc
     env:
       CARGO_BUILD_TARGET: ${{ matrix.target }}
@@ -127,7 +119,7 @@ jobs:
         uses: actions-rs/toolchain@v1
         with:
           profile: minimal
-          toolchain: ${{ matrix.rust }}
+          toolchain: stable
           target: ${{ matrix.target }}
           override: true
       - name: Install additional packages (macOS)
@@ -200,7 +192,7 @@ jobs:
         with:
           args: "--ignore-tests"
       - name: Upload to codecov.io
-        uses: codecov/codecov-action@v1.0.2
+        uses: codecov/codecov-action@v1
         with:
           token: ${{secrets.CODECOV_TOKEN}}
       - name: Archive code coverage results

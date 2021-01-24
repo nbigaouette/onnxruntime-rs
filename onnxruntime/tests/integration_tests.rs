@@ -204,6 +204,94 @@ mod download {
             IMAGE_TO_LOAD, probabilities[0].0
         );
     }
+
+    // This test verifies that dynamically sized inputs and outputs work. It loads and runs
+    // upsample.onnx, which was produced via:
+    //
+    // ```
+    // import subprocess
+    // from tensorflow import keras
+    //
+    // m = keras.Sequential([
+    //     keras.layers.UpSampling2D(size=2)
+    // ])
+    // m.build(input_shape=(None, None, None, 3))
+    // m.summary()
+    // m.save('saved_model')
+    //
+    // subprocess.check_call([
+    //     'python', '-m', 'tf2onnx.convert',
+    //     '--saved-model', 'saved_model',
+    //     '--opset', '12',
+    //     '--output', 'upsample.onnx',
+    // ])
+    // ```
+    #[test]
+    fn upsample() {
+        const IMAGE_TO_LOAD: &str = "mushroom.png";
+
+        let environment = Environment::builder()
+            .with_name("integration_test")
+            .with_log_level(LoggingLevel::Warning)
+            .build()
+            .unwrap();
+
+        let mut session = environment
+            .new_session_builder()
+            .unwrap()
+            .with_optimization_level(GraphOptimizationLevel::Basic)
+            .unwrap()
+            .with_number_threads(1)
+            .unwrap()
+            .with_model_from_file(
+                Path::new(env!("CARGO_MANIFEST_DIR"))
+                    .join("tests")
+                    .join("data")
+                    .join("upsample.onnx"),
+            )
+            .expect("Could not open model from file");
+
+        assert_eq!(
+            session.inputs[0].dimensions().collect::<Vec<_>>(),
+            [None, None, None, Some(3)]
+        );
+        assert_eq!(
+            session.outputs[0].dimensions().collect::<Vec<_>>(),
+            [None, None, None, Some(3)]
+        );
+
+        // Load image, converting to RGB format
+        let image_buffer: ImageBuffer<Rgb<u8>, Vec<u8>> = image::open(
+            Path::new(env!("CARGO_MANIFEST_DIR"))
+                .join("tests")
+                .join("data")
+                .join(IMAGE_TO_LOAD),
+        )
+        .unwrap()
+        .to_rgb();
+
+        let array = ndarray::Array::from_shape_fn((1, 224, 224, 3), |(_, j, i, c)| {
+            let pixel = image_buffer.get_pixel(i as u32, j as u32);
+            let channels = pixel.channels();
+
+            // range [0, 255] -> range [0, 1]
+            (channels[c] as f32) / 255.0
+        });
+
+        // Just one input
+        let input_tensor_values = vec![array];
+
+        // Perform the inference
+        let outputs: Vec<
+            onnxruntime::tensor::OrtOwnedTensor<f32, ndarray::Dim<ndarray::IxDynImpl>>,
+        > = session.run(input_tensor_values).unwrap();
+
+        assert_eq!(outputs.len(), 1);
+        let output = &outputs[0];
+
+        // The image should have doubled in size
+        assert_eq!(output.shape(), [1, 448, 448, 3]);
+    }
 }
 
 fn get_imagenet_labels() -> Result<Vec<String>, io::Error> {

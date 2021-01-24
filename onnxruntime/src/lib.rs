@@ -163,7 +163,7 @@ fn g_ort() -> sys::OrtApi {
 }
 
 fn char_p_to_string(raw: *const i8) -> Result<String> {
-    let c_string = unsafe { std::ffi::CString::from_raw(raw as *mut i8) };
+    let c_string = unsafe { std::ffi::CStr::from_ptr(raw as *mut i8).to_owned() };
 
     match c_string.into_string() {
         Ok(string) => Ok(string),
@@ -478,5 +478,17 @@ impl Into<sys::OrtMemType> for MemType {
             // CPU => sys::OrtMemType::OrtMemTypeCPU,
             Default => sys::OrtMemType::OrtMemTypeDefault,
         }
+    }
+}
+
+#[cfg(test)]
+mod test {
+    use super::*;
+
+    #[test]
+    fn test_char_p_to_string() {
+        let s = std::ffi::CString::new("foo").unwrap();
+        let ptr = s.as_c_str().as_ptr();
+        assert_eq!("foo", char_p_to_string(ptr).unwrap());
     }
 }

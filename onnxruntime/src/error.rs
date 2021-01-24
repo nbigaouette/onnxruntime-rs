@@ -62,6 +62,9 @@ pub enum OrtError {
     /// Error occurred when checking if ONNX tensor was properly initialized
     #[error("Failed to check if tensor: {0}")]
     IsTensor(OrtApiError),
+    /// Error occurred when getting tensor type and shape
+    #[error("Failed to get tensor type and shape: {0}")]
+    GetTensorTypeAndShape(OrtApiError),
     /// Error occurred when ONNX inference operation was called
     #[error("Failed to run: {0}")]
     Run(OrtApiError),
@@ -117,7 +120,7 @@ pub enum NonMatchingDimensionsError {
 #[derive(Error, Debug)]
 pub enum OrtApiError {
     /// Details as reported by the ONNX C API in case of error
-    #[error("Error calling ONNX Runtime C function")]
+    #[error("Error calling ONNX Runtime C function: {0}")]
     Msg(String),
     /// Details as reported by the ONNX C API in case of error cannot be converted to UTF-8
     #[error("Error calling ONNX Runtime C function and failed to convert error message to UTF-8")]
