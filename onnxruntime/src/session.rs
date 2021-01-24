@@ -405,6 +405,35 @@ impl<'a> Session<'a> {
             .map(|n| n.as_ptr() as *const i8)
             .collect();
 
+        let mut output_tensor_extractors_ptrs: Vec<*mut sys::OrtValue> =
+            vec![std::ptr::null_mut(); output_names_ptr.len()];
+
+        // The C API expects pointers for the arrays (pointers to C-arrays)
+        let input_ort_tensors: Vec<OrtTensor<TIn, D>> = input_arrays
+            .into_iter()
+            .map(|input_array| OrtTensor::from_array(&self.memory_info, input_array))
+            .collect::<Result<Vec<OrtTensor<TIn, D>>>>()?;
+        let input_ort_values: Vec<*const sys::OrtValue> = input_ort_tensors
+            .iter()
+            .map(|input_array_ort| input_array_ort.c_ptr as *const sys::OrtValue)
+            .collect();
+
+        let run_options_ptr: *const sys::OrtRunOptions = std::ptr::null();
+
+        let status = unsafe {
+            g_ort().Run.unwrap()(
+                self.session_ptr,
+                run_options_ptr,
+                input_names_ptr.as_ptr(),
+                input_ort_values.as_ptr(),
+                input_ort_values.len() as u64, // C API expects a u64, not isize
+                output_names_ptr.as_ptr(),
+                output_names_ptr.len() as u64, // C API expects a u64, not isize
+                output_tensor_extractors_ptrs.as_mut_ptr(),
+            )
+        };
+        status_to_result(status).map_err(OrtError::Run)?;
+
         let output_shapes: Vec<Vec<usize>> = unsafe {
             let mut tmp = Vec::new();
             for output in output_tensor_extractors_ptrs.iter() {
@@ -447,35 +476,6 @@ impl<'a> Session<'a> {
                 OrtOwnedTensorExtractor::new(memory_info_ref, ndarray::IxDyn(output_shape))
             })
             .collect();
-
-        let mut output_tensor_extractors_ptrs: Vec<*mut sys::OrtValue> =
-            vec![std::ptr::null_mut(); output_tensor_extractors.len()];
-
-        // The C API expects pointers for the arrays (pointers to C-arrays)
-        let input_ort_tensors: Vec<OrtTensor<TIn, D>> = input_arrays
-            .into_iter()
-            .map(|input_array| OrtTensor::from_array(&self.memory_info, input_array))
-            .collect::<Result<Vec<OrtTensor<TIn, D>>>>()?;
-        let input_ort_values: Vec<*const sys::OrtValue> = input_ort_tensors
-            .iter()
-            .map(|input_array_ort| input_array_ort.c_ptr as *const sys::OrtValue)
-            .collect();
-
-        let run_options_ptr: *const sys::OrtRunOptions = std::ptr::null();
-
-        let status = unsafe {
-            g_ort().Run.unwrap()(
-                self.session_ptr,
-                run_options_ptr,
-                input_names_ptr.as_ptr(),
-                input_ort_values.as_ptr(),
-                input_ort_values.len() as u64, // C API expects a u64, not isize
-                output_names_ptr.as_ptr(),
-                output_names_ptr.len() as u64, // C API expects a u64, not isize
-                output_tensor_extractors_ptrs.as_mut_ptr(),
-            )
-        };
-        status_to_result(status).map_err(OrtError::Run)?;
 
         let outputs: Result<Vec<OrtOwnedTensor<TOut, ndarray::Dim<ndarray::IxDynImpl>>>> =
             output_tensor_extractors

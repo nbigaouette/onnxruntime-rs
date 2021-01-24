@@ -19,7 +19,7 @@ name = "integration_tests"
 required-features = ["model-fetching"]
 
 [dependencies]
-onnxruntime-sys = {version = "0.0.10", path = "../onnxruntime-sys"}
+onnxruntime-sys = { version = "0.0.10", path = "../onnxruntime-sys" }
 
 lazy_static = "1.4"
 ndarray = "0.14"
@@ -27,11 +27,11 @@ thiserror = "1.0"
 tracing = "0.1"
 
 # Enabled with 'model-fetching' feature
-ureq = {version = "1.5.1", optional = true}
+ureq = { version = "2", optional = true }
 
 [dev-dependencies]
 image = "0.23"
-test-env-log = {version = "0.2", default-features = false, features = ["trace"]}
+test-env-log = { version = "0.2", default-features = false, features = ["trace"] }
 tracing-subscriber = "0.2"
 ureq = "2.0"
 
