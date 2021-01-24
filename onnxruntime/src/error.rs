@@ -132,6 +132,7 @@ pub enum OrtApiError {
 #[derive(Error, Debug)]
 pub enum OrtDownloadError {
     /// Generic download error
+    #[cfg(feature = "model-fetching")]
     #[error("Error downloading data")]
     DownloadError(#[from] ureq::Error),
     /// Generic input/output error
