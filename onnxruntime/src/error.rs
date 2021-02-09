@@ -56,9 +56,15 @@ pub enum OrtError {
     /// Error occurred when creating CPU memory information
     #[error("Failed to get dimensions: {0}")]
     CreateCpuMemoryInfo(OrtApiError),
+    /// Error occurred when creating ONNX tensor
+    #[error("Failed to create tensor: {0}")]
+    CreateTensor(OrtApiError),
     /// Error occurred when creating ONNX tensor with specific data
     #[error("Failed to create tensor with data: {0}")]
     CreateTensorWithData(OrtApiError),
+    /// Error occurred when filling a tensor with string data
+    #[error("Failed to fill string tensor: {0}")]
+    FillStringTensor(OrtApiError),
     /// Error occurred when checking if ONNX tensor was properly initialized
     #[error("Failed to check if tensor: {0}")]
     IsTensor(OrtApiError),
@@ -183,4 +189,11 @@ pub(crate) fn status_to_result(
 ) -> std::result::Result<(), OrtApiError> {
     let status_wrapper: OrtStatusWrapper = status.into();
     status_wrapper.into()
+}
+
+/// A wrapper around a function on OrtApi that maps the status code into [OrtApiError]
+pub(crate) unsafe fn call_ort<F: FnMut(sys::OrtApi) -> *const sys::OrtStatus>(
+    mut block: F,
+) -> std::result::Result<(), OrtApiError> {
+    status_to_result(block(g_ort()))
 }
