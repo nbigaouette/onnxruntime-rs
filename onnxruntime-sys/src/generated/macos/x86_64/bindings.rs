@@ -112,7 +112,6 @@ pub const __MAC_10_14_1: u32 = 101401;
 pub const __MAC_10_14_4: u32 = 101404;
 pub const __MAC_10_15: u32 = 101500;
 pub const __MAC_10_15_1: u32 = 101501;
-pub const __MAC_10_15_4: u32 = 101504;
 pub const __IPHONE_2_0: u32 = 20000;
 pub const __IPHONE_2_1: u32 = 20100;
 pub const __IPHONE_2_2: u32 = 20200;
@@ -154,10 +153,6 @@ pub const __IPHONE_12_3: u32 = 120300;
 pub const __IPHONE_13_0: u32 = 130000;
 pub const __IPHONE_13_1: u32 = 130100;
 pub const __IPHONE_13_2: u32 = 130200;
-pub const __IPHONE_13_3: u32 = 130300;
-pub const __IPHONE_13_4: u32 = 130400;
-pub const __IPHONE_13_5: u32 = 130500;
-pub const __IPHONE_13_6: u32 = 130600;
 pub const __TVOS_9_0: u32 = 90000;
 pub const __TVOS_9_1: u32 = 90100;
 pub const __TVOS_9_2: u32 = 90200;
@@ -175,9 +170,7 @@ pub const __TVOS_12_1: u32 = 120100;
 pub const __TVOS_12_2: u32 = 120200;
 pub const __TVOS_12_3: u32 = 120300;
 pub const __TVOS_13_0: u32 = 130000;
-pub const __TVOS_13_2: u32 = 130200;
-pub const __TVOS_13_3: u32 = 130300;
-pub const __TVOS_13_4: u32 = 130400;
+pub const __TVOS_13_1: u32 = 130100;
 pub const __WATCHOS_1_0: u32 = 10000;
 pub const __WATCHOS_2_0: u32 = 20000;
 pub const __WATCHOS_2_1: u32 = 20100;
@@ -194,8 +187,7 @@ pub const __WATCHOS_5_0: u32 = 50000;
 pub const __WATCHOS_5_1: u32 = 50100;
 pub const __WATCHOS_5_2: u32 = 50200;
 pub const __WATCHOS_6_0: u32 = 60000;
-pub const __WATCHOS_6_1: u32 = 60100;
-pub const __WATCHOS_6_2: u32 = 60200;
+pub const __WATCHOS_6_0_1: u32 = 60001;
 pub const __DRIVERKIT_19_0: u32 = 190000;
 pub const __MAC_OS_X_VERSION_MAX_ALLOWED: u32 = 101500;
 pub const __ENABLE_LEGACY_MAC_AVAILABILITY: u32 = 1;
@@ -475,7 +467,7 @@ pub const EXIT_SUCCESS: u32 = 0;
 pub const RAND_MAX: u32 = 2147483647;
 pub const _USE_FORTIFY_LEVEL: u32 = 2;
 pub const __HAS_FIXED_CHK_PROTOTYPES: u32 = 1;
-pub const ORT_API_VERSION: u32 = 5;
+pub const ORT_API_VERSION: u32 = 6;
 pub type __int8_t = ::std::os::raw::c_schar;
 pub type __uint8_t = ::std::os::raw::c_uchar;
 pub type __int16_t = ::std::os::raw::c_short;
@@ -11209,14 +11201,6 @@ extern "C" {
 extern "C" {
     pub fn flsll(arg1: ::std::os::raw::c_longlong) -> ::std::os::raw::c_int;
 }
-pub const kOrtSessionOptionsConfigDisablePrepacking: &'static [u8; 27usize] =
-    b"session.disable_prepacking\0";
-pub const kOrtSessionOptionsConfigUseEnvAllocators: &'static [u8; 27usize] =
-    b"session.use_env_allocators\0";
-pub const kOrtSessionOptionsConfigLoadModelFormat: &'static [u8; 26usize] =
-    b"session.load_model_format\0";
-pub const kOrtSessionOptionsConfigSaveModelFormat: &'static [u8; 26usize] =
-    b"session.save_model_format\0";
 #[repr(u32)]
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
 pub enum ONNXTensorElementDataType {
@@ -11272,73 +11256,6 @@ pub enum OrtErrorCode {
     ORT_NOT_IMPLEMENTED = 9,
     ORT_INVALID_GRAPH = 10,
     ORT_EP_FAIL = 11,
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct OrtArenaCfg {
-    pub max_mem: size_t,
-    pub arena_extend_strategy: ::std::os::raw::c_int,
-    pub initial_chunk_size_bytes: ::std::os::raw::c_int,
-    pub max_dead_bytes_per_chunk: ::std::os::raw::c_int,
-}
-#[test]
-fn bindgen_test_layout_OrtArenaCfg() {
-    assert_eq!(
-        ::std::mem::size_of::<OrtArenaCfg>(),
-        24usize,
-        concat!("Size of: ", stringify!(OrtArenaCfg))
-    );
-    assert_eq!(
-        ::std::mem::align_of::<OrtArenaCfg>(),
-        8usize,
-        concat!("Alignment of ", stringify!(OrtArenaCfg))
-    );
-    assert_eq!(
-        unsafe { &(*(::std::ptr::null::<OrtArenaCfg>())).max_mem as *const _ as usize },
-        0usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(OrtArenaCfg),
-            "::",
-            stringify!(max_mem)
-        )
-    );
-    assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<OrtArenaCfg>())).arena_extend_strategy as *const _ as usize
-        },
-        8usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(OrtArenaCfg),
-            "::",
-            stringify!(arena_extend_strategy)
-        )
-    );
-    assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<OrtArenaCfg>())).initial_chunk_size_bytes as *const _ as usize
-        },
-        12usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(OrtArenaCfg),
-            "::",
-            stringify!(initial_chunk_size_bytes)
-        )
-    );
-    assert_eq!(
-        unsafe {
-            &(*(::std::ptr::null::<OrtArenaCfg>())).max_dead_bytes_per_chunk as *const _ as usize
-        },
-        16usize,
-        concat!(
-            "Offset of field: ",
-            stringify!(OrtArenaCfg),
-            "::",
-            stringify!(max_dead_bytes_per_chunk)
-        )
-    );
 }
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
@@ -11418,6 +11335,11 @@ pub struct OrtThreadPoolParams {
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
 pub struct OrtThreadingOptions {
+    _unused: [u8; 0],
+}
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct OrtArenaCfg {
     _unused: [u8; 0],
 }
 pub type OrtStatusPtr = *mut OrtStatus;
@@ -11521,6 +11443,7 @@ pub enum OrtLanguageProjection {
     ORT_PROJECTION_PYTHON = 3,
     ORT_PROJECTION_JAVA = 4,
     ORT_PROJECTION_WINML = 5,
+    ORT_PROJECTION_NODEJS = 6,
 }
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
@@ -11550,6 +11473,175 @@ pub enum OrtMemType {
     OrtMemTypeCPUInput = -2,
     OrtMemTypeCPUOutput = -1,
     OrtMemTypeDefault = 0,
+}
+#[repr(u32)]
+#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
+pub enum OrtCudnnConvAlgoSearch {
+    EXHAUSTIVE = 0,
+    HEURISTIC = 1,
+    DEFAULT = 2,
+}
+#[doc = " <summary>"]
+#[doc = " Options for the CUDA provider that are passed to SessionOptionsAppendExecutionProvider_CUDA"]
+#[doc = " </summary>"]
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct OrtCUDAProviderOptions {
+    pub device_id: ::std::os::raw::c_int,
+    pub cudnn_conv_algo_search: OrtCudnnConvAlgoSearch,
+    pub cuda_mem_limit: size_t,
+    pub arena_extend_strategy: ::std::os::raw::c_int,
+    pub do_copy_in_default_stream: ::std::os::raw::c_int,
+}
+#[test]
+fn bindgen_test_layout_OrtCUDAProviderOptions() {
+    assert_eq!(
+        ::std::mem::size_of::<OrtCUDAProviderOptions>(),
+        24usize,
+        concat!("Size of: ", stringify!(OrtCUDAProviderOptions))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<OrtCUDAProviderOptions>(),
+        8usize,
+        concat!("Alignment of ", stringify!(OrtCUDAProviderOptions))
+    );
+    assert_eq!(
+        unsafe {
+            &(*(::std::ptr::null::<OrtCUDAProviderOptions>())).device_id as *const _ as usize
+        },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(OrtCUDAProviderOptions),
+            "::",
+            stringify!(device_id)
+        )
+    );
+    assert_eq!(
+        unsafe {
+            &(*(::std::ptr::null::<OrtCUDAProviderOptions>())).cudnn_conv_algo_search as *const _
+                as usize
+        },
+        4usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(OrtCUDAProviderOptions),
+            "::",
+            stringify!(cudnn_conv_algo_search)
+        )
+    );
+    assert_eq!(
+        unsafe {
+            &(*(::std::ptr::null::<OrtCUDAProviderOptions>())).cuda_mem_limit as *const _ as usize
+        },
+        8usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(OrtCUDAProviderOptions),
+            "::",
+            stringify!(cuda_mem_limit)
+        )
+    );
+    assert_eq!(
+        unsafe {
+            &(*(::std::ptr::null::<OrtCUDAProviderOptions>())).arena_extend_strategy as *const _
+                as usize
+        },
+        16usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(OrtCUDAProviderOptions),
+            "::",
+            stringify!(arena_extend_strategy)
+        )
+    );
+    assert_eq!(
+        unsafe {
+            &(*(::std::ptr::null::<OrtCUDAProviderOptions>())).do_copy_in_default_stream as *const _
+                as usize
+        },
+        20usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(OrtCUDAProviderOptions),
+            "::",
+            stringify!(do_copy_in_default_stream)
+        )
+    );
+}
+#[doc = " <summary>"]
+#[doc = " Options for the OpenVINO provider that are passed to SessionOptionsAppendExecutionProvider_OpenVINO"]
+#[doc = " </summary>"]
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct OrtOpenVINOProviderOptions {
+    pub device_type: *const ::std::os::raw::c_char,
+    pub enable_vpu_fast_compile: ::std::os::raw::c_uchar,
+    pub device_id: *const ::std::os::raw::c_char,
+    pub num_of_threads: size_t,
+}
+#[test]
+fn bindgen_test_layout_OrtOpenVINOProviderOptions() {
+    assert_eq!(
+        ::std::mem::size_of::<OrtOpenVINOProviderOptions>(),
+        32usize,
+        concat!("Size of: ", stringify!(OrtOpenVINOProviderOptions))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<OrtOpenVINOProviderOptions>(),
+        8usize,
+        concat!("Alignment of ", stringify!(OrtOpenVINOProviderOptions))
+    );
+    assert_eq!(
+        unsafe {
+            &(*(::std::ptr::null::<OrtOpenVINOProviderOptions>())).device_type as *const _ as usize
+        },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(OrtOpenVINOProviderOptions),
+            "::",
+            stringify!(device_type)
+        )
+    );
+    assert_eq!(
+        unsafe {
+            &(*(::std::ptr::null::<OrtOpenVINOProviderOptions>())).enable_vpu_fast_compile
+                as *const _ as usize
+        },
+        8usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(OrtOpenVINOProviderOptions),
+            "::",
+            stringify!(enable_vpu_fast_compile)
+        )
+    );
+    assert_eq!(
+        unsafe {
+            &(*(::std::ptr::null::<OrtOpenVINOProviderOptions>())).device_id as *const _ as usize
+        },
+        16usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(OrtOpenVINOProviderOptions),
+            "::",
+            stringify!(device_id)
+        )
+    );
+    assert_eq!(
+        unsafe {
+            &(*(::std::ptr::null::<OrtOpenVINOProviderOptions>())).num_of_threads as *const _
+                as usize
+        },
+        24usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(OrtOpenVINOProviderOptions),
+            "::",
+            stringify!(num_of_threads)
+        )
+    );
 }
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
@@ -11613,7 +11705,7 @@ pub struct OrtApi {
     >,
     pub CreateEnv: ::std::option::Option<
         unsafe extern "C" fn(
-            default_logging_level: OrtLoggingLevel,
+            logging_level: OrtLoggingLevel,
             logid: *const ::std::os::raw::c_char,
             out: *mut *mut OrtEnv,
         ) -> OrtStatusPtr,
@@ -11622,7 +11714,7 @@ pub struct OrtApi {
         unsafe extern "C" fn(
             logging_function: OrtLoggingFunction,
             logger_param: *mut ::std::os::raw::c_void,
-            default_warning_level: OrtLoggingLevel,
+            logging_level: OrtLoggingLevel,
             logid: *const ::std::os::raw::c_char,
             out: *mut *mut OrtEnv,
         ) -> OrtStatusPtr,
@@ -11747,7 +11839,7 @@ pub struct OrtApi {
     pub CustomOpDomain_Add: ::std::option::Option<
         unsafe extern "C" fn(
             custom_op_domain: *mut OrtCustomOpDomain,
-            op: *mut OrtCustomOp,
+            op: *const OrtCustomOp,
         ) -> OrtStatusPtr,
     >,
     pub AddCustomOpDomain: ::std::option::Option<
@@ -12241,7 +12333,7 @@ pub struct OrtApi {
         ::std::option::Option<unsafe extern "C" fn(input: *mut OrtModelMetadata)>,
     pub CreateEnvWithGlobalThreadPools: ::std::option::Option<
         unsafe extern "C" fn(
-            default_logging_level: OrtLoggingLevel,
+            logging_level: OrtLoggingLevel,
             logid: *const ::std::os::raw::c_char,
             t_options: *const OrtThreadingOptions,
             out: *mut *mut OrtEnv,
@@ -12415,12 +12507,54 @@ pub struct OrtApi {
             allow_spinning: ::std::os::raw::c_int,
         ) -> OrtStatusPtr,
     >,
+    pub AddInitializer: ::std::option::Option<
+        unsafe extern "C" fn(
+            options: *mut OrtSessionOptions,
+            name: *const ::std::os::raw::c_char,
+            val: *const OrtValue,
+        ) -> OrtStatusPtr,
+    >,
+    pub CreateEnvWithCustomLoggerAndGlobalThreadPools: ::std::option::Option<
+        unsafe extern "C" fn(
+            logging_function: OrtLoggingFunction,
+            logger_param: *mut ::std::os::raw::c_void,
+            logging_level: OrtLoggingLevel,
+            logid: *const ::std::os::raw::c_char,
+            tp_options: *const OrtThreadingOptions,
+            out: *mut *mut OrtEnv,
+        ) -> OrtStatusPtr,
+    >,
+    pub SessionOptionsAppendExecutionProvider_CUDA: ::std::option::Option<
+        unsafe extern "C" fn(
+            options: *mut OrtSessionOptions,
+            cuda_options: *const OrtCUDAProviderOptions,
+        ) -> OrtStatusPtr,
+    >,
+    pub SessionOptionsAppendExecutionProvider_OpenVINO: ::std::option::Option<
+        unsafe extern "C" fn(
+            options: *mut OrtSessionOptions,
+            provider_options: *const OrtOpenVINOProviderOptions,
+        ) -> OrtStatusPtr,
+    >,
+    pub SetGlobalDenormalAsZero: ::std::option::Option<
+        unsafe extern "C" fn(tp_options: *mut OrtThreadingOptions) -> OrtStatusPtr,
+    >,
+    pub CreateArenaCfg: ::std::option::Option<
+        unsafe extern "C" fn(
+            max_mem: size_t,
+            arena_extend_strategy: ::std::os::raw::c_int,
+            initial_chunk_size_bytes: ::std::os::raw::c_int,
+            max_dead_bytes_per_chunk: ::std::os::raw::c_int,
+            out: *mut *mut OrtArenaCfg,
+        ) -> OrtStatusPtr,
+    >,
+    pub ReleaseArenaCfg: ::std::option::Option<unsafe extern "C" fn(input: *mut OrtArenaCfg)>,
 }
 #[test]
 fn bindgen_test_layout_OrtApi() {
     assert_eq!(
         ::std::mem::size_of::<OrtApi>(),
-        1200usize,
+        1256usize,
         concat!("Size of: ", stringify!(OrtApi))
     );
     assert_eq!(
@@ -14013,6 +14147,85 @@ fn bindgen_test_layout_OrtApi() {
             stringify!(SetGlobalSpinControl)
         )
     );
+    assert_eq!(
+        unsafe { &(*(::std::ptr::null::<OrtApi>())).AddInitializer as *const _ as usize },
+        1200usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(OrtApi),
+            "::",
+            stringify!(AddInitializer)
+        )
+    );
+    assert_eq!(
+        unsafe {
+            &(*(::std::ptr::null::<OrtApi>())).CreateEnvWithCustomLoggerAndGlobalThreadPools
+                as *const _ as usize
+        },
+        1208usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(OrtApi),
+            "::",
+            stringify!(CreateEnvWithCustomLoggerAndGlobalThreadPools)
+        )
+    );
+    assert_eq!(
+        unsafe {
+            &(*(::std::ptr::null::<OrtApi>())).SessionOptionsAppendExecutionProvider_CUDA
+                as *const _ as usize
+        },
+        1216usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(OrtApi),
+            "::",
+            stringify!(SessionOptionsAppendExecutionProvider_CUDA)
+        )
+    );
+    assert_eq!(
+        unsafe {
+            &(*(::std::ptr::null::<OrtApi>())).SessionOptionsAppendExecutionProvider_OpenVINO
+                as *const _ as usize
+        },
+        1224usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(OrtApi),
+            "::",
+            stringify!(SessionOptionsAppendExecutionProvider_OpenVINO)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(::std::ptr::null::<OrtApi>())).SetGlobalDenormalAsZero as *const _ as usize },
+        1232usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(OrtApi),
+            "::",
+            stringify!(SetGlobalDenormalAsZero)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(::std::ptr::null::<OrtApi>())).CreateArenaCfg as *const _ as usize },
+        1240usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(OrtApi),
+            "::",
+            stringify!(CreateArenaCfg)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(::std::ptr::null::<OrtApi>())).ReleaseArenaCfg as *const _ as usize },
+        1248usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(OrtApi),
+            "::",
+            stringify!(ReleaseArenaCfg)
+        )
+    );
 }
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
@@ -14020,27 +14233,27 @@ pub struct OrtCustomOp {
     pub version: u32,
     pub CreateKernel: ::std::option::Option<
         unsafe extern "C" fn(
-            op: *mut OrtCustomOp,
+            op: *const OrtCustomOp,
             api: *const OrtApi,
             info: *const OrtKernelInfo,
         ) -> *mut ::std::os::raw::c_void,
     >,
     pub GetName: ::std::option::Option<
-        unsafe extern "C" fn(op: *mut OrtCustomOp) -> *const ::std::os::raw::c_char,
+        unsafe extern "C" fn(op: *const OrtCustomOp) -> *const ::std::os::raw::c_char,
     >,
     pub GetExecutionProviderType: ::std::option::Option<
-        unsafe extern "C" fn(op: *mut OrtCustomOp) -> *const ::std::os::raw::c_char,
+        unsafe extern "C" fn(op: *const OrtCustomOp) -> *const ::std::os::raw::c_char,
     >,
     pub GetInputType: ::std::option::Option<
-        unsafe extern "C" fn(op: *mut OrtCustomOp, index: size_t) -> ONNXTensorElementDataType,
+        unsafe extern "C" fn(op: *const OrtCustomOp, index: size_t) -> ONNXTensorElementDataType,
     >,
     pub GetInputTypeCount:
-        ::std::option::Option<unsafe extern "C" fn(op: *mut OrtCustomOp) -> size_t>,
+        ::std::option::Option<unsafe extern "C" fn(op: *const OrtCustomOp) -> size_t>,
     pub GetOutputType: ::std::option::Option<
-        unsafe extern "C" fn(op: *mut OrtCustomOp, index: size_t) -> ONNXTensorElementDataType,
+        unsafe extern "C" fn(op: *const OrtCustomOp, index: size_t) -> ONNXTensorElementDataType,
     >,
     pub GetOutputTypeCount:
-        ::std::option::Option<unsafe extern "C" fn(op: *mut OrtCustomOp) -> size_t>,
+        ::std::option::Option<unsafe extern "C" fn(op: *const OrtCustomOp) -> size_t>,
     pub KernelCompute: ::std::option::Option<
         unsafe extern "C" fn(
             op_kernel: *mut ::std::os::raw::c_void,

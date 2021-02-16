@@ -7,7 +7,7 @@
 [![codecov](https://codecov.io/gh/nbigaouette/onnxruntime-rs/branch/master/graph/badge.svg)](https://codecov.io/gh/nbigaouette/onnxruntime-rs)
 
 This is an attempt at a Rust wrapper for
-[Microsoft's ONNX Runtime](https://github.com/microsoft/onnxruntime) (version 1.5).
+[Microsoft's ONNX Runtime](https://github.com/microsoft/onnxruntime) (version 1.6).
 
 This project consist on two crates:
 
