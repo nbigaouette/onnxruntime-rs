@@ -167,10 +167,9 @@ impl From<OrtStatusWrapper> for std::result::Result<(), OrtApiError> {
             match char_p_to_string(raw) {
                 Ok(msg) => Err(OrtApiError::Msg(msg)),
                 Err(err) => match err {
-                    OrtError::StringConversion(e) => match e {
-                        OrtApiError::IntoStringError(e) => Err(OrtApiError::IntoStringError(e)),
-                        _ => unreachable!(),
-                    },
+                    OrtError::StringConversion(OrtApiError::IntoStringError(e)) => {
+                        Err(OrtApiError::IntoStringError(e))
+                    }
                     _ => unreachable!(),
                 },
             }
