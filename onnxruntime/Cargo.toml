@@ -26,6 +26,12 @@ ndarray = "0.13"
 thiserror = "1.0"
 tracing = "0.1"
 
+[target.'cfg(unix)'.dependencies]
+libc = "0.2.88"
+
+[target.'cfg(windows)'.dependencies]
+winapi = { version = "0.3.9", features = ["std"] }
+
 # Enabled with 'model-fetching' feature
 ureq = {version = "1.5.1", optional = true}
 

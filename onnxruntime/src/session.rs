@@ -1,6 +1,6 @@
 //! Module containing session types
 
-use std::{convert::TryInto as _, ffi::CString, fmt::Debug, path::Path};
+use std::{convert::TryInto as _, ffi, ffi::CString, fmt::Debug, path::Path};
 
 #[cfg(not(target_family = "windows"))]
 use std::os::unix::ffi::OsStrExt;
@@ -64,11 +64,16 @@ pub struct SessionBuilder<'a> {
 
     allocator: AllocatorType,
     memory_type: MemType,
+    custom_runtime_handles: Vec<*mut ::std::os::raw::c_void>,
 }
 
 impl<'a> Drop for SessionBuilder<'a> {
     #[tracing::instrument]
     fn drop(&mut self) {
+        for &handle in self.custom_runtime_handles.iter() {
+            close_lib_handle(handle);
+        }
+
         debug!("Dropping the session options.");
         assert_ne!(self.session_options_ptr, std::ptr::null_mut());
         unsafe { g_ort().ReleaseSessionOptions.unwrap()(self.session_options_ptr) };
@@ -89,6 +94,7 @@ impl<'a> SessionBuilder<'a> {
             session_options_ptr,
             allocator: AllocatorType::Arena,
             memory_type: MemType::Default,
+            custom_runtime_handles: Vec::new(),
         })
     }
 
@@ -133,6 +139,39 @@ impl<'a> SessionBuilder<'a> {
     /// Defaults to [`MemType::Default`](../enum.MemType.html#variant.Default)
     pub fn with_memory_type(mut self, memory_type: MemType) -> Result<SessionBuilder<'a>> {
         self.memory_type = memory_type;
+        Ok(self)
+    }
+
+    /// Registers a custom ops library with the given library path in the session.
+    pub fn with_custom_op_lib(mut self, lib_path: &str) -> Result<SessionBuilder<'a>> {
+        let path_cstr = ffi::CString::new(lib_path)?;
+
+        let mut handle: *mut ::std::os::raw::c_void = std::ptr::null_mut();
+
+        let status = unsafe {
+            g_ort().RegisterCustomOpsLibrary.unwrap()(
+                self.session_options_ptr,
+                path_cstr.as_ptr(),
+                &mut handle,
+            )
+        };
+
+        // per RegisterCustomOpsLibrary docs, release handle if there was an error and the handle
+        // is non-null
+        match status_to_result(status).map_err(OrtError::SessionOptions) {
+            Ok(_) => {}
+            Err(e) => {
+                if handle != std::ptr::null_mut() {
+                    // handle was written to, should release it
+                    close_lib_handle(handle);
+                }
+
+                return Err(e);
+            }
+        }
+
+        self.custom_runtime_handles.push(handle);
+
         Ok(self)
     }
 
@@ -617,6 +656,20 @@ where
     g_ort().ReleaseTensorTypeAndShapeInfo.unwrap()(tensor_info_ptr);
 
     res
+}
+
+#[cfg(unix)]
+fn close_lib_handle(handle: *mut ::std::os::raw::c_void) {
+    unsafe {
+        libc::dlclose(handle);
+    }
+}
+
+#[cfg(windows)]
+fn close_lib_handle(handle: *mut ::std::os::raw::c_void) {
+    unsafe {
+        winapi::um::libloaderapi::FreeLibrary(handle as winapi::shared::minwindef::HINSTANCE)
+    };
 }
 
 /// This module contains dangerous functions working on raw pointers.

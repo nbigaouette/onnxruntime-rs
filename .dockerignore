@@ -1,0 +1,9 @@
+*
+!/Cargo.*
+!/onnxruntime/Cargo.toml
+!/onnxruntime/src
+!/onnxruntime/tests
+!/onnxruntime-sys/Cargo.toml
+!/onnxruntime-sys/build.rs
+!/onnxruntime-sys/src
+!/test-models/tensorflow/*.onnx
