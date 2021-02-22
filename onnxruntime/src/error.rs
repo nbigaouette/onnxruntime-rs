@@ -192,8 +192,9 @@ pub(crate) fn status_to_result(
 }
 
 /// A wrapper around a function on OrtApi that maps the status code into [OrtApiError]
-pub(crate) unsafe fn call_ort<F: FnMut(sys::OrtApi) -> *const sys::OrtStatus>(
-    mut block: F,
-) -> std::result::Result<(), OrtApiError> {
-    status_to_result(block(g_ort()))
+pub(crate) unsafe fn call_ort<F>(mut f: F) -> std::result::Result<(), OrtApiError>
+where
+    F: FnMut(sys::OrtApi) -> *const sys::OrtStatus,
+{
+    status_to_result(f(g_ort()))
 }
