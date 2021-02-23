@@ -7,10 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.0.11] - 2021-02-22
+
 ### Changed
 
 - Prevent session from being built a temporary environment resulting in segfault ([#46](https://github.com/nbigaouette/onnxruntime-rs/pull/46))
-- Update onnxruntime to 1.6.0
+- Update onnxruntime to 1.6.0 ([#59](https://github.com/nbigaouette/onnxruntime-rs/pull/59))
 
 ### Added
 

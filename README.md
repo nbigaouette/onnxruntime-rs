@@ -197,7 +197,7 @@ Then on each platform build with the proper feature flag:
 Prepare the container:
 
 ```sh
-❯ docker run -it --rm --name rustbuilder -v "$PWD":/usr/src/myapp -w /usr/src/myapp rust:1.47.0 /bin/bash
+❯ docker run -it --rm --name rustbuilder -v "$PWD":/usr/src/myapp -w /usr/src/myapp rust:1.50.0 /bin/bash
 ❯ apt-get update
 ❯ apt-get install clang
 ❯ rustup component add rustfmt
