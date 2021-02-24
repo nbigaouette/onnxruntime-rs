@@ -105,7 +105,10 @@ fn generate_bindings(include_dir: &Path) {
         .expect("Couldn't write bindings!");
 }
 
-fn download<P: AsRef<Path>>(source_url: &str, target_file: P) {
+fn download<P>(source_url: &str, target_file: P)
+where
+    P: AsRef<Path>,
+{
     let resp = ureq::get(source_url)
         .timeout_connect(1_000) // 1 second
         .timeout(std::time::Duration::from_secs(300))

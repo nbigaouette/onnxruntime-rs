@@ -411,7 +411,9 @@ impl<'a> Session<'a> {
         // The C API expects pointers for the arrays (pointers to C-arrays)
         let input_ort_tensors: Vec<OrtTensor<TIn, D>> = input_arrays
             .into_iter()
-            .map(|input_array| OrtTensor::from_array(&self.memory_info, input_array))
+            .map(|input_array| {
+                OrtTensor::from_array(&self.memory_info, self.allocator_ptr, input_array)
+            })
             .collect::<Result<Vec<OrtTensor<TIn, D>>>>()?;
         let input_ort_values: Vec<*const sys::OrtValue> = input_ort_tensors
             .iter()

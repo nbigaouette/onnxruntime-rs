@@ -343,8 +343,8 @@ pub enum TensorElementDataType {
     Int32 = sys::ONNXTensorElementDataType::ONNX_TENSOR_ELEMENT_DATA_TYPE_INT32 as OnnxEnumInt,
     /// Signed 64-bit int, equivalent to Rust's `i64`
     Int64 = sys::ONNXTensorElementDataType::ONNX_TENSOR_ELEMENT_DATA_TYPE_INT64 as OnnxEnumInt,
-    // /// String, equivalent to Rust's `String`
-    // String = sys::ONNXTensorElementDataType::ONNX_TENSOR_ELEMENT_DATA_TYPE_STRING as OnnxEnumInt,
+    /// String, equivalent to Rust's `String`
+    String = sys::ONNXTensorElementDataType::ONNX_TENSOR_ELEMENT_DATA_TYPE_STRING as OnnxEnumInt,
     // /// Boolean, equivalent to Rust's `bool`
     // Bool = sys::ONNXTensorElementDataType::ONNX_TENSOR_ELEMENT_DATA_TYPE_BOOL as OnnxEnumInt,
     // /// 16-bit floating point, equivalent to Rust's `f16`
@@ -374,9 +374,7 @@ impl Into<sys::ONNXTensorElementDataType> for TensorElementDataType {
             Int16 => sys::ONNXTensorElementDataType::ONNX_TENSOR_ELEMENT_DATA_TYPE_INT16,
             Int32 => sys::ONNXTensorElementDataType::ONNX_TENSOR_ELEMENT_DATA_TYPE_INT32,
             Int64 => sys::ONNXTensorElementDataType::ONNX_TENSOR_ELEMENT_DATA_TYPE_INT64,
-            // String => {
-            //     sys::ONNXTensorElementDataType::ONNX_TENSOR_ELEMENT_DATA_TYPE_STRING
-            // }
+            String => sys::ONNXTensorElementDataType::ONNX_TENSOR_ELEMENT_DATA_TYPE_STRING,
             // Bool => {
             //     sys::ONNXTensorElementDataType::ONNX_TENSOR_ELEMENT_DATA_TYPE_BOOL
             // }
@@ -402,15 +400,22 @@ impl Into<sys::ONNXTensorElementDataType> for TensorElementDataType {
 /// Trait used to map Rust types (for example `f32`) to ONNX types (for example `Float`)
 pub trait TypeToTensorElementDataType {
     /// Return the ONNX type for a Rust type
-    fn tensor_element_data_type() -> sys::ONNXTensorElementDataType;
+    fn tensor_element_data_type() -> TensorElementDataType;
+
+    /// If the type is `String`, returns `Some` with utf8 contents, else `None`.
+    fn try_utf8_bytes(&self) -> Option<&[u8]>;
 }
 
 macro_rules! impl_type_trait {
     ($type_:ty, $variant:ident) => {
         impl TypeToTensorElementDataType for $type_ {
-            fn tensor_element_data_type() -> sys::ONNXTensorElementDataType {
+            fn tensor_element_data_type() -> TensorElementDataType {
                 // unsafe { std::mem::transmute(TensorElementDataType::$variant) }
-                TensorElementDataType::$variant.into()
+                TensorElementDataType::$variant
+            }
+
+            fn try_utf8_bytes(&self) -> Option<&[u8]> {
+                None
             }
         }
     };
@@ -423,7 +428,6 @@ impl_type_trait!(u16, Uint16);
 impl_type_trait!(i16, Int16);
 impl_type_trait!(i32, Int32);
 impl_type_trait!(i64, Int64);
-// impl_type_trait!(String, String);
 // impl_type_trait!(bool, Bool);
 // impl_type_trait!(f16, Float16);
 impl_type_trait!(f64, Double);
@@ -432,6 +436,39 @@ impl_type_trait!(u64, Uint64);
 // impl_type_trait!(, Complex64);
 // impl_type_trait!(, Complex128);
 // impl_type_trait!(, Bfloat16);
+
+/// Adapter for common Rust string types to Onnx strings.
+///
+/// It should be easy to use both `String` and `&str` as [TensorElementDataType::String] data, but
+/// we can't define an automatic implementation for anything that implements `AsRef<str>` as it
+/// would conflict with the implementations of [TypeToTensorElementDataType] for primitive numeric
+/// types (which might implement `AsRef<str>` at some point in the future).
+pub trait Utf8Data {
+    /// Returns the utf8 contents.
+    fn utf8_bytes(&self) -> &[u8];
+}
+
+impl Utf8Data for String {
+    fn utf8_bytes(&self) -> &[u8] {
+        self.as_bytes()
+    }
+}
+
+impl<'a> Utf8Data for &'a str {
+    fn utf8_bytes(&self) -> &[u8] {
+        self.as_bytes()
+    }
+}
+
+impl<T: Utf8Data> TypeToTensorElementDataType for T {
+    fn tensor_element_data_type() -> TensorElementDataType {
+        TensorElementDataType::String
+    }
+
+    fn try_utf8_bytes(&self) -> Option<&[u8]> {
+        Some(self.utf8_bytes())
+    }
+}
 
 /// Allocator type
 #[derive(Debug, Clone)]
