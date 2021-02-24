@@ -249,7 +249,7 @@ mod tests {
     }
 
     #[test]
-    fn orttensor_from_array_3d_string() {
+    fn orttensor_from_array_3d_str() {
         let memory_info = MemoryInfo::new(AllocatorType::Arena, MemType::Default).unwrap();
         let array = arr3(&[
             [["1", "2", "3"], ["4", "5", "6"]],
