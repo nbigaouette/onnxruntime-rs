@@ -104,7 +104,10 @@ to download.
 //! let array = ndarray::Array::linspace(0.0_f32, 1.0, 100);
 //! // Multiple inputs and outputs are possible
 //! let input_tensor = vec![array];
-//! let outputs: Vec<OrtOwnedTensor<f32,_>> = session.run(input_tensor)?;
+//! let outputs: Vec<OrtOwnedTensor<f32, _>> = session.run(input_tensor)?
+//!     .into_iter()
+//!     .map(|dyn_tensor| dyn_tensor.try_extract())
+//!     .collect::<Result<_, _>>()?;
 //! # Ok(())
 //! # }
 //! ```
@@ -115,7 +118,10 @@ to download.
 //! See the [`sample.rs`](https://github.com/nbigaouette/onnxruntime-rs/blob/master/onnxruntime/examples/sample.rs)
 //! example for more details.
 
-use std::sync::{atomic::AtomicPtr, Arc, Mutex};
+use std::{
+    ffi, ptr,
+    sync::{atomic::AtomicPtr, Arc, Mutex},
+};
 
 use lazy_static::lazy_static;
 
@@ -142,7 +148,7 @@ lazy_static! {
     //     } as *mut sys::OrtApi)));
     static ref G_ORT_API: Arc<Mutex<AtomicPtr<sys::OrtApi>>> = {
         let base: *const sys::OrtApiBase = unsafe { sys::OrtGetApiBase() };
-        assert_ne!(base, std::ptr::null());
+        assert_ne!(base, ptr::null());
         let get_api: unsafe extern "C" fn(u32) -> *const onnxruntime_sys::OrtApi =
             unsafe { (*base).GetApi.unwrap() };
         let api: *const sys::OrtApi = unsafe { get_api(sys::ORT_API_VERSION) };
@@ -157,13 +163,13 @@ fn g_ort() -> sys::OrtApi {
     let api_ref_mut: &mut *mut sys::OrtApi = api_ref.get_mut();
     let api_ptr_mut: *mut sys::OrtApi = *api_ref_mut;
 
-    assert_ne!(api_ptr_mut, std::ptr::null_mut());
+    assert_ne!(api_ptr_mut, ptr::null_mut());
 
     unsafe { *api_ptr_mut }
 }
 
 fn char_p_to_string(raw: *const i8) -> Result<String> {
-    let c_string = unsafe { std::ffi::CStr::from_ptr(raw as *mut i8).to_owned() };
+    let c_string = unsafe { ffi::CStr::from_ptr(raw as *mut i8).to_owned() };
 
     match c_string.into_string() {
         Ok(string) => Ok(string),
@@ -176,7 +182,7 @@ mod onnxruntime {
     //! Module containing a custom logger, used to catch the runtime's own logging and send it
     //! to Rust's tracing logging instead.
 
-    use std::ffi::CStr;
+    use std::{ffi, ffi::CStr, ptr};
     use tracing::{debug, error, info, span, trace, warn, Level};
 
     use onnxruntime_sys as sys;
@@ -212,7 +218,7 @@ mod onnxruntime {
 
     /// Callback from C that will handle the logging, forwarding the runtime's logs to the tracing crate.
     pub(crate) extern "C" fn custom_logger(
-        _params: *mut std::ffi::c_void,
+        _params: *mut ffi::c_void,
         severity: sys::OrtLoggingLevel,
         category: *const i8,
         logid: *const i8,
@@ -227,16 +233,16 @@ mod onnxruntime {
             sys::OrtLoggingLevel::ORT_LOGGING_LEVEL_FATAL => Level::ERROR,
         };
 
-        assert_ne!(category, std::ptr::null());
+        assert_ne!(category, ptr::null());
         let category = unsafe { CStr::from_ptr(category) };
-        assert_ne!(code_location, std::ptr::null());
+        assert_ne!(code_location, ptr::null());
         let code_location = unsafe { CStr::from_ptr(code_location) }
             .to_str()
             .unwrap_or("unknown");
-        assert_ne!(message, std::ptr::null());
+        assert_ne!(message, ptr::null());
         let message = unsafe { CStr::from_ptr(message) };
 
-        assert_ne!(logid, std::ptr::null());
+        assert_ne!(logid, ptr::null());
         let logid = unsafe { CStr::from_ptr(logid) };
 
         // Parse the code location
@@ -376,7 +382,7 @@ mod test {
 
     #[test]
     fn test_char_p_to_string() {
-        let s = std::ffi::CString::new("foo").unwrap();
+        let s = ffi::CString::new("foo").unwrap();
         let ptr = s.as_c_str().as_ptr();
         assert_eq!("foo", char_p_to_string(ptr).unwrap());
     }

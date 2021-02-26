@@ -15,6 +15,7 @@ mod download {
     use onnxruntime::{
         download::vision::{DomainBasedImageClassification, ImageClassification},
         environment::Environment,
+        tensor::{DynOrtTensor, OrtOwnedTensor},
         GraphOptimizationLevel, LoggingLevel,
     };
 
@@ -93,13 +94,13 @@ mod download {
         let input_tensor_values = vec![array];
 
         // Perform the inference
-        let outputs: Vec<
-            onnxruntime::tensor::OrtOwnedTensor<f32, ndarray::Dim<ndarray::IxDynImpl>>,
-        > = session.run(input_tensor_values).unwrap();
+        let outputs: Vec<DynOrtTensor<ndarray::Dim<ndarray::IxDynImpl>>> =
+            session.run(input_tensor_values).unwrap();
 
         // Downloaded model does not have a softmax as final layer; call softmax on second axis
         // and iterate on resulting probabilities, creating an index to later access labels.
-        let mut probabilities: Vec<(usize, f32)> = outputs[0]
+        let output: OrtOwnedTensor<_, _> = outputs[0].try_extract().unwrap();
+        let mut probabilities: Vec<(usize, f32)> = output
             .softmax(ndarray::Axis(1))
             .into_iter()
             .copied()
@@ -184,11 +185,11 @@ mod download {
         let input_tensor_values = vec![array];
 
         // Perform the inference
-        let outputs: Vec<
-            onnxruntime::tensor::OrtOwnedTensor<f32, ndarray::Dim<ndarray::IxDynImpl>>,
-        > = session.run(input_tensor_values).unwrap();
+        let outputs: Vec<DynOrtTensor<ndarray::Dim<ndarray::IxDynImpl>>> =
+            session.run(input_tensor_values).unwrap();
 
-        let mut probabilities: Vec<(usize, f32)> = outputs[0]
+        let output: OrtOwnedTensor<_, _> = outputs[0].try_extract().unwrap();
+        let mut probabilities: Vec<(usize, f32)> = output
             .softmax(ndarray::Axis(1))
             .into_iter()
             .copied()
@@ -282,12 +283,12 @@ mod download {
         let input_tensor_values = vec![array];
 
         // Perform the inference
-        let outputs: Vec<
-            onnxruntime::tensor::OrtOwnedTensor<f32, ndarray::Dim<ndarray::IxDynImpl>>,
-        > = session.run(input_tensor_values).unwrap();
+        let outputs: Vec<DynOrtTensor<ndarray::Dim<ndarray::IxDynImpl>>> =
+            session.run(input_tensor_values).unwrap();
 
         assert_eq!(outputs.len(), 1);
-        let output = &outputs[0];
+        let output: OrtOwnedTensor<'_, f32, ndarray::Dim<ndarray::IxDynImpl>> =
+            outputs[0].try_extract().unwrap();
 
         // The image should have doubled in size
         assert_eq!(output.shape(), [1, 448, 448, 3]);

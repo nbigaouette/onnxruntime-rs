@@ -21,10 +21,7 @@ use crate::{
     error::{call_ort, status_to_result, NonMatchingDimensionsError, OrtError, Result},
     g_ort,
     memory::MemoryInfo,
-    tensor::{
-        ort_owned_tensor::OrtOwnedTensor, OrtTensor, TensorDataToType, TensorElementDataType,
-        TypeToTensorElementDataType,
-    },
+    tensor::{DynOrtTensor, OrtTensor, TensorElementDataType, TypeToTensorElementDataType},
     AllocatorType, GraphOptimizationLevel, MemType,
 };
 
@@ -364,13 +361,12 @@ impl<'a> Session<'a> {
     ///
     /// Note that ONNX models can have multiple inputs; a `Vec<_>` is thus
     /// used for the input data here.
-    pub fn run<'s, 't, 'm, TIn, TOut, D>(
+    pub fn run<'s, 't, 'm, TIn, D>(
         &'s mut self,
         input_arrays: Vec<Array<TIn, D>>,
-    ) -> Result<Vec<OrtOwnedTensor<'t, 'm, TOut, ndarray::IxDyn>>>
+    ) -> Result<Vec<DynOrtTensor<'m, ndarray::IxDyn>>>
     where
         TIn: TypeToTensorElementDataType + Debug + Clone,
-        TOut: TensorDataToType,
         D: ndarray::Dimension,
         'm: 't, // 'm outlives 't (memory info outlives tensor)
         's: 'm, // 's outlives 'm (session outlives memory info)
@@ -404,7 +400,7 @@ impl<'a> Session<'a> {
             .map(|n| n.as_ptr() as *const i8)
             .collect();
 
-        let mut output_tensor_extractors_ptrs: Vec<*mut sys::OrtValue> =
+        let mut output_tensor_ptrs: Vec<*mut sys::OrtValue> =
             vec![std::ptr::null_mut(); self.outputs.len()];
 
         // The C API expects pointers for the arrays (pointers to C-arrays)
@@ -430,38 +426,32 @@ impl<'a> Session<'a> {
                 input_ort_values.len() as u64, // C API expects a u64, not isize
                 output_names_ptr.as_ptr(),
                 output_names_ptr.len() as u64, // C API expects a u64, not isize
-                output_tensor_extractors_ptrs.as_mut_ptr(),
+                output_tensor_ptrs.as_mut_ptr(),
             )
         };
         status_to_result(status).map_err(OrtError::Run)?;
 
         let memory_info_ref = &self.memory_info;
-        let outputs: Result<Vec<OrtOwnedTensor<TOut, ndarray::Dim<ndarray::IxDynImpl>>>> =
-            output_tensor_extractors_ptrs
+        let outputs: Result<Vec<DynOrtTensor<ndarray::Dim<ndarray::IxDynImpl>>>> =
+            output_tensor_ptrs
                 .into_iter()
                 .map(|tensor_ptr| {
-                    let dims = unsafe {
+                    let (dims, data_type) = unsafe {
                         call_with_tensor_info(tensor_ptr, |tensor_info_ptr| {
                             get_tensor_dimensions(tensor_info_ptr)
                                 .map(|dims| dims.iter().map(|&n| n as usize).collect::<Vec<_>>())
+                                .and_then(|dims| {
+                                    extract_data_type(tensor_info_ptr)
+                                        .map(|data_type| (dims, data_type))
+                                })
                         })
                     }?;
 
-                    // Note: Both tensor and array will point to the same data, nothing is copied.
-                    // As such, there is no need to free the pointer used to create the ArrayView.
-                    assert_ne!(tensor_ptr, std::ptr::null_mut());
-
-                    let mut is_tensor = 0;
-                    unsafe { call_ort(|ort| ort.IsTensor.unwrap()(tensor_ptr, &mut is_tensor)) }
-                        .map_err(OrtError::IsTensor)?;
-                    assert_eq!(is_tensor, 1);
-
-                    let array_view = TOut::extract_array(ndarray::IxDyn(&dims), tensor_ptr)?;
-
-                    Ok(OrtOwnedTensor::new(
+                    Ok(DynOrtTensor::new(
                         tensor_ptr,
-                        array_view,
-                        &memory_info_ref,
+                        memory_info_ref,
+                        ndarray::IxDyn(&dims),
+                        data_type,
                     ))
                 })
                 .collect();
