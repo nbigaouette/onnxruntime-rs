@@ -8,9 +8,11 @@ use tracing::{debug, error};
 use onnxruntime_sys as sys;
 
 use crate::{
-    error::call_ort, error::status_to_result, g_ort, memory::MemoryInfo,
-    tensor::ndarray_tensor::NdArrayTensor, OrtError, Result, TensorElementDataType,
-    TypeToTensorElementDataType,
+    error::{call_ort, status_to_result},
+    g_ort,
+    memory::MemoryInfo,
+    tensor::{ndarray_tensor::NdArrayTensor, TensorElementDataType, TypeToTensorElementDataType},
+    OrtError, Result,
 };
 
 /// Owned tensor, backed by an [`ndarray::Array`](https://docs.rs/ndarray/latest/ndarray/type.Array.html)
