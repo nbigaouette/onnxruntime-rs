@@ -25,6 +25,15 @@ fn run() -> Result<(), Error> {
 
     tracing::subscriber::set_global_default(subscriber).expect("setting default subscriber failed");
 
+    #[cfg(feature = "cuda")]
+    let environment = Environment::builder()
+        .with_name("test")
+        .with_gpu(0)
+        // The ONNX Runtime's log level can be different than the one of the wrapper crate or the application.
+        .with_log_level(LoggingLevel::Info)
+        .build()?;
+
+    #[cfg(not(feature = "cuda"))]
     let environment = Environment::builder()
         .with_name("test")
         // The ONNX Runtime's log level can be different than the one of the wrapper crate or the application.
