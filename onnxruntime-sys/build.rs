@@ -70,8 +70,8 @@ fn generate_bindings(include_dir: &Path) {
     let clang_arg = match env::var(ORT_ENV_GPU) {
         Ok(cuda_env) => match cuda_env.to_lowercase().as_str() {
             "1" | "yes" | "true" | "on" => match os.as_str() {
-                "linux" | "windows" => "-gpu",
-                _ => format!("-I{}", include_dir.display())
+                "linux" | "windows" => format!("-I{} -DORT_USE_CUDA", include_dir.display()),
+                _ => format!("-I{}", include_dir.display()),
             },
             _ => format!("-I{}", include_dir.display()),
         },
