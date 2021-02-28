@@ -66,7 +66,17 @@ fn generate_bindings(_include_dir: &Path) {
 
 #[cfg(feature = "generate-bindings")]
 fn generate_bindings(include_dir: &Path) {
-    let clang_arg = format!("-I{}", include_dir.display());
+    let os = env::var("CARGO_CFG_TARGET_OS").expect("Unable to get TARGET_OS");
+    let clang_arg = match env::var(ORT_ENV_GPU) {
+        Ok(cuda_env) => match cuda_env.to_lowercase().as_str() {
+            "1" | "yes" | "true" | "on" => match os.as_str() {
+                "linux" | "windows" => "-gpu",
+                _ => format!("-I{}", include_dir.display())
+            },
+            _ => format!("-I{}", include_dir.display()),
+        },
+        Err(_) => format!("-I{}", include_dir.display()),
+    };
 
     // Tell cargo to invalidate the built crate whenever the wrapper changes
     println!("cargo:rerun-if-changed=wrapper.h");
