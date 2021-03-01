@@ -125,7 +125,7 @@ impl<'a> SessionBuilder<'a> {
     }
 
     /// Set the session use cpu provider
-    pub fn with_cpu(mut self, use_arena: bool) -> Result<SessionBuilder<'a>> {
+    pub fn with_cpu(self, use_arena: bool) -> Result<SessionBuilder<'a>> {
         unsafe {
             sys::OrtSessionOptionsAppendExecutionProvider_CPU(
                 self.session_options_ptr,
@@ -137,7 +137,7 @@ impl<'a> SessionBuilder<'a> {
 
     /// Set the session use cuda provider
     #[cfg(feature = "cuda")]
-    pub fn with_cuda(mut self, device_id: i32) -> Result<SessionBuilder<'a>> {
+    pub fn with_cuda(self, device_id: i32) -> Result<SessionBuilder<'a>> {
         unsafe {
             sys::OrtSessionOptionsAppendExecutionProvider_CUDA(
                 self.session_options_ptr,
