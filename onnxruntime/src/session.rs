@@ -124,6 +124,29 @@ impl<'a> SessionBuilder<'a> {
         Ok(self)
     }
 
+    /// Set the session use cpu provider
+    pub fn with_cpu(self, use_arena: bool) -> Result<SessionBuilder<'a>> {
+        unsafe {
+            sys::OrtSessionOptionsAppendExecutionProvider_CPU(
+                self.session_options_ptr,
+                use_arena.into(),
+            );
+        }
+        Ok(self)
+    }
+
+    /// Set the session use cuda provider
+    #[cfg(feature = "cuda")]
+    pub fn with_cuda(self, device_id: i32) -> Result<SessionBuilder<'a>> {
+        unsafe {
+            sys::OrtSessionOptionsAppendExecutionProvider_CUDA(
+                self.session_options_ptr,
+                device_id.into(),
+            );
+        }
+        Ok(self)
+    }
+
     /// Set the session's allocator
     ///
     /// Defaults to [`AllocatorType::Arena`](../enum.AllocatorType.html#variant.Arena)
