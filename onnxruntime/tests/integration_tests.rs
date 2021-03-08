@@ -19,6 +19,7 @@ mod download {
         tensor::{DynOrtTensor, OrtOwnedTensor},
         GraphOptimizationLevel, LoggingLevel,
     };
+    use onnxruntime::tensor::ndarray_tensor::NdArrayTensor;
 
     #[test]
     fn squeezenet_mushroom() {
