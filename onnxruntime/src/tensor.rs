@@ -30,9 +30,10 @@ pub mod ort_tensor;
 pub use ort_owned_tensor::{DynOrtTensor, OrtOwnedTensor};
 pub use ort_tensor::OrtTensor;
 
-use crate::{OrtError, Result};
+use crate::tensor::ort_owned_tensor::TensorPointerHolder;
+use crate::{error::call_ort, OrtError, Result};
 use onnxruntime_sys::{self as sys, OnnxEnumInt};
-use std::{fmt, ptr};
+use std::{convert::TryInto as _, ffi, fmt, ptr, rc, result, string};
 
 // FIXME: Use https://docs.rs/bindgen/0.54.1/bindgen/struct.Builder.html#method.rustified_enum
 // FIXME: Add tests to cover the commented out types
@@ -188,12 +189,39 @@ pub trait TensorDataToType: Sized + fmt::Debug {
     fn tensor_element_data_type() -> TensorElementDataType;
 
     /// Extract an `ArrayView` from the ort-owned tensor.
-    fn extract_array<'t, D>(
+    fn extract_data<'t, D>(
         shape: D,
-        tensor: *mut sys::OrtValue,
-    ) -> Result<ndarray::ArrayView<'t, Self, D>>
+        tensor_element_len: usize,
+        tensor_ptr: rc::Rc<TensorPointerHolder>,
+    ) -> Result<TensorData<'t, Self, D>>
     where
         D: ndarray::Dimension;
+}
+
+/// Represents the possible ways tensor data can be accessed.
+///
+/// This should only be used internally.
+#[derive(Debug)]
+pub enum TensorData<'t, T, D>
+where
+    D: ndarray::Dimension,
+{
+    /// Data resides in ort's tensor, in which case the 't lifetime is what makes this valid.
+    /// This is used for data types whose in-memory form from ort is compatible with Rust's, like
+    /// primitive numeric types.
+    TensorPtr {
+        /// The pointer ort produced. Kept alive so that `array_view` is valid.
+        ptr: rc::Rc<TensorPointerHolder>,
+        /// A view into `ptr`
+        array_view: ndarray::ArrayView<'t, T, D>,
+    },
+    /// String data is output differently by ort, and of course is also variable size, so it cannot
+    /// use the same simple pointer representation.
+    // Since 't outlives this struct, the 't lifetime is more than we need, but no harm done.
+    Strings {
+        /// Owned Strings copied out of ort's output
+        strings: ndarray::Array<T, D>,
+    },
 }
 
 /// Implements `OwnedTensorDataToType` for primitives, which can use `GetTensorMutableData`
@@ -204,14 +232,20 @@ macro_rules! impl_prim_type_from_ort_trait {
                 TensorElementDataType::$variant
             }
 
-            fn extract_array<'t, D>(
+            fn extract_data<'t, D>(
                 shape: D,
-                tensor: *mut sys::OrtValue,
-            ) -> Result<ndarray::ArrayView<'t, Self, D>>
+                _tensor_element_len: usize,
+                tensor_ptr: rc::Rc<TensorPointerHolder>,
+            ) -> Result<TensorData<'t, Self, D>>
             where
                 D: ndarray::Dimension,
             {
-                extract_primitive_array(shape, tensor)
+                extract_primitive_array(shape, tensor_ptr.tensor_ptr).map(|v| {
+                    TensorData::TensorPtr {
+                        ptr: tensor_ptr,
+                        array_view: v,
+                    }
+                })
             }
         }
     };
@@ -255,3 +289,70 @@ impl_prim_type_from_ort_trait!(i64, Int64);
 impl_prim_type_from_ort_trait!(f64, Double);
 impl_prim_type_from_ort_trait!(u32, Uint32);
 impl_prim_type_from_ort_trait!(u64, Uint64);
+
+impl TensorDataToType for String {
+    fn tensor_element_data_type() -> TensorElementDataType {
+        TensorElementDataType::String
+    }
+
+    fn extract_data<'t, D: ndarray::Dimension>(
+        shape: D,
+        tensor_element_len: usize,
+        tensor_ptr: rc::Rc<TensorPointerHolder>,
+    ) -> Result<TensorData<'t, Self, D>> {
+        // Total length of string data, not including \0 suffix
+        let mut total_length = 0_u64;
+        unsafe {
+            call_ort(|ort| {
+                ort.GetStringTensorDataLength.unwrap()(tensor_ptr.tensor_ptr, &mut total_length)
+            })
+            .map_err(OrtError::GetStringTensorDataLength)?
+        }
+
+        // In the JNI impl of this, tensor_element_len was included in addition to total_length,
+        // but that seems contrary to the docs of GetStringTensorDataLength, and those extra bytes
+        // don't seem to be written to in practice either.
+        // If the string data actually did go farther, it would panic below when using the offset
+        // data to get slices for each string.
+        let mut string_contents = vec![0_u8; total_length as usize];
+        // one extra slot so that the total length can go in the last one, making all per-string
+        // length calculations easy
+        let mut offsets = vec![0_u64; tensor_element_len as usize + 1];
+
+        unsafe {
+            call_ort(|ort| {
+                ort.GetStringTensorContent.unwrap()(
+                    tensor_ptr.tensor_ptr,
+                    string_contents.as_mut_ptr() as *mut ffi::c_void,
+                    total_length,
+                    offsets.as_mut_ptr(),
+                    tensor_element_len as u64,
+                )
+            })
+            .map_err(OrtError::GetStringTensorContent)?
+        }
+
+        // final offset = overall length so that per-string length calculations work for the last
+        // string
+        debug_assert_eq!(0, offsets[tensor_element_len]);
+        offsets[tensor_element_len] = total_length;
+
+        let strings = offsets
+            // offsets has 1 extra offset past the end so that all windows work
+            .windows(2)
+            .map(|w| {
+                let start: usize = w[0].try_into().expect("Offset didn't fit into usize");
+                let next_start: usize = w[1].try_into().expect("Offset didn't fit into usize");
+
+                let slice = &string_contents[start..next_start];
+                String::from_utf8(slice.into())
+            })
+            .collect::<result::Result<Vec<String>, string::FromUtf8Error>>()
+            .map_err(OrtError::StringFromUtf8Error)?;
+
+        let array = ndarray::Array::from_shape_vec(shape, strings)
+            .expect("Shape extracted from tensor didn't match tensor contents");
+
+        Ok(TensorData::Strings { strings: array })
+    }
+}

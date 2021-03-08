@@ -12,6 +12,7 @@ mod download {
     use ndarray::s;
     use test_env_log::test;
 
+    use onnxruntime::tensor::ndarray_tensor::NdArrayTensor;
     use onnxruntime::{
         download::vision::{DomainBasedImageClassification, ImageClassification},
         environment::Environment,
@@ -63,7 +64,7 @@ mod download {
             input0_shape[3] as u32,
             FilterType::Nearest,
         )
-        .to_rgb();
+        .to_rgb8();
 
         // Python:
         // # image[y, x, RGB]
@@ -101,6 +102,7 @@ mod download {
         // and iterate on resulting probabilities, creating an index to later access labels.
         let output: OrtOwnedTensor<_, _> = outputs[0].try_extract().unwrap();
         let mut probabilities: Vec<(usize, f32)> = output
+            .view()
             .softmax(ndarray::Axis(1))
             .into_iter()
             .copied()
@@ -171,7 +173,7 @@ mod download {
             input0_shape[3] as u32,
             FilterType::Nearest,
         )
-        .to_luma();
+        .to_luma8();
 
         let array = ndarray::Array::from_shape_fn((1, 1, 28, 28), |(_, c, j, i)| {
             let pixel = image_buffer.get_pixel(i as u32, j as u32);
@@ -190,6 +192,7 @@ mod download {
 
         let output: OrtOwnedTensor<_, _> = outputs[0].try_extract().unwrap();
         let mut probabilities: Vec<(usize, f32)> = output
+            .view()
             .softmax(ndarray::Axis(1))
             .into_iter()
             .copied()
@@ -269,7 +272,7 @@ mod download {
                 .join(IMAGE_TO_LOAD),
         )
         .unwrap()
-        .to_rgb();
+        .to_rgb8();
 
         let array = ndarray::Array::from_shape_fn((1, 224, 224, 3), |(_, j, i, c)| {
             let pixel = image_buffer.get_pixel(i as u32, j as u32);
@@ -291,7 +294,7 @@ mod download {
             outputs[0].try_extract().unwrap();
 
         // The image should have doubled in size
-        assert_eq!(output.shape(), [1, 448, 448, 3]);
+        assert_eq!(output.view().shape(), [1, 448, 448, 3]);
     }
 }
 

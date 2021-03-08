@@ -1,6 +1,6 @@
 //! Module containing error definitions.
 
-use std::{io, path::PathBuf};
+use std::{io, path::PathBuf, string};
 
 use thiserror::Error;
 
@@ -53,6 +53,12 @@ pub enum OrtError {
     /// Error occurred when getting ONNX dimensions
     #[error("Failed to get dimensions: {0}")]
     GetDimensions(OrtApiError),
+    /// Error occurred when getting string length
+    #[error("Failed to get string tensor length: {0}")]
+    GetStringTensorDataLength(OrtApiError),
+    /// Error occurred when getting tensor element count
+    #[error("Failed to get tensor element count: {0}")]
+    GetTensorShapeElementCount(OrtApiError),
     /// Error occurred when creating CPU memory information
     #[error("Failed to get dimensions: {0}")]
     CreateCpuMemoryInfo(OrtApiError),
@@ -77,6 +83,12 @@ pub enum OrtError {
     /// Error occurred when extracting data from an ONNX tensor into an C array to be used as an `ndarray::ArrayView`
     #[error("Failed to get tensor data: {0}")]
     GetTensorMutableData(OrtApiError),
+    /// Error occurred when extracting string data from an ONNX tensor
+    #[error("Failed to get tensor string data: {0}")]
+    GetStringTensorContent(OrtApiError),
+    /// Error occurred when converting data to a String
+    #[error("Data was not UTF-8: {0}")]
+    StringFromUtf8Error(#[from] string::FromUtf8Error),
 
     /// Error occurred when downloading a pre-trained ONNX model from the [ONNX Model Zoo](https://github.com/onnx/models)
     #[error("Failed to download ONNX model: {0}")]

@@ -1,6 +1,6 @@
 //! Module containing session types
 
-use std::{ffi::CString, fmt::Debug, path::Path};
+use std::{convert::TryInto as _, ffi::CString, fmt::Debug, path::Path};
 
 #[cfg(not(target_family = "windows"))]
 use std::os::unix::ffi::OsStrExt;
@@ -436,13 +436,31 @@ impl<'a> Session<'a> {
             output_tensor_ptrs
                 .into_iter()
                 .map(|tensor_ptr| {
-                    let (dims, data_type) = unsafe {
+                    let (dims, data_type, len) = unsafe {
                         call_with_tensor_info(tensor_ptr, |tensor_info_ptr| {
                             get_tensor_dimensions(tensor_info_ptr)
                                 .map(|dims| dims.iter().map(|&n| n as usize).collect::<Vec<_>>())
                                 .and_then(|dims| {
                                     extract_data_type(tensor_info_ptr)
                                         .map(|data_type| (dims, data_type))
+                                })
+                                .and_then(|(dims, data_type)| {
+                                    let mut len = 0_u64;
+
+                                    call_ort(|ort| {
+                                        ort.GetTensorShapeElementCount.unwrap()(
+                                            tensor_info_ptr,
+                                            &mut len,
+                                        )
+                                    })
+                                    .map_err(OrtError::GetTensorShapeElementCount)?;
+
+                                    Ok((
+                                        dims,
+                                        data_type,
+                                        len.try_into()
+                                            .expect("u64 length could not fit into usize"),
+                                    ))
                                 })
                         })
                     }?;
@@ -451,6 +469,7 @@ impl<'a> Session<'a> {
                         tensor_ptr,
                         memory_info_ref,
                         ndarray::IxDyn(&dims),
+                        len,
                         data_type,
                     ))
                 })

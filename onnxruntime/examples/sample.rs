@@ -66,9 +66,9 @@ fn run() -> Result<(), Error> {
     let outputs: Vec<DynOrtTensor<_>> = session.run(input_tensor_values)?;
 
     let output: OrtOwnedTensor<f32, _> = outputs[0].try_extract().unwrap();
-    assert_eq!(output.shape(), output0_shape.as_slice());
+    assert_eq!(output.view().shape(), output0_shape.as_slice());
     for i in 0..5 {
-        println!("Score for class [{}] =  {}", i, output[[0, i, 0, 0]]);
+        println!("Score for class [{}] =  {}", i, output.view()[[0, i, 0, 0]]);
     }
 
     Ok(())
