@@ -104,7 +104,10 @@ to download.
 //! let array = ndarray::Array::linspace(0.0_f32, 1.0, 100);
 //! // Multiple inputs and outputs are possible
 //! let input_tensor = vec![array];
-//! let outputs: Vec<OrtOwnedTensor<f32,_>> = session.run(input_tensor)?;
+//! let outputs: Vec<OrtOwnedTensor<f32, _>> = session.run(input_tensor)?
+//!     .into_iter()
+//!     .map(|dyn_tensor| dyn_tensor.try_extract())
+//!     .collect::<Result<_, _>>()?;
 //! # Ok(())
 //! # }
 //! ```
@@ -115,7 +118,10 @@ to download.
 //! See the [`sample.rs`](https://github.com/nbigaouette/onnxruntime-rs/blob/master/onnxruntime/examples/sample.rs)
 //! example for more details.
 
-use std::sync::{atomic::AtomicPtr, Arc, Mutex};
+use std::{
+    ffi, ptr,
+    sync::{atomic::AtomicPtr, Arc, Mutex},
+};
 
 use lazy_static::lazy_static;
 
@@ -142,7 +148,7 @@ lazy_static! {
     //     } as *mut sys::OrtApi)));
     static ref G_ORT_API: Arc<Mutex<AtomicPtr<sys::OrtApi>>> = {
         let base: *const sys::OrtApiBase = unsafe { sys::OrtGetApiBase() };
-        assert_ne!(base, std::ptr::null());
+        assert_ne!(base, ptr::null());
         let get_api: unsafe extern "C" fn(u32) -> *const onnxruntime_sys::OrtApi =
             unsafe { (*base).GetApi.unwrap() };
         let api: *const sys::OrtApi = unsafe { get_api(sys::ORT_API_VERSION) };
@@ -157,13 +163,13 @@ fn g_ort() -> sys::OrtApi {
     let api_ref_mut: &mut *mut sys::OrtApi = api_ref.get_mut();
     let api_ptr_mut: *mut sys::OrtApi = *api_ref_mut;
 
-    assert_ne!(api_ptr_mut, std::ptr::null_mut());
+    assert_ne!(api_ptr_mut, ptr::null_mut());
 
     unsafe { *api_ptr_mut }
 }
 
 fn char_p_to_string(raw: *const i8) -> Result<String> {
-    let c_string = unsafe { std::ffi::CStr::from_ptr(raw as *mut i8).to_owned() };
+    let c_string = unsafe { ffi::CStr::from_ptr(raw as *mut i8).to_owned() };
 
     match c_string.into_string() {
         Ok(string) => Ok(string),
@@ -176,7 +182,7 @@ mod onnxruntime {
     //! Module containing a custom logger, used to catch the runtime's own logging and send it
     //! to Rust's tracing logging instead.
 
-    use std::ffi::CStr;
+    use std::{ffi, ffi::CStr, ptr};
     use tracing::{debug, error, info, span, trace, warn, Level};
 
     use onnxruntime_sys as sys;
@@ -212,7 +218,7 @@ mod onnxruntime {
 
     /// Callback from C that will handle the logging, forwarding the runtime's logs to the tracing crate.
     pub(crate) extern "C" fn custom_logger(
-        _params: *mut std::ffi::c_void,
+        _params: *mut ffi::c_void,
         severity: sys::OrtLoggingLevel,
         category: *const i8,
         logid: *const i8,
@@ -227,16 +233,16 @@ mod onnxruntime {
             sys::OrtLoggingLevel::ORT_LOGGING_LEVEL_FATAL => Level::ERROR,
         };
 
-        assert_ne!(category, std::ptr::null());
+        assert_ne!(category, ptr::null());
         let category = unsafe { CStr::from_ptr(category) };
-        assert_ne!(code_location, std::ptr::null());
+        assert_ne!(code_location, ptr::null());
         let code_location = unsafe { CStr::from_ptr(code_location) }
             .to_str()
             .unwrap_or("unknown");
-        assert_ne!(message, std::ptr::null());
+        assert_ne!(message, ptr::null());
         let message = unsafe { CStr::from_ptr(message) };
 
-        assert_ne!(logid, std::ptr::null());
+        assert_ne!(logid, ptr::null());
         let logid = unsafe { CStr::from_ptr(logid) };
 
         // Parse the code location
@@ -322,154 +328,6 @@ impl Into<sys::GraphOptimizationLevel> for GraphOptimizationLevel {
     }
 }
 
-// FIXME: Use https://docs.rs/bindgen/0.54.1/bindgen/struct.Builder.html#method.rustified_enum
-// FIXME: Add tests to cover the commented out types
-/// Enum mapping ONNX Runtime's supported tensor types
-#[derive(Debug)]
-#[cfg_attr(not(windows), repr(u32))]
-#[cfg_attr(windows, repr(i32))]
-pub enum TensorElementDataType {
-    /// 32-bit floating point, equivalent to Rust's `f32`
-    Float = sys::ONNXTensorElementDataType::ONNX_TENSOR_ELEMENT_DATA_TYPE_FLOAT as OnnxEnumInt,
-    /// Unsigned 8-bit int, equivalent to Rust's `u8`
-    Uint8 = sys::ONNXTensorElementDataType::ONNX_TENSOR_ELEMENT_DATA_TYPE_UINT8 as OnnxEnumInt,
-    /// Signed 8-bit int, equivalent to Rust's `i8`
-    Int8 = sys::ONNXTensorElementDataType::ONNX_TENSOR_ELEMENT_DATA_TYPE_INT8 as OnnxEnumInt,
-    /// Unsigned 16-bit int, equivalent to Rust's `u16`
-    Uint16 = sys::ONNXTensorElementDataType::ONNX_TENSOR_ELEMENT_DATA_TYPE_UINT16 as OnnxEnumInt,
-    /// Signed 16-bit int, equivalent to Rust's `i16`
-    Int16 = sys::ONNXTensorElementDataType::ONNX_TENSOR_ELEMENT_DATA_TYPE_INT16 as OnnxEnumInt,
-    /// Signed 32-bit int, equivalent to Rust's `i32`
-    Int32 = sys::ONNXTensorElementDataType::ONNX_TENSOR_ELEMENT_DATA_TYPE_INT32 as OnnxEnumInt,
-    /// Signed 64-bit int, equivalent to Rust's `i64`
-    Int64 = sys::ONNXTensorElementDataType::ONNX_TENSOR_ELEMENT_DATA_TYPE_INT64 as OnnxEnumInt,
-    /// String, equivalent to Rust's `String`
-    String = sys::ONNXTensorElementDataType::ONNX_TENSOR_ELEMENT_DATA_TYPE_STRING as OnnxEnumInt,
-    // /// Boolean, equivalent to Rust's `bool`
-    // Bool = sys::ONNXTensorElementDataType::ONNX_TENSOR_ELEMENT_DATA_TYPE_BOOL as OnnxEnumInt,
-    // /// 16-bit floating point, equivalent to Rust's `f16`
-    // Float16 = sys::ONNXTensorElementDataType::ONNX_TENSOR_ELEMENT_DATA_TYPE_FLOAT16 as OnnxEnumInt,
-    /// 64-bit floating point, equivalent to Rust's `f64`
-    Double = sys::ONNXTensorElementDataType::ONNX_TENSOR_ELEMENT_DATA_TYPE_DOUBLE as OnnxEnumInt,
-    /// Unsigned 32-bit int, equivalent to Rust's `u32`
-    Uint32 = sys::ONNXTensorElementDataType::ONNX_TENSOR_ELEMENT_DATA_TYPE_UINT32 as OnnxEnumInt,
-    /// Unsigned 64-bit int, equivalent to Rust's `u64`
-    Uint64 = sys::ONNXTensorElementDataType::ONNX_TENSOR_ELEMENT_DATA_TYPE_UINT64 as OnnxEnumInt,
-    // /// Complex 64-bit floating point, equivalent to Rust's `???`
-    // Complex64 = sys::ONNXTensorElementDataType::ONNX_TENSOR_ELEMENT_DATA_TYPE_COMPLEX64 as OnnxEnumInt,
-    // /// Complex 128-bit floating point, equivalent to Rust's `???`
-    // Complex128 = sys::ONNXTensorElementDataType::ONNX_TENSOR_ELEMENT_DATA_TYPE_COMPLEX128 as OnnxEnumInt,
-    // /// Brain 16-bit floating point
-    // Bfloat16 = sys::ONNXTensorElementDataType::ONNX_TENSOR_ELEMENT_DATA_TYPE_BFLOAT16 as OnnxEnumInt,
-}
-
-impl Into<sys::ONNXTensorElementDataType> for TensorElementDataType {
-    fn into(self) -> sys::ONNXTensorElementDataType {
-        use TensorElementDataType::*;
-        match self {
-            Float => sys::ONNXTensorElementDataType::ONNX_TENSOR_ELEMENT_DATA_TYPE_FLOAT,
-            Uint8 => sys::ONNXTensorElementDataType::ONNX_TENSOR_ELEMENT_DATA_TYPE_UINT8,
-            Int8 => sys::ONNXTensorElementDataType::ONNX_TENSOR_ELEMENT_DATA_TYPE_INT8,
-            Uint16 => sys::ONNXTensorElementDataType::ONNX_TENSOR_ELEMENT_DATA_TYPE_UINT16,
-            Int16 => sys::ONNXTensorElementDataType::ONNX_TENSOR_ELEMENT_DATA_TYPE_INT16,
-            Int32 => sys::ONNXTensorElementDataType::ONNX_TENSOR_ELEMENT_DATA_TYPE_INT32,
-            Int64 => sys::ONNXTensorElementDataType::ONNX_TENSOR_ELEMENT_DATA_TYPE_INT64,
-            String => sys::ONNXTensorElementDataType::ONNX_TENSOR_ELEMENT_DATA_TYPE_STRING,
-            // Bool => {
-            //     sys::ONNXTensorElementDataType::ONNX_TENSOR_ELEMENT_DATA_TYPE_BOOL
-            // }
-            // Float16 => {
-            //     sys::ONNXTensorElementDataType::ONNX_TENSOR_ELEMENT_DATA_TYPE_FLOAT16
-            // }
-            Double => sys::ONNXTensorElementDataType::ONNX_TENSOR_ELEMENT_DATA_TYPE_DOUBLE,
-            Uint32 => sys::ONNXTensorElementDataType::ONNX_TENSOR_ELEMENT_DATA_TYPE_UINT32,
-            Uint64 => sys::ONNXTensorElementDataType::ONNX_TENSOR_ELEMENT_DATA_TYPE_UINT64,
-            // Complex64 => {
-            //     sys::ONNXTensorElementDataType::ONNX_TENSOR_ELEMENT_DATA_TYPE_COMPLEX64
-            // }
-            // Complex128 => {
-            //     sys::ONNXTensorElementDataType::ONNX_TENSOR_ELEMENT_DATA_TYPE_COMPLEX128
-            // }
-            // Bfloat16 => {
-            //     sys::ONNXTensorElementDataType::ONNX_TENSOR_ELEMENT_DATA_TYPE_BFLOAT16
-            // }
-        }
-    }
-}
-
-/// Trait used to map Rust types (for example `f32`) to ONNX types (for example `Float`)
-pub trait TypeToTensorElementDataType {
-    /// Return the ONNX type for a Rust type
-    fn tensor_element_data_type() -> TensorElementDataType;
-
-    /// If the type is `String`, returns `Some` with utf8 contents, else `None`.
-    fn try_utf8_bytes(&self) -> Option<&[u8]>;
-}
-
-macro_rules! impl_type_trait {
-    ($type_:ty, $variant:ident) => {
-        impl TypeToTensorElementDataType for $type_ {
-            fn tensor_element_data_type() -> TensorElementDataType {
-                // unsafe { std::mem::transmute(TensorElementDataType::$variant) }
-                TensorElementDataType::$variant
-            }
-
-            fn try_utf8_bytes(&self) -> Option<&[u8]> {
-                None
-            }
-        }
-    };
-}
-
-impl_type_trait!(f32, Float);
-impl_type_trait!(u8, Uint8);
-impl_type_trait!(i8, Int8);
-impl_type_trait!(u16, Uint16);
-impl_type_trait!(i16, Int16);
-impl_type_trait!(i32, Int32);
-impl_type_trait!(i64, Int64);
-// impl_type_trait!(bool, Bool);
-// impl_type_trait!(f16, Float16);
-impl_type_trait!(f64, Double);
-impl_type_trait!(u32, Uint32);
-impl_type_trait!(u64, Uint64);
-// impl_type_trait!(, Complex64);
-// impl_type_trait!(, Complex128);
-// impl_type_trait!(, Bfloat16);
-
-/// Adapter for common Rust string types to Onnx strings.
-///
-/// It should be easy to use both `String` and `&str` as [TensorElementDataType::String] data, but
-/// we can't define an automatic implementation for anything that implements `AsRef<str>` as it
-/// would conflict with the implementations of [TypeToTensorElementDataType] for primitive numeric
-/// types (which might implement `AsRef<str>` at some point in the future).
-pub trait Utf8Data {
-    /// Returns the utf8 contents.
-    fn utf8_bytes(&self) -> &[u8];
-}
-
-impl Utf8Data for String {
-    fn utf8_bytes(&self) -> &[u8] {
-        self.as_bytes()
-    }
-}
-
-impl<'a> Utf8Data for &'a str {
-    fn utf8_bytes(&self) -> &[u8] {
-        self.as_bytes()
-    }
-}
-
-impl<T: Utf8Data> TypeToTensorElementDataType for T {
-    fn tensor_element_data_type() -> TensorElementDataType {
-        TensorElementDataType::String
-    }
-
-    fn try_utf8_bytes(&self) -> Option<&[u8]> {
-        Some(self.utf8_bytes())
-    }
-}
-
 /// Allocator type
 #[derive(Debug, Clone)]
 #[repr(i32)]
@@ -524,7 +382,7 @@ mod test {
 
     #[test]
     fn test_char_p_to_string() {
-        let s = std::ffi::CString::new("foo").unwrap();
+        let s = ffi::CString::new("foo").unwrap();
         let ptr = s.as_c_str().as_ptr();
         assert_eq!("foo", char_p_to_string(ptr).unwrap());
     }
