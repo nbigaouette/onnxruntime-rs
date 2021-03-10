@@ -1,0 +1,19 @@
+tf2onnx1.9.0:—
+
+	input_1:0
+
+pattern__7
+
+rewrite__8
+Identity:0)PartitionedCall/model1/StaticRegexReplace"StringRegexReplace:ai.onnx.contribtf2onnx*2_B
+rewrite__8*2 B
+pattern__7R!converted from models/regex_modelZ
+	input_1:0
+
+
+unk__9b
+
+Identity:0
+
+	unk__10B	B
+ai.onnx.contrib
