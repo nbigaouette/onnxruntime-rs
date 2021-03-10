@@ -370,7 +370,7 @@ impl<'a> Session<'a> {
         'm: 't, // 'm outlives 't (memory info outlives tensor)
         's: 'm, // 's outlives 'm (session outlives memory info)
     {
-        self.validate_input_shapes(&input_array)?;
+        self.validate_input_shapes(&input_array);
         // The C API expects pointers for the arrays (pointers to C-arrays)
         let input_ort_tensor: OrtTensor<TIn, D> =
             OrtTensor::from_array(&self.memory_info, self.allocator_ptr, input_array)?;
@@ -481,6 +481,7 @@ impl<'a> Session<'a> {
         };
         status_to_result(status).map_err(OrtError::Run)?;
         self.input_ort_values.iter().for_each(std::mem::drop);
+        self.input_ort_values.clear();
 
         let memory_info_ref = &self.memory_info;
         let outputs: Result<Vec<DynOrtTensor<ndarray::Dim<ndarray::IxDynImpl>>>> =
@@ -545,7 +546,7 @@ impl<'a> Session<'a> {
     //     Tensor::from_array(self, array)
     // }
 
-    fn validate_input_shapes<TIn, D>(&mut self, input_array: &Array<TIn, D>) -> Result<()>
+    fn validate_input_shapes<TIn, D>(&mut self, input_array: &Array<TIn, D>)
     where
         TIn: TypeToTensorElementDataType + Debug + Clone,
         D: ndarray::Dimension,
@@ -592,8 +593,6 @@ impl<'a> Session<'a> {
                 self.inputs, input_array
             );
         }
-
-        Ok(())
     }
 }
 

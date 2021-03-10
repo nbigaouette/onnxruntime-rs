@@ -1,6 +1,5 @@
 use std::error::Error;
 
-use ndarray;
 use onnxruntime::tensor::{OrtOwnedTensor, TensorElementDataType};
 use onnxruntime::{environment::Environment, tensor::DynOrtTensor, LoggingLevel};
 
