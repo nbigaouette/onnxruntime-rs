@@ -1,6 +1,6 @@
 //! Module containing error definitions.
 
-use std::{io, path::PathBuf};
+use std::{io, path::PathBuf, string};
 
 use thiserror::Error;
 
@@ -53,6 +53,12 @@ pub enum OrtError {
     /// Error occurred when getting ONNX dimensions
     #[error("Failed to get dimensions: {0}")]
     GetDimensions(OrtApiError),
+    /// Error occurred when getting string length
+    #[error("Failed to get string tensor length: {0}")]
+    GetStringTensorDataLength(OrtApiError),
+    /// Error occurred when getting tensor element count
+    #[error("Failed to get tensor element count: {0}")]
+    GetTensorShapeElementCount(OrtApiError),
     /// Error occurred when creating CPU memory information
     #[error("Failed to get dimensions: {0}")]
     CreateCpuMemoryInfo(OrtApiError),
@@ -77,6 +83,12 @@ pub enum OrtError {
     /// Error occurred when extracting data from an ONNX tensor into an C array to be used as an `ndarray::ArrayView`
     #[error("Failed to get tensor data: {0}")]
     GetTensorMutableData(OrtApiError),
+    /// Error occurred when extracting string data from an ONNX tensor
+    #[error("Failed to get tensor string data: {0}")]
+    GetStringTensorContent(OrtApiError),
+    /// Error occurred when converting data to a String
+    #[error("Data was not UTF-8: {0}")]
+    StringFromUtf8Error(#[from] string::FromUtf8Error),
 
     /// Error occurred when downloading a pre-trained ONNX model from the [ONNX Model Zoo](https://github.com/onnx/models)
     #[error("Failed to download ONNX model: {0}")]
@@ -108,16 +120,16 @@ pub enum OrtError {
 #[derive(Error, Debug)]
 pub enum NonMatchingDimensionsError {
     /// Number of inputs from model does not match number of inputs from inference call
-    #[error("Non-matching number of inputs: {inference_input_count:?} for input vs {model_input_count:?} for model (inputs: {inference_input:?}, model: {model_input:?})")]
+    #[error("Non-matching number of inputs: {inference_input_count:?} for input vs {model_input_count:?}")]
     InputsCount {
         /// Number of input dimensions used by inference call
         inference_input_count: usize,
         /// Number of input dimensions defined in model
         model_input_count: usize,
-        /// Input dimensions used by inference call
-        inference_input: Vec<Vec<usize>>,
-        /// Input dimensions defined in model
-        model_input: Vec<Vec<Option<u32>>>,
+        // Input dimensions used by inference call
+        // inference_input: Vec<Vec<usize>>,
+        // Input dimensions defined in model
+        // model_input: Vec<Vec<Option<u32>>>,
     },
 }
 
