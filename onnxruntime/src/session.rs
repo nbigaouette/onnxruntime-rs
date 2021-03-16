@@ -245,7 +245,7 @@ impl<'a> SessionBuilder<'a> {
 
         let status = unsafe {
             let model_data = model_bytes.as_ptr() as *const std::ffi::c_void;
-            let model_data_length = model_bytes.len() as u64;
+            let model_data_length = model_bytes.len();
             g_ort().CreateSessionFromArray.unwrap()(
                 env_ptr,
                 model_data,
@@ -428,9 +428,9 @@ impl<'a> Session<'a> {
                 run_options_ptr,
                 input_names_ptr.as_ptr(),
                 input_ort_values.as_ptr(),
-                input_ort_values.len() as u64, // C API expects a u64, not isize
+                input_ort_values.len(),
                 output_names_ptr.as_ptr(),
-                output_names_ptr.len() as u64, // C API expects a u64, not isize
+                output_names_ptr.len(),
                 output_tensor_extractors_ptrs.as_mut_ptr(),
             )
         };
@@ -574,21 +574,21 @@ unsafe fn get_tensor_dimensions(
 mod dangerous {
     use super::*;
 
-    pub(super) fn extract_inputs_count(session_ptr: *mut sys::OrtSession) -> Result<u64> {
+    pub(super) fn extract_inputs_count(session_ptr: *mut sys::OrtSession) -> Result<usize> {
         let f = g_ort().SessionGetInputCount.unwrap();
         extract_io_count(f, session_ptr)
     }
 
-    pub(super) fn extract_outputs_count(session_ptr: *mut sys::OrtSession) -> Result<u64> {
+    pub(super) fn extract_outputs_count(session_ptr: *mut sys::OrtSession) -> Result<usize> {
         let f = g_ort().SessionGetOutputCount.unwrap();
         extract_io_count(f, session_ptr)
     }
 
     fn extract_io_count(
-        f: unsafe extern "C" fn(*const sys::OrtSession, *mut u64) -> *mut sys::OrtStatus,
+        f: unsafe extern "C" fn(*const sys::OrtSession, *mut usize) -> *mut sys::OrtStatus,
         session_ptr: *mut sys::OrtSession,
-    ) -> Result<u64> {
-        let mut num_nodes: u64 = 0;
+    ) -> Result<usize> {
+        let mut num_nodes: usize = 0;
         let status = unsafe { f(session_ptr, &mut num_nodes) };
         status_to_result(status).map_err(OrtError::InOutCount)?;
         assert_eq!(status, std::ptr::null_mut());
@@ -599,7 +599,7 @@ mod dangerous {
     fn extract_input_name(
         session_ptr: *mut sys::OrtSession,
         allocator_ptr: *mut sys::OrtAllocator,
-        i: u64,
+        i: usize,
     ) -> Result<String> {
         let f = g_ort().SessionGetInputName.unwrap();
         extract_io_name(f, session_ptr, allocator_ptr, i)
@@ -608,7 +608,7 @@ mod dangerous {
     fn extract_output_name(
         session_ptr: *mut sys::OrtSession,
         allocator_ptr: *mut sys::OrtAllocator,
-        i: u64,
+        i: usize,
     ) -> Result<String> {
         let f = g_ort().SessionGetOutputName.unwrap();
         extract_io_name(f, session_ptr, allocator_ptr, i)
@@ -617,13 +617,13 @@ mod dangerous {
     fn extract_io_name(
         f: unsafe extern "C" fn(
             *const sys::OrtSession,
-            u64,
+            usize,
             *mut sys::OrtAllocator,
             *mut *mut i8,
         ) -> *mut sys::OrtStatus,
         session_ptr: *mut sys::OrtSession,
         allocator_ptr: *mut sys::OrtAllocator,
-        i: u64,
+        i: usize,
     ) -> Result<String> {
         let mut name_bytes: *mut i8 = std::ptr::null_mut();
 
@@ -640,7 +640,7 @@ mod dangerous {
     pub(super) fn extract_input(
         session_ptr: *mut sys::OrtSession,
         allocator_ptr: *mut sys::OrtAllocator,
-        i: u64,
+        i: usize,
     ) -> Result<Input> {
         let input_name = extract_input_name(session_ptr, allocator_ptr, i)?;
         let f = g_ort().SessionGetInputTypeInfo.unwrap();
@@ -655,7 +655,7 @@ mod dangerous {
     pub(super) fn extract_output(
         session_ptr: *mut sys::OrtSession,
         allocator_ptr: *mut sys::OrtAllocator,
-        i: u64,
+        i: usize,
     ) -> Result<Output> {
         let output_name = extract_output_name(session_ptr, allocator_ptr, i)?;
         let f = g_ort().SessionGetOutputTypeInfo.unwrap();
@@ -670,15 +670,15 @@ mod dangerous {
     fn extract_io(
         f: unsafe extern "C" fn(
             *const sys::OrtSession,
-            u64,
+            usize,
             *mut *mut sys::OrtTypeInfo,
         ) -> *mut sys::OrtStatus,
         session_ptr: *mut sys::OrtSession,
-        i: u64,
+        i: usize,
     ) -> Result<(TensorElementDataType, Vec<Option<u32>>)> {
         let mut typeinfo_ptr: *mut sys::OrtTypeInfo = std::ptr::null_mut();
 
-        let status = unsafe { f(session_ptr, i as u64, &mut typeinfo_ptr) };
+        let status = unsafe { f(session_ptr, i, &mut typeinfo_ptr) };
         status_to_result(status).map_err(OrtError::GetTypeInfo)?;
         assert_ne!(typeinfo_ptr, std::ptr::null_mut());
 

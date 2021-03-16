@@ -50,7 +50,7 @@ where
 
         let shape: Vec<i64> = array.shape().iter().map(|d: &usize| *d as i64).collect();
         let shape_ptr: *const i64 = shape.as_ptr();
-        let shape_len = array.shape().len() as u64;
+        let shape_len = array.shape().len();
 
         match T::tensor_element_data_type() {
             TensorElementDataType::Float
@@ -74,7 +74,7 @@ where
                         ort.CreateTensorWithDataAsOrtValue.unwrap()(
                             memory_info.ptr,
                             tensor_values_ptr,
-                            (array.len() * std::mem::size_of::<T>()) as u64,
+                            array.len() * std::mem::size_of::<T>(),
                             shape_ptr,
                             shape_len,
                             T::tensor_element_data_type().into(),
@@ -126,7 +126,7 @@ where
                         ort.FillStringTensor.unwrap()(
                             tensor_ptr,
                             string_pointers.as_ptr(),
-                            string_pointers.len() as u64,
+                            string_pointers.len(),
                         )
                     })
                 }
