@@ -585,7 +585,7 @@ mod dangerous {
     }
 
     fn extract_io_count(
-        f: unsafe extern "C" fn(*const sys::OrtSession, *mut usize) -> *mut sys::OrtStatus,
+        f: extern_system_fn! { unsafe fn(*const sys::OrtSession, *mut usize) -> *mut sys::OrtStatus },
         session_ptr: *mut sys::OrtSession,
     ) -> Result<usize> {
         let mut num_nodes: usize = 0;
@@ -615,12 +615,12 @@ mod dangerous {
     }
 
     fn extract_io_name(
-        f: unsafe extern "C" fn(
+        f: extern_system_fn! { unsafe fn(
             *const sys::OrtSession,
             usize,
             *mut sys::OrtAllocator,
             *mut *mut i8,
-        ) -> *mut sys::OrtStatus,
+        ) -> *mut sys::OrtStatus },
         session_ptr: *mut sys::OrtSession,
         allocator_ptr: *mut sys::OrtAllocator,
         i: usize,
@@ -668,11 +668,11 @@ mod dangerous {
     }
 
     fn extract_io(
-        f: unsafe extern "C" fn(
+        f: extern_system_fn! { unsafe fn(
             *const sys::OrtSession,
             usize,
             *mut *mut sys::OrtTypeInfo,
-        ) -> *mut sys::OrtStatus,
+        ) -> *mut sys::OrtStatus },
         session_ptr: *mut sys::OrtSession,
         i: usize,
     ) -> Result<(TensorElementDataType, Vec<Option<u32>>)> {
