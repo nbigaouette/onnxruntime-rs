@@ -23,6 +23,7 @@ CPU:
 
 * Linux x86_64
 * macOS x86_64
+* macOS aarch64 (no pre-built binaries, no CI testing, see [#74](https://github.com/nbigaouette/onnxruntime-rs/pull/74))
 * Windows i686
 * Windows x86_64
 
