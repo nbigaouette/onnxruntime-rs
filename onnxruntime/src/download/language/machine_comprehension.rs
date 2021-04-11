@@ -2,6 +2,9 @@
 //!
 //! See [https://github.com/onnx/models#machine_comprehension](https://github.com/onnx/models#machine_comprehension)
 
+// Acronyms are specific ONNX model names and contains upper cases
+#![allow(clippy::upper_case_acronyms)]
+
 use crate::download::{language::Language, AvailableOnnxModel, ModelUrl};
 
 /// Machine Comprehension

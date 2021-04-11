@@ -280,9 +280,9 @@ pub enum LoggingLevel {
     Fatal = sys::OrtLoggingLevel::ORT_LOGGING_LEVEL_FATAL as OnnxEnumInt,
 }
 
-impl Into<sys::OrtLoggingLevel> for LoggingLevel {
-    fn into(self) -> sys::OrtLoggingLevel {
-        match self {
+impl From<LoggingLevel> for sys::OrtLoggingLevel {
+    fn from(val: LoggingLevel) -> Self {
+        match val {
             LoggingLevel::Verbose => sys::OrtLoggingLevel::ORT_LOGGING_LEVEL_VERBOSE,
             LoggingLevel::Info => sys::OrtLoggingLevel::ORT_LOGGING_LEVEL_INFO,
             LoggingLevel::Warning => sys::OrtLoggingLevel::ORT_LOGGING_LEVEL_WARNING,
@@ -310,10 +310,10 @@ pub enum GraphOptimizationLevel {
     All = sys::GraphOptimizationLevel::ORT_ENABLE_ALL as OnnxEnumInt,
 }
 
-impl Into<sys::GraphOptimizationLevel> for GraphOptimizationLevel {
-    fn into(self) -> sys::GraphOptimizationLevel {
+impl From<GraphOptimizationLevel> for sys::GraphOptimizationLevel {
+    fn from(val: GraphOptimizationLevel) -> Self {
         use GraphOptimizationLevel::*;
-        match self {
+        match val {
             DisableAll => sys::GraphOptimizationLevel::ORT_DISABLE_ALL,
             Basic => sys::GraphOptimizationLevel::ORT_ENABLE_BASIC,
             Extended => sys::GraphOptimizationLevel::ORT_ENABLE_EXTENDED,
@@ -363,10 +363,10 @@ pub enum TensorElementDataType {
     // Bfloat16 = sys::ONNXTensorElementDataType::ONNX_TENSOR_ELEMENT_DATA_TYPE_BFLOAT16 as OnnxEnumInt,
 }
 
-impl Into<sys::ONNXTensorElementDataType> for TensorElementDataType {
-    fn into(self) -> sys::ONNXTensorElementDataType {
+impl From<TensorElementDataType> for sys::ONNXTensorElementDataType {
+    fn from(val: TensorElementDataType) -> Self {
         use TensorElementDataType::*;
-        match self {
+        match val {
             Float => sys::ONNXTensorElementDataType::ONNX_TENSOR_ELEMENT_DATA_TYPE_FLOAT,
             Uint8 => sys::ONNXTensorElementDataType::ONNX_TENSOR_ELEMENT_DATA_TYPE_UINT8,
             Int8 => sys::ONNXTensorElementDataType::ONNX_TENSOR_ELEMENT_DATA_TYPE_INT8,
@@ -481,10 +481,10 @@ pub enum AllocatorType {
     Arena = sys::OrtAllocatorType::OrtArenaAllocator as i32,
 }
 
-impl Into<sys::OrtAllocatorType> for AllocatorType {
-    fn into(self) -> sys::OrtAllocatorType {
+impl From<AllocatorType> for sys::OrtAllocatorType {
+    fn from(val: AllocatorType) -> Self {
         use AllocatorType::*;
-        match self {
+        match val {
             // Invalid => sys::OrtAllocatorType::Invalid,
             Device => sys::OrtAllocatorType::OrtDeviceAllocator,
             Arena => sys::OrtAllocatorType::OrtArenaAllocator,
@@ -506,10 +506,10 @@ pub enum MemType {
     Default = sys::OrtMemType::OrtMemTypeDefault as i32,
 }
 
-impl Into<sys::OrtMemType> for MemType {
-    fn into(self) -> sys::OrtMemType {
+impl From<MemType> for sys::OrtMemType {
+    fn from(val: MemType) -> Self {
         use MemType::*;
-        match self {
+        match val {
             // CPUInput => sys::OrtMemType::OrtMemTypeCPUInput,
             // CPUOutput => sys::OrtMemType::OrtMemTypeCPUOutput,
             // CPU => sys::OrtMemType::OrtMemTypeCPU,
