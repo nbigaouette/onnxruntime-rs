@@ -2,6 +2,9 @@
 //!
 //! See [https://github.com/onnx/models#image_classification](https://github.com/onnx/models#image_classification)
 
+// Acronyms are specific ONNX model names and contains upper cases
+#![allow(clippy::upper_case_acronyms)]
+
 use crate::download::{vision::Vision, AvailableOnnxModel, ModelUrl};
 
 /// Image classification model
