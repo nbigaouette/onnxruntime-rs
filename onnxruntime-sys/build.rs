@@ -66,7 +66,17 @@ fn generate_bindings(_include_dir: &Path) {
 
 #[cfg(feature = "generate-bindings")]
 fn generate_bindings(include_dir: &Path) {
-    let clang_arg = format!("-I{}", include_dir.display());
+    let clang_args = &[
+        format!("-I{}", include_dir.display()),
+        format!(
+            "-I{}",
+            include_dir
+                .join("onnxruntime")
+                .join("core")
+                .join("session")
+                .display()
+        ),
+    ];
 
     // Tell cargo to invalidate the built crate whenever the wrapper changes
     println!("cargo:rerun-if-changed=wrapper.h");
@@ -80,7 +90,7 @@ fn generate_bindings(include_dir: &Path) {
         // bindings for.
         .header("wrapper.h")
         // The current working directory is 'onnxruntime-sys'
-        .clang_arg(clang_arg)
+        .clang_args(clang_args)
         // Tell cargo to invalidate the built crate whenever any of the
         // included header files changed.
         .parse_callbacks(Box::new(bindgen::CargoCallbacks))
