@@ -54,7 +54,7 @@ Three different strategy to obtain the ONNX Runtime are supported by the `build.
 To select which strategy to use, set the `ORT_STRATEGY` environment variable to:
 
 1. `download`: This is the default if `ORT_STRATEGY` is not set;
-2. `system`: To use a locally installed version
+2. `system`: To use a locally installed version (use `ORT_LIB_LOCATION` environment variable to point to the install path)
 3. `compile`: To compile the library
 
 The `download` strategy supports downloading a version of ONNX that supports CUDA. To use this, set the
