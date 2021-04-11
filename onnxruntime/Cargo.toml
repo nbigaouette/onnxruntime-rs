@@ -22,7 +22,7 @@ required-features = ["model-fetching"]
 onnxruntime-sys = { version = "0.0.11", path = "../onnxruntime-sys" }
 
 lazy_static = "1.4"
-ndarray = "0.13"
+ndarray = "0.15"
 thiserror = "1.0"
 tracing = "0.1"
 
