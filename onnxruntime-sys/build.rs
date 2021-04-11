@@ -61,7 +61,7 @@ fn main() {
 #[cfg(not(feature = "generate-bindings"))]
 fn generate_bindings(_include_dir: &Path) {
     println!("Bindings not generated automatically, using committed files instead.");
-    println!("Enable with the 'bindgen' cargo feature.");
+    println!("Enable with the 'generate-bindings' cargo feature.");
 }
 
 #[cfg(feature = "generate-bindings")]
