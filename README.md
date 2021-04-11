@@ -63,6 +63,29 @@ environment variable `ORT_USE_CUDA=1` (only supports Linux or Windows).
 Until the build script allow compilation of the runtime, see the [compilation notes](ONNX_Compilation_Notes.md)
 for some details on the process.
 
+### Note on 'ORT_STRATEGY=system'
+
+When using `ORT_STRATEGY=system`, executing a built crate binary (for example the tests) might fail, at least on macOS,
+if the library is not installed in a system path. An error similar to the following happens:
+
+```text
+dyld: Library not loaded: @rpath/libonnxruntime.1.7.1.dylib
+  Referenced from: onnxruntime-rs.git/target/debug/deps/onnxruntime_sys-22eb0e3e89a0278c
+  Reason: image not found
+```
+
+To fix, one can either:
+
+* Set the `LD_LIBRARY_PATH` environment variable to point to the path where the library can be found.
+* Adapt the `.cargo/config` file to contain a linker flag to provide the **full** path:
+  
+  ```toml
+  [target.aarch64-apple-darwin]
+  rustflags = ["-C", "link-args=-Wl,-rpath,/full/path/to/onnxruntime/lib"]
+  ```
+
+See [rust-lang/cargo #5077](https://github.com/rust-lang/cargo/issues/5077) for more information.
+
 ## Example
 
 The C++ example that uses the C API
