@@ -143,7 +143,7 @@ pub enum OrtDownloadError {
     #[cfg(feature = "model-fetching")]
     /// Download error by ureq
     #[error("Error downloading data to file: {0}")]
-    UreqError(#[from] ureq::Error),
+    UreqError(#[from] Box<ureq::Error>),
     /// Error getting content-length from an HTTP GET request
     #[error("Error getting content-length")]
     ContentLengthError,
