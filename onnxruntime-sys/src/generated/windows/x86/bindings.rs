@@ -173,7 +173,6 @@ pub const __drv_typeCond: u32 = 1;
 pub const __drv_typeBitset: u32 = 2;
 pub const __drv_typeExpr: u32 = 3;
 pub type va_list = *mut ::std::os::raw::c_char;
-pub type size_t = ::std::os::raw::c_uint;
 pub type __vcrt_bool = bool;
 pub type wchar_t = ::std::os::raw::c_ushort;
 extern "C" {
@@ -359,9 +358,9 @@ fn bindgen_test_layout__Mbstatet() {
 }
 pub type mbstate_t = _Mbstatet;
 pub type time_t = __time64_t;
-pub type rsize_t = size_t;
+pub type rsize_t = usize;
 extern "C" {
-    pub fn _calloc_base(_Count: size_t, _Size: size_t) -> *mut ::std::os::raw::c_void;
+    pub fn _calloc_base(_Count: usize, _Size: usize) -> *mut ::std::os::raw::c_void;
 }
 extern "C" {
     pub fn calloc(
@@ -370,12 +369,12 @@ extern "C" {
     ) -> *mut ::std::os::raw::c_void;
 }
 extern "C" {
-    pub fn _callnewh(_Size: size_t) -> ::std::os::raw::c_int;
+    pub fn _callnewh(_Size: usize) -> ::std::os::raw::c_int;
 }
 extern "C" {
     pub fn _expand(
         _Block: *mut ::std::os::raw::c_void,
-        _Size: size_t,
+        _Size: usize,
     ) -> *mut ::std::os::raw::c_void;
 }
 extern "C" {
@@ -385,21 +384,21 @@ extern "C" {
     pub fn free(_Block: *mut ::std::os::raw::c_void);
 }
 extern "C" {
-    pub fn _malloc_base(_Size: size_t) -> *mut ::std::os::raw::c_void;
+    pub fn _malloc_base(_Size: usize) -> *mut ::std::os::raw::c_void;
 }
 extern "C" {
     pub fn malloc(_Size: ::std::os::raw::c_uint) -> *mut ::std::os::raw::c_void;
 }
 extern "C" {
-    pub fn _msize_base(_Block: *mut ::std::os::raw::c_void) -> size_t;
+    pub fn _msize_base(_Block: *mut ::std::os::raw::c_void) -> usize;
 }
 extern "C" {
-    pub fn _msize(_Block: *mut ::std::os::raw::c_void) -> size_t;
+    pub fn _msize(_Block: *mut ::std::os::raw::c_void) -> usize;
 }
 extern "C" {
     pub fn _realloc_base(
         _Block: *mut ::std::os::raw::c_void,
-        _Size: size_t,
+        _Size: usize,
     ) -> *mut ::std::os::raw::c_void;
 }
 extern "C" {
@@ -411,70 +410,84 @@ extern "C" {
 extern "C" {
     pub fn _recalloc_base(
         _Block: *mut ::std::os::raw::c_void,
-        _Count: size_t,
-        _Size: size_t,
+        _Count: usize,
+        _Size: usize,
     ) -> *mut ::std::os::raw::c_void;
 }
 extern "C" {
     pub fn _recalloc(
         _Block: *mut ::std::os::raw::c_void,
-        _Count: size_t,
-        _Size: size_t,
+        _Count: usize,
+        _Size: usize,
     ) -> *mut ::std::os::raw::c_void;
 }
 extern "C" {
     pub fn _aligned_free(_Block: *mut ::std::os::raw::c_void);
 }
 extern "C" {
-    pub fn _aligned_malloc(_Size: size_t, _Alignment: size_t) -> *mut ::std::os::raw::c_void;
+    pub fn _aligned_malloc(_Size: usize, _Alignment: usize) -> *mut ::std::os::raw::c_void;
 }
 extern "C" {
     pub fn _aligned_offset_malloc(
-        _Size: size_t,
-        _Alignment: size_t,
-        _Offset: size_t,
+        _Size: usize,
+        _Alignment: usize,
+        _Offset: usize,
     ) -> *mut ::std::os::raw::c_void;
 }
 extern "C" {
     pub fn _aligned_msize(
         _Block: *mut ::std::os::raw::c_void,
-        _Alignment: size_t,
-        _Offset: size_t,
-    ) -> size_t;
+        _Alignment: usize,
+        _Offset: usize,
+    ) -> usize;
 }
 extern "C" {
     pub fn _aligned_offset_realloc(
         _Block: *mut ::std::os::raw::c_void,
-        _Size: size_t,
-        _Alignment: size_t,
-        _Offset: size_t,
+        _Size: usize,
+        _Alignment: usize,
+        _Offset: usize,
     ) -> *mut ::std::os::raw::c_void;
 }
 extern "C" {
     pub fn _aligned_offset_recalloc(
         _Block: *mut ::std::os::raw::c_void,
-        _Count: size_t,
-        _Size: size_t,
-        _Alignment: size_t,
-        _Offset: size_t,
+        _Count: usize,
+        _Size: usize,
+        _Alignment: usize,
+        _Offset: usize,
     ) -> *mut ::std::os::raw::c_void;
 }
 extern "C" {
     pub fn _aligned_realloc(
         _Block: *mut ::std::os::raw::c_void,
-        _Size: size_t,
-        _Alignment: size_t,
+        _Size: usize,
+        _Alignment: usize,
     ) -> *mut ::std::os::raw::c_void;
 }
 extern "C" {
     pub fn _aligned_recalloc(
         _Block: *mut ::std::os::raw::c_void,
-        _Count: size_t,
-        _Size: size_t,
-        _Alignment: size_t,
+        _Count: usize,
+        _Size: usize,
+        _Alignment: usize,
     ) -> *mut ::std::os::raw::c_void;
 }
-pub type max_align_t = f64;
+extern "C" {
+    pub fn _errno() -> *mut ::std::os::raw::c_int;
+}
+extern "C" {
+    pub fn _set_errno(_Value: ::std::os::raw::c_int) -> errno_t;
+}
+extern "C" {
+    pub fn _get_errno(_Value: *mut ::std::os::raw::c_int) -> errno_t;
+}
+extern "C" {
+    pub fn __threadid() -> ::std::os::raw::c_ulong;
+}
+extern "C" {
+    pub fn __threadhandle() -> usize;
+}
 pub type _CoreCrtSecureSearchSortCompareFunction = ::std::option::Option<
     unsafe extern "C" fn(
         arg1: *mut ::std::os::raw::c_void,
@@ -511,16 +524,16 @@ extern "C" {
     pub fn bsearch(
         _Key: *const ::std::os::raw::c_void,
         _Base: *const ::std::os::raw::c_void,
-        _NumOfElements: size_t,
-        _SizeOfElements: size_t,
+        _NumOfElements: usize,
+        _SizeOfElements: usize,
         _CompareFunction: _CoreCrtNonSecureSearchSortCompareFunction,
     ) -> *mut ::std::os::raw::c_void;
 }
 extern "C" {
     pub fn qsort(
         _Base: *mut ::std::os::raw::c_void,
-        _NumOfElements: size_t,
-        _SizeOfElements: size_t,
+        _NumOfElements: usize,
+        _SizeOfElements: usize,
         _CompareFunction: _CoreCrtNonSecureSearchSortCompareFunction,
     );
 }
@@ -529,7 +542,7 @@ extern "C" {
         _Key: *const ::std::os::raw::c_void,
         _Base: *const ::std::os::raw::c_void,
         _NumOfElements: *mut ::std::os::raw::c_uint,
-        _SizeOfElements: size_t,
+        _SizeOfElements: usize,
         _CompareFunction: _CoreCrtSecureSearchSortCompareFunction,
         _Context: *mut ::std::os::raw::c_void,
     ) -> *mut ::std::os::raw::c_void;
@@ -548,7 +561,7 @@ extern "C" {
         _Key: *const ::std::os::raw::c_void,
         _Base: *mut ::std::os::raw::c_void,
         _NumOfElements: *mut ::std::os::raw::c_uint,
-        _SizeOfElements: size_t,
+        _SizeOfElements: usize,
         _CompareFunction: _CoreCrtSecureSearchSortCompareFunction,
         _Context: *mut ::std::os::raw::c_void,
     ) -> *mut ::std::os::raw::c_void;
@@ -584,7 +597,7 @@ extern "C" {
     pub fn _itow_s(
         _Value: ::std::os::raw::c_int,
         _Buffer: *mut wchar_t,
-        _BufferCount: size_t,
+        _BufferCount: usize,
         _Radix: ::std::os::raw::c_int,
     ) -> errno_t;
 }
@@ -599,7 +612,7 @@ extern "C" {
     pub fn _ltow_s(
         _Value: ::std::os::raw::c_long,
         _Buffer: *mut wchar_t,
-        _BufferCount: size_t,
+        _BufferCount: usize,
         _Radix: ::std::os::raw::c_int,
     ) -> errno_t;
 }
@@ -614,7 +627,7 @@ extern "C" {
     pub fn _ultow_s(
         _Value: ::std::os::raw::c_ulong,
         _Buffer: *mut wchar_t,
-        _BufferCount: size_t,
+        _BufferCount: usize,
         _Radix: ::std::os::raw::c_int,
     ) -> errno_t;
 }
@@ -743,7 +756,7 @@ extern "C" {
     pub fn _i64tow_s(
         _Value: ::std::os::raw::c_longlong,
         _Buffer: *mut wchar_t,
-        _BufferCount: size_t,
+        _BufferCount: usize,
         _Radix: ::std::os::raw::c_int,
     ) -> errno_t;
 }
@@ -758,7 +771,7 @@ extern "C" {
     pub fn _ui64tow_s(
         _Value: ::std::os::raw::c_ulonglong,
         _Buffer: *mut wchar_t,
-        _BufferCount: size_t,
+        _BufferCount: usize,
         _Radix: ::std::os::raw::c_int,
     ) -> errno_t;
 }
@@ -809,13 +822,13 @@ extern "C" {
     pub fn _wfullpath(
         _Buffer: *mut wchar_t,
         _Path: *const wchar_t,
-        _BufferCount: size_t,
+        _BufferCount: usize,
     ) -> *mut wchar_t;
 }
 extern "C" {
     pub fn _wmakepath_s(
         _Buffer: *mut wchar_t,
-        _BufferCount: size_t,
+        _BufferCount: usize,
         _Drive: *const wchar_t,
         _Dir: *const wchar_t,
         _Filename: *const wchar_t,
@@ -847,19 +860,19 @@ extern "C" {
     pub fn _wsplitpath_s(
         _FullPath: *const wchar_t,
         _Drive: *mut wchar_t,
-        _DriveCount: size_t,
+        _DriveCount: usize,
         _Dir: *mut wchar_t,
-        _DirCount: size_t,
+        _DirCount: usize,
         _Filename: *mut wchar_t,
-        _FilenameCount: size_t,
+        _FilenameCount: usize,
         _Ext: *mut wchar_t,
-        _ExtCount: size_t,
+        _ExtCount: usize,
     ) -> errno_t;
 }
 extern "C" {
     pub fn _wdupenv_s(
         _Buffer: *mut *mut wchar_t,
-        _BufferCount: *mut size_t,
+        _BufferCount: *mut usize,
         _VarName: *const wchar_t,
     ) -> errno_t;
 }
@@ -868,9 +881,9 @@ extern "C" {
 }
 extern "C" {
     pub fn _wgetenv_s(
-        _RequiredCount: *mut size_t,
+        _RequiredCount: *mut usize,
         _Buffer: *mut wchar_t,
-        _BufferCount: size_t,
+        _BufferCount: usize,
         _VarName: *const wchar_t,
     ) -> errno_t;
 }
@@ -885,7 +898,7 @@ extern "C" {
         _Filename: *const wchar_t,
         _VarName: *const wchar_t,
         _Buffer: *mut wchar_t,
-        _BufferCount: size_t,
+        _BufferCount: usize,
     ) -> errno_t;
 }
 extern "C" {
@@ -972,15 +985,6 @@ extern "C" {
 }
 extern "C" {
     pub fn _set_error_mode(_Mode: ::std::os::raw::c_int) -> ::std::os::raw::c_int;
-}
-extern "C" {
-    pub fn _errno() -> *mut ::std::os::raw::c_int;
-}
-extern "C" {
-    pub fn _set_errno(_Value: ::std::os::raw::c_int) -> errno_t;
-}
-extern "C" {
-    pub fn _get_errno(_Value: *mut ::std::os::raw::c_int) -> errno_t;
 }
 extern "C" {
     pub fn __doserrno() -> *mut ::std::os::raw::c_ulong;
@@ -1571,7 +1575,7 @@ extern "C" {
     pub fn _itoa_s(
         _Value: ::std::os::raw::c_int,
         _Buffer: *mut ::std::os::raw::c_char,
-        _BufferCount: size_t,
+        _BufferCount: usize,
         _Radix: ::std::os::raw::c_int,
     ) -> errno_t;
 }
@@ -1586,7 +1590,7 @@ extern "C" {
     pub fn _ltoa_s(
         _Value: ::std::os::raw::c_long,
         _Buffer: *mut ::std::os::raw::c_char,
-        _BufferCount: size_t,
+        _BufferCount: usize,
         _Radix: ::std::os::raw::c_int,
     ) -> errno_t;
 }
@@ -1601,7 +1605,7 @@ extern "C" {
     pub fn _ultoa_s(
         _Value: ::std::os::raw::c_ulong,
         _Buffer: *mut ::std::os::raw::c_char,
-        _BufferCount: size_t,
+        _BufferCount: usize,
         _Radix: ::std::os::raw::c_int,
     ) -> errno_t;
 }
@@ -1616,7 +1620,7 @@ extern "C" {
     pub fn _i64toa_s(
         _Value: ::std::os::raw::c_longlong,
         _Buffer: *mut ::std::os::raw::c_char,
-        _BufferCount: size_t,
+        _BufferCount: usize,
         _Radix: ::std::os::raw::c_int,
     ) -> errno_t;
 }
@@ -1631,7 +1635,7 @@ extern "C" {
     pub fn _ui64toa_s(
         _Value: ::std::os::raw::c_ulonglong,
         _Buffer: *mut ::std::os::raw::c_char,
-        _BufferCount: size_t,
+        _BufferCount: usize,
         _Radix: ::std::os::raw::c_int,
     ) -> errno_t;
 }
@@ -1645,7 +1649,7 @@ extern "C" {
 extern "C" {
     pub fn _ecvt_s(
         _Buffer: *mut ::std::os::raw::c_char,
-        _BufferCount: size_t,
+        _BufferCount: usize,
         _Value: f64,
         _DigitCount: ::std::os::raw::c_int,
         _PtDec: *mut ::std::os::raw::c_int,
@@ -1663,7 +1667,7 @@ extern "C" {
 extern "C" {
     pub fn _fcvt_s(
         _Buffer: *mut ::std::os::raw::c_char,
-        _BufferCount: size_t,
+        _BufferCount: usize,
         _Value: f64,
         _FractionalDigitCount: ::std::os::raw::c_int,
         _PtDec: *mut ::std::os::raw::c_int,
@@ -1681,7 +1685,7 @@ extern "C" {
 extern "C" {
     pub fn _gcvt_s(
         _Buffer: *mut ::std::os::raw::c_char,
-        _BufferCount: size_t,
+        _BufferCount: usize,
         _Value: f64,
         _DigitCount: ::std::os::raw::c_int,
     ) -> errno_t;
@@ -1700,69 +1704,69 @@ extern "C" {
     pub fn ___mb_cur_max_l_func(_Locale: _locale_t) -> ::std::os::raw::c_int;
 }
 extern "C" {
-    pub fn mblen(_Ch: *const ::std::os::raw::c_char, _MaxCount: size_t) -> ::std::os::raw::c_int;
+    pub fn mblen(_Ch: *const ::std::os::raw::c_char, _MaxCount: usize) -> ::std::os::raw::c_int;
 }
 extern "C" {
     pub fn _mblen_l(
         _Ch: *const ::std::os::raw::c_char,
-        _MaxCount: size_t,
+        _MaxCount: usize,
         _Locale: _locale_t,
     ) -> ::std::os::raw::c_int;
 }
 extern "C" {
-    pub fn _mbstrlen(_String: *const ::std::os::raw::c_char) -> size_t;
+    pub fn _mbstrlen(_String: *const ::std::os::raw::c_char) -> usize;
 }
 extern "C" {
-    pub fn _mbstrlen_l(_String: *const ::std::os::raw::c_char, _Locale: _locale_t) -> size_t;
+    pub fn _mbstrlen_l(_String: *const ::std::os::raw::c_char, _Locale: _locale_t) -> usize;
 }
 extern "C" {
-    pub fn _mbstrnlen(_String: *const ::std::os::raw::c_char, _MaxCount: size_t) -> size_t;
+    pub fn _mbstrnlen(_String: *const ::std::os::raw::c_char, _MaxCount: usize) -> usize;
 }
 extern "C" {
     pub fn _mbstrnlen_l(
         _String: *const ::std::os::raw::c_char,
-        _MaxCount: size_t,
+        _MaxCount: usize,
         _Locale: _locale_t,
-    ) -> size_t;
+    ) -> usize;
 }
 extern "C" {
     pub fn mbtowc(
         _DstCh: *mut wchar_t,
         _SrcCh: *const ::std::os::raw::c_char,
-        _SrcSizeInBytes: size_t,
+        _SrcSizeInBytes: usize,
     ) -> ::std::os::raw::c_int;
 }
 extern "C" {
     pub fn _mbtowc_l(
         _DstCh: *mut wchar_t,
         _SrcCh: *const ::std::os::raw::c_char,
-        _SrcSizeInBytes: size_t,
+        _SrcSizeInBytes: usize,
         _Locale: _locale_t,
     ) -> ::std::os::raw::c_int;
 }
 extern "C" {
     pub fn mbstowcs_s(
-        _PtNumOfCharConverted: *mut size_t,
+        _PtNumOfCharConverted: *mut usize,
         _DstBuf: *mut wchar_t,
-        _SizeInWords: size_t,
+        _SizeInWords: usize,
         _SrcBuf: *const ::std::os::raw::c_char,
-        _MaxCount: size_t,
+        _MaxCount: usize,
     ) -> errno_t;
 }
 extern "C" {
     pub fn mbstowcs(
         _Dest: *mut wchar_t,
         _Source: *const ::std::os::raw::c_char,
-        _MaxCount: size_t,
-    ) -> size_t;
+        _MaxCount: usize,
+    ) -> usize;
 }
 extern "C" {
     pub fn _mbstowcs_s_l(
-        _PtNumOfCharConverted: *mut size_t,
+        _PtNumOfCharConverted: *mut usize,
         _DstBuf: *mut wchar_t,
-        _SizeInWords: size_t,
+        _SizeInWords: usize,
         _SrcBuf: *const ::std::os::raw::c_char,
-        _MaxCount: size_t,
+        _MaxCount: usize,
         _Locale: _locale_t,
     ) -> errno_t;
 }
@@ -1770,9 +1774,9 @@ extern "C" {
     pub fn _mbstowcs_l(
         _Dest: *mut wchar_t,
         _Source: *const ::std::os::raw::c_char,
-        _MaxCount: size_t,
+        _MaxCount: usize,
         _Locale: _locale_t,
-    ) -> size_t;
+    ) -> usize;
 }
 extern "C" {
     pub fn wctomb(_MbCh: *mut ::std::os::raw::c_char, _WCh: wchar_t) -> ::std::os::raw::c_int;
@@ -1796,34 +1800,34 @@ extern "C" {
     pub fn _wctomb_s_l(
         _SizeConverted: *mut ::std::os::raw::c_int,
         _MbCh: *mut ::std::os::raw::c_char,
-        _SizeInBytes: size_t,
+        _SizeInBytes: usize,
         _WCh: wchar_t,
         _Locale: _locale_t,
     ) -> errno_t;
 }
 extern "C" {
     pub fn wcstombs_s(
-        _PtNumOfCharConverted: *mut size_t,
+        _PtNumOfCharConverted: *mut usize,
         _Dst: *mut ::std::os::raw::c_char,
-        _DstSizeInBytes: size_t,
+        _DstSizeInBytes: usize,
         _Src: *const wchar_t,
-        _MaxCountInBytes: size_t,
+        _MaxCountInBytes: usize,
     ) -> errno_t;
 }
 extern "C" {
     pub fn wcstombs(
         _Dest: *mut ::std::os::raw::c_char,
         _Source: *const wchar_t,
-        _MaxCount: size_t,
-    ) -> size_t;
+        _MaxCount: usize,
+    ) -> usize;
 }
 extern "C" {
     pub fn _wcstombs_s_l(
-        _PtNumOfCharConverted: *mut size_t,
+        _PtNumOfCharConverted: *mut usize,
         _Dst: *mut ::std::os::raw::c_char,
-        _DstSizeInBytes: size_t,
+        _DstSizeInBytes: usize,
         _Src: *const wchar_t,
-        _MaxCountInBytes: size_t,
+        _MaxCountInBytes: usize,
         _Locale: _locale_t,
     ) -> errno_t;
 }
@@ -1831,21 +1835,21 @@ extern "C" {
     pub fn _wcstombs_l(
         _Dest: *mut ::std::os::raw::c_char,
         _Source: *const wchar_t,
-        _MaxCount: size_t,
+        _MaxCount: usize,
         _Locale: _locale_t,
-    ) -> size_t;
+    ) -> usize;
 }
 extern "C" {
     pub fn _fullpath(
         _Buffer: *mut ::std::os::raw::c_char,
         _Path: *const ::std::os::raw::c_char,
-        _BufferCount: size_t,
+        _BufferCount: usize,
     ) -> *mut ::std::os::raw::c_char;
 }
 extern "C" {
     pub fn _makepath_s(
         _Buffer: *mut ::std::os::raw::c_char,
-        _BufferCount: size_t,
+        _BufferCount: usize,
         _Drive: *const ::std::os::raw::c_char,
         _Dir: *const ::std::os::raw::c_char,
         _Filename: *const ::std::os::raw::c_char,
@@ -1874,18 +1878,18 @@ extern "C" {
     pub fn _splitpath_s(
         _FullPath: *const ::std::os::raw::c_char,
         _Drive: *mut ::std::os::raw::c_char,
-        _DriveCount: size_t,
+        _DriveCount: usize,
         _Dir: *mut ::std::os::raw::c_char,
-        _DirCount: size_t,
+        _DirCount: usize,
         _Filename: *mut ::std::os::raw::c_char,
-        _FilenameCount: size_t,
+        _FilenameCount: usize,
         _Ext: *mut ::std::os::raw::c_char,
-        _ExtCount: size_t,
+        _ExtCount: usize,
     ) -> errno_t;
 }
 extern "C" {
     pub fn getenv_s(
-        _RequiredCount: *mut size_t,
+        _RequiredCount: *mut usize,
         _Buffer: *mut ::std::os::raw::c_char,
         _BufferCount: rsize_t,
         _VarName: *const ::std::os::raw::c_char,
@@ -1912,7 +1916,7 @@ extern "C" {
 extern "C" {
     pub fn _dupenv_s(
         _Buffer: *mut *mut ::std::os::raw::c_char,
-        _BufferCount: *mut size_t,
+        _BufferCount: *mut usize,
         _VarName: *const ::std::os::raw::c_char,
     ) -> errno_t;
 }
@@ -1933,7 +1937,7 @@ extern "C" {
         _Filename: *const ::std::os::raw::c_char,
         _VarName: *const ::std::os::raw::c_char,
         _Buffer: *mut ::std::os::raw::c_char,
-        _BufferCount: size_t,
+        _BufferCount: usize,
     ) -> errno_t;
 }
 extern "C" {
@@ -2096,14 +2100,14 @@ extern "C" {
     pub fn _memicmp(
         _Buf1: *const ::std::os::raw::c_void,
         _Buf2: *const ::std::os::raw::c_void,
-        _Size: size_t,
+        _Size: usize,
     ) -> ::std::os::raw::c_int;
 }
 extern "C" {
     pub fn _memicmp_l(
         _Buf1: *const ::std::os::raw::c_void,
         _Buf2: *const ::std::os::raw::c_void,
-        _Size: size_t,
+        _Size: usize,
         _Locale: _locale_t,
     ) -> ::std::os::raw::c_int;
 }
@@ -2119,7 +2123,7 @@ extern "C" {
     pub fn memicmp(
         _Buf1: *const ::std::os::raw::c_void,
         _Buf2: *const ::std::os::raw::c_void,
-        _Size: size_t,
+        _Size: usize,
     ) -> ::std::os::raw::c_int;
 }
 extern "C" {
@@ -2175,19 +2179,19 @@ extern "C" {
     pub fn wcscpy(_Destination: *mut wchar_t, _Source: *const wchar_t) -> *mut wchar_t;
 }
 extern "C" {
-    pub fn wcscspn(_String: *const wchar_t, _Control: *const wchar_t) -> size_t;
+    pub fn wcscspn(_String: *const wchar_t, _Control: *const wchar_t) -> usize;
 }
 extern "C" {
     pub fn wcslen(_String: *const ::std::os::raw::c_ushort) -> ::std::os::raw::c_uint;
 }
 extern "C" {
-    pub fn wcsnlen(_Source: *const wchar_t, _MaxCount: size_t) -> size_t;
+    pub fn wcsnlen(_Source: *const wchar_t, _MaxCount: usize) -> usize;
 }
 extern "C" {
     pub fn wcsncat(
         _Destination: *mut wchar_t,
         _Source: *const wchar_t,
-        _Count: size_t,
+        _Count: usize,
     ) -> *mut wchar_t;
 }
 extern "C" {
@@ -2201,14 +2205,14 @@ extern "C" {
     pub fn wcsncpy(
         _Destination: *mut wchar_t,
         _Source: *const wchar_t,
-        _Count: size_t,
+        _Count: usize,
     ) -> *mut wchar_t;
 }
 extern "C" {
     pub fn wcspbrk(_String: *const wchar_t, _Control: *const wchar_t) -> *mut wchar_t;
 }
 extern "C" {
-    pub fn wcsspn(_String: *const wchar_t, _Control: *const wchar_t) -> size_t;
+    pub fn wcsspn(_String: *const wchar_t, _Control: *const wchar_t) -> usize;
 }
 extern "C" {
     pub fn wcstok(
@@ -2223,7 +2227,7 @@ extern "C" {
 extern "C" {
     pub fn _wcserror_s(
         _Buffer: *mut wchar_t,
-        _SizeInWords: size_t,
+        _SizeInWords: usize,
         _ErrorNumber: ::std::os::raw::c_int,
     ) -> errno_t;
 }
@@ -2233,7 +2237,7 @@ extern "C" {
 extern "C" {
     pub fn __wcserror_s(
         _Buffer: *mut wchar_t,
-        _SizeInWords: size_t,
+        _SizeInWords: usize,
         _ErrorMessage: *const wchar_t,
     ) -> errno_t;
 }
@@ -2251,75 +2255,71 @@ extern "C" {
     pub fn _wcsnicmp(
         _String1: *const wchar_t,
         _String2: *const wchar_t,
-        _MaxCount: size_t,
+        _MaxCount: usize,
     ) -> ::std::os::raw::c_int;
 }
 extern "C" {
     pub fn _wcsnicmp_l(
         _String1: *const wchar_t,
         _String2: *const wchar_t,
-        _MaxCount: size_t,
+        _MaxCount: usize,
         _Locale: _locale_t,
     ) -> ::std::os::raw::c_int;
 }
 extern "C" {
     pub fn _wcsnset_s(
         _Destination: *mut wchar_t,
-        _SizeInWords: size_t,
+        _SizeInWords: usize,
         _Value: wchar_t,
-        _MaxCount: size_t,
+        _MaxCount: usize,
     ) -> errno_t;
 }
 extern "C" {
-    pub fn _wcsnset(_String: *mut wchar_t, _Value: wchar_t, _MaxCount: size_t) -> *mut wchar_t;
+    pub fn _wcsnset(_String: *mut wchar_t, _Value: wchar_t, _MaxCount: usize) -> *mut wchar_t;
 }
 extern "C" {
     pub fn _wcsrev(_String: *mut wchar_t) -> *mut wchar_t;
 }
 extern "C" {
-    pub fn _wcsset_s(_Destination: *mut wchar_t, _SizeInWords: size_t, _Value: wchar_t) -> errno_t;
+    pub fn _wcsset_s(_Destination: *mut wchar_t, _SizeInWords: usize, _Value: wchar_t) -> errno_t;
 }
 extern "C" {
     pub fn _wcsset(_String: *mut wchar_t, _Value: wchar_t) -> *mut wchar_t;
 }
 extern "C" {
-    pub fn _wcslwr_s(_String: *mut wchar_t, _SizeInWords: size_t) -> errno_t;
+    pub fn _wcslwr_s(_String: *mut wchar_t, _SizeInWords: usize) -> errno_t;
 }
 extern "C" {
     pub fn _wcslwr(_String: *mut wchar_t) -> *mut wchar_t;
 }
 extern "C" {
-    pub fn _wcslwr_s_l(_String: *mut wchar_t, _SizeInWords: size_t, _Locale: _locale_t) -> errno_t;
+    pub fn _wcslwr_s_l(_String: *mut wchar_t, _SizeInWords: usize, _Locale: _locale_t) -> errno_t;
 }
 extern "C" {
     pub fn _wcslwr_l(_String: *mut wchar_t, _Locale: _locale_t) -> *mut wchar_t;
 }
 extern "C" {
-    pub fn _wcsupr_s(_String: *mut wchar_t, _Size: size_t) -> errno_t;
+    pub fn _wcsupr_s(_String: *mut wchar_t, _Size: usize) -> errno_t;
 }
 extern "C" {
     pub fn _wcsupr(_String: *mut wchar_t) -> *mut wchar_t;
 }
 extern "C" {
-    pub fn _wcsupr_s_l(_String: *mut wchar_t, _Size: size_t, _Locale: _locale_t) -> errno_t;
+    pub fn _wcsupr_s_l(_String: *mut wchar_t, _Size: usize, _Locale: _locale_t) -> errno_t;
 }
 extern "C" {
     pub fn _wcsupr_l(_String: *mut wchar_t, _Locale: _locale_t) -> *mut wchar_t;
 }
 extern "C" {
-    pub fn wcsxfrm(
-        _Destination: *mut wchar_t,
-        _Source: *const wchar_t,
-        _MaxCount: size_t,
-    ) -> size_t;
+    pub fn wcsxfrm(_Destination: *mut wchar_t, _Source: *const wchar_t, _MaxCount: usize) -> usize;
 }
 extern "C" {
     pub fn _wcsxfrm_l(
         _Destination: *mut wchar_t,
         _Source: *const wchar_t,
-        _MaxCount: size_t,
+        _MaxCount: usize,
         _Locale: _locale_t,
-    ) -> size_t;
+    ) -> usize;
 }
 extern "C" {
     pub fn wcscoll(_String1: *const wchar_t, _String2: *const wchar_t) -> ::std::os::raw::c_int;
@@ -2345,14 +2345,14 @@ extern "C" {
     pub fn _wcsncoll(
         _String1: *const wchar_t,
         _String2: *const wchar_t,
-        _MaxCount: size_t,
+        _MaxCount: usize,
     ) -> ::std::os::raw::c_int;
 }
 extern "C" {
     pub fn _wcsncoll_l(
         _String1: *const wchar_t,
         _String2: *const wchar_t,
-        _MaxCount: size_t,
+        _MaxCount: usize,
         _Locale: _locale_t,
     ) -> ::std::os::raw::c_int;
 }
@@ -2360,14 +2360,14 @@ extern "C" {
     pub fn _wcsnicoll(
         _String1: *const wchar_t,
         _String2: *const wchar_t,
-        _MaxCount: size_t,
+        _MaxCount: usize,
     ) -> ::std::os::raw::c_int;
 }
 extern "C" {
     pub fn _wcsnicoll_l(
         _String1: *const wchar_t,
         _String2: *const wchar_t,
-        _MaxCount: size_t,
+        _MaxCount: usize,
         _Locale: _locale_t,
     ) -> ::std::os::raw::c_int;
 }
@@ -2381,11 +2381,11 @@ extern "C" {
     pub fn wcsnicmp(
         _String1: *const wchar_t,
         _String2: *const wchar_t,
-        _MaxCount: size_t,
+        _MaxCount: usize,
     ) -> ::std::os::raw::c_int;
 }
 extern "C" {
-    pub fn wcsnset(_String: *mut wchar_t, _Value: wchar_t, _MaxCount: size_t) -> *mut wchar_t;
+    pub fn wcsnset(_String: *mut wchar_t, _Value: wchar_t, _MaxCount: usize) -> *mut wchar_t;
 }
 extern "C" {
     pub fn wcsrev(_String: *mut wchar_t) -> *mut wchar_t;
@@ -2419,7 +2419,7 @@ extern "C" {
 extern "C" {
     pub fn strerror_s(
         _Buffer: *mut ::std::os::raw::c_char,
-        _SizeInBytes: size_t,
+        _SizeInBytes: usize,
         _ErrorNumber: ::std::os::raw::c_int,
     ) -> errno_t;
 }
@@ -2451,7 +2451,7 @@ extern "C" {
         _Dst: *mut ::std::os::raw::c_void,
         _Src: *const ::std::os::raw::c_void,
         _Val: ::std::os::raw::c_int,
-        _MaxCount: size_t,
+        _MaxCount: usize,
     ) -> *mut ::std::os::raw::c_void;
 }
 extern "C" {
@@ -2506,7 +2506,7 @@ extern "C" {
 extern "C" {
     pub fn _strerror_s(
         _Buffer: *mut ::std::os::raw::c_char,
-        _SizeInBytes: size_t,
+        _SizeInBytes: usize,
         _ErrorMessage: *const ::std::os::raw::c_char,
     ) -> errno_t;
 }
@@ -2543,7 +2543,7 @@ extern "C" {
     pub fn strlen(_Str: *const ::std::os::raw::c_char) -> ::std::os::raw::c_uint;
 }
 extern "C" {
-    pub fn _strlwr_s(_String: *mut ::std::os::raw::c_char, _Size: size_t) -> errno_t;
+    pub fn _strlwr_s(_String: *mut ::std::os::raw::c_char, _Size: usize) -> errno_t;
 }
 extern "C" {
     pub fn _strlwr(_String: *mut ::std::os::raw::c_char) -> *mut ::std::os::raw::c_char;
@@ -2551,7 +2551,7 @@ extern "C" {
 extern "C" {
     pub fn _strlwr_s_l(
         _String: *mut ::std::os::raw::c_char,
-        _Size: size_t,
+        _Size: usize,
         _Locale: _locale_t,
     ) -> errno_t;
 }
@@ -2579,14 +2579,14 @@ extern "C" {
     pub fn _strnicmp(
         _String1: *const ::std::os::raw::c_char,
         _String2: *const ::std::os::raw::c_char,
-        _MaxCount: size_t,
+        _MaxCount: usize,
     ) -> ::std::os::raw::c_int;
 }
 extern "C" {
     pub fn _strnicmp_l(
         _String1: *const ::std::os::raw::c_char,
         _String2: *const ::std::os::raw::c_char,
-        _MaxCount: size_t,
+        _MaxCount: usize,
         _Locale: _locale_t,
     ) -> ::std::os::raw::c_int;
 }
@@ -2594,14 +2594,14 @@ extern "C" {
     pub fn _strnicoll(
         _String1: *const ::std::os::raw::c_char,
         _String2: *const ::std::os::raw::c_char,
-        _MaxCount: size_t,
+        _MaxCount: usize,
     ) -> ::std::os::raw::c_int;
 }
 extern "C" {
     pub fn _strnicoll_l(
         _String1: *const ::std::os::raw::c_char,
         _String2: *const ::std::os::raw::c_char,
-        _MaxCount: size_t,
+        _MaxCount: usize,
         _Locale: _locale_t,
     ) -> ::std::os::raw::c_int;
 }
@@ -2609,19 +2609,19 @@ extern "C" {
     pub fn _strncoll(
         _String1: *const ::std::os::raw::c_char,
         _String2: *const ::std::os::raw::c_char,
-        _MaxCount: size_t,
+        _MaxCount: usize,
     ) -> ::std::os::raw::c_int;
 }
 extern "C" {
     pub fn _strncoll_l(
         _String1: *const ::std::os::raw::c_char,
         _String2: *const ::std::os::raw::c_char,
-        _MaxCount: size_t,
+        _MaxCount: usize,
         _Locale: _locale_t,
     ) -> ::std::os::raw::c_int;
 }
 extern "C" {
-    pub fn __strncnt(_String: *const ::std::os::raw::c_char, _Count: size_t) -> size_t;
+    pub fn __strncnt(_String: *const ::std::os::raw::c_char, _Count: usize) -> usize;
 }
 extern "C" {
     pub fn strncpy(
@@ -2631,21 +2631,21 @@ extern "C" {
     ) -> *mut ::std::os::raw::c_char;
 }
 extern "C" {
-    pub fn strnlen(_String: *const ::std::os::raw::c_char, _MaxCount: size_t) -> size_t;
+    pub fn strnlen(_String: *const ::std::os::raw::c_char, _MaxCount: usize) -> usize;
 }
 extern "C" {
     pub fn _strnset_s(
         _String: *mut ::std::os::raw::c_char,
-        _SizeInBytes: size_t,
+        _SizeInBytes: usize,
         _Value: ::std::os::raw::c_int,
-        _MaxCount: size_t,
+        _MaxCount: usize,
     ) -> errno_t;
 }
 extern "C" {
     pub fn _strnset(
         _Destination: *mut ::std::os::raw::c_char,
         _Value: ::std::os::raw::c_int,
-        _Count: size_t,
+        _Count: usize,
     ) -> *mut ::std::os::raw::c_char;
 }
 extern "C" {
@@ -2660,7 +2660,7 @@ extern "C" {
 extern "C" {
     pub fn _strset_s(
         _Destination: *mut ::std::os::raw::c_char,
-        _DestinationSize: size_t,
+        _DestinationSize: usize,
         _Value: ::std::os::raw::c_int,
     ) -> errno_t;
 }
@@ -2683,7 +2683,7 @@ extern "C" {
     ) -> *mut ::std::os::raw::c_char;
 }
 extern "C" {
-    pub fn _strupr_s(_String: *mut ::std::os::raw::c_char, _Size: size_t) -> errno_t;
+    pub fn _strupr_s(_String: *mut ::std::os::raw::c_char, _Size: usize) -> errno_t;
 }
 extern "C" {
     pub fn _strupr(_String: *mut ::std::os::raw::c_char) -> *mut ::std::os::raw::c_char;
@@ -2691,7 +2691,7 @@ extern "C" {
 extern "C" {
     pub fn _strupr_s_l(
         _String: *mut ::std::os::raw::c_char,
-        _Size: size_t,
+        _Size: usize,
         _Locale: _locale_t,
     ) -> errno_t;
 }
@@ -2712,9 +2712,9 @@ extern "C" {
     pub fn _strxfrm_l(
         _Destination: *mut ::std::os::raw::c_char,
         _Source: *const ::std::os::raw::c_char,
-        _MaxCount: size_t,
+        _MaxCount: usize,
         _Locale: _locale_t,
-    ) -> size_t;
+    ) -> usize;
 }
 extern "C" {
     pub fn strdup(_String: *const ::std::os::raw::c_char) -> *mut ::std::os::raw::c_char;
@@ -2738,14 +2738,14 @@ extern "C" {
     pub fn strnicmp(
         _String1: *const ::std::os::raw::c_char,
         _String2: *const ::std::os::raw::c_char,
-        _MaxCount: size_t,
+        _MaxCount: usize,
     ) -> ::std::os::raw::c_int;
 }
 extern "C" {
     pub fn strnset(
         _String: *mut ::std::os::raw::c_char,
         _Value: ::std::os::raw::c_int,
-        _MaxCount: size_t,
+        _MaxCount: usize,
     ) -> *mut ::std::os::raw::c_char;
 }
 extern "C" {
@@ -2909,7 +2909,7 @@ pub struct OrtAllocator {
     pub Alloc: ::std::option::Option<
         unsafe extern "stdcall" fn(
             this_: *mut OrtAllocator,
-            size: size_t,
+            size: usize,
         ) -> *mut ::std::os::raw::c_void,
     >,
     pub Free: ::std::option::Option<
@@ -3051,7 +3051,7 @@ pub enum OrtCudnnConvAlgoSearch {
 pub struct OrtCUDAProviderOptions {
     pub device_id: ::std::os::raw::c_int,
     pub cudnn_conv_algo_search: OrtCudnnConvAlgoSearch,
-    pub cuda_mem_limit: size_t,
+    pub cuda_mem_limit: usize,
     pub arena_extend_strategy: ::std::os::raw::c_int,
     pub do_copy_in_default_stream: ::std::os::raw::c_int,
 }
@@ -3140,7 +3140,7 @@ pub struct OrtOpenVINOProviderOptions {
     pub device_type: *const ::std::os::raw::c_char,
     pub enable_vpu_fast_compile: ::std::os::raw::c_uchar,
     pub device_id: *const ::std::os::raw::c_char,
-    pub num_of_threads: size_t,
+    pub num_of_threads: usize,
 }
 #[test]
 fn bindgen_test_layout_OrtOpenVINOProviderOptions() {
@@ -3297,7 +3297,7 @@ pub struct OrtApi {
         unsafe extern "stdcall" fn(
             env: *const OrtEnv,
             model_data: *const ::std::os::raw::c_void,
-            model_data_length: size_t,
+            model_data_length: usize,
             options: *const OrtSessionOptions,
             out: *mut *mut OrtSession,
         ) -> OrtStatusPtr,
@@ -3308,9 +3308,9 @@ pub struct OrtApi {
             run_options: *const OrtRunOptions,
             input_names: *const *const ::std::os::raw::c_char,
             input: *const *const OrtValue,
-            input_len: size_t,
+            input_len: usize,
             output_names1: *const *const ::std::os::raw::c_char,
-            output_names_len: size_t,
+            output_names_len: usize,
             output: *mut *mut OrtValue,
         ) -> OrtStatusPtr,
     >,
@@ -3418,39 +3418,39 @@ pub struct OrtApi {
         ) -> OrtStatusPtr,
     >,
     pub SessionGetInputCount: ::std::option::Option<
-        unsafe extern "stdcall" fn(sess: *const OrtSession, out: *mut size_t) -> OrtStatusPtr,
+        unsafe extern "stdcall" fn(sess: *const OrtSession, out: *mut usize) -> OrtStatusPtr,
     >,
     pub SessionGetOutputCount: ::std::option::Option<
-        unsafe extern "stdcall" fn(sess: *const OrtSession, out: *mut size_t) -> OrtStatusPtr,
+        unsafe extern "stdcall" fn(sess: *const OrtSession, out: *mut usize) -> OrtStatusPtr,
     >,
     pub SessionGetOverridableInitializerCount: ::std::option::Option<
-        unsafe extern "stdcall" fn(sess: *const OrtSession, out: *mut size_t) -> OrtStatusPtr,
+        unsafe extern "stdcall" fn(sess: *const OrtSession, out: *mut usize) -> OrtStatusPtr,
     >,
     pub SessionGetInputTypeInfo: ::std::option::Option<
         unsafe extern "stdcall" fn(
             sess: *const OrtSession,
-            index: size_t,
+            index: usize,
             type_info: *mut *mut OrtTypeInfo,
         ) -> OrtStatusPtr,
     >,
     pub SessionGetOutputTypeInfo: ::std::option::Option<
         unsafe extern "stdcall" fn(
             sess: *const OrtSession,
-            index: size_t,
+            index: usize,
             type_info: *mut *mut OrtTypeInfo,
         ) -> OrtStatusPtr,
     >,
     pub SessionGetOverridableInitializerTypeInfo: ::std::option::Option<
         unsafe extern "stdcall" fn(
             sess: *const OrtSession,
-            index: size_t,
+            index: usize,
             type_info: *mut *mut OrtTypeInfo,
         ) -> OrtStatusPtr,
     >,
     pub SessionGetInputName: ::std::option::Option<
         unsafe extern "stdcall" fn(
             sess: *const OrtSession,
-            index: size_t,
+            index: usize,
             allocator: *mut OrtAllocator,
             value: *mut *mut ::std::os::raw::c_char,
         ) -> OrtStatusPtr,
@@ -3458,7 +3458,7 @@ pub struct OrtApi {
     pub SessionGetOutputName: ::std::option::Option<
         unsafe extern "stdcall" fn(
             sess: *const OrtSession,
-            index: size_t,
+            index: usize,
             allocator: *mut OrtAllocator,
             value: *mut *mut ::std::os::raw::c_char,
         ) -> OrtStatusPtr,
@@ -3466,7 +3466,7 @@ pub struct OrtApi {
     pub SessionGetOverridableInitializerName: ::std::option::Option<
         unsafe extern "stdcall" fn(
             sess: *const OrtSession,
-            index: size_t,
+            index: usize,
             allocator: *mut OrtAllocator,
             value: *mut *mut ::std::os::raw::c_char,
         ) -> OrtStatusPtr,
@@ -3520,7 +3520,7 @@ pub struct OrtApi {
         unsafe extern "stdcall" fn(
             allocator: *mut OrtAllocator,
             shape: *const i64,
-            shape_len: size_t,
+            shape_len: usize,
             type_: ONNXTensorElementDataType,
             out: *mut *mut OrtValue,
         ) -> OrtStatusPtr,
@@ -3529,9 +3529,9 @@ pub struct OrtApi {
         unsafe extern "stdcall" fn(
             info: *const OrtMemoryInfo,
             p_data: *mut ::std::os::raw::c_void,
-            p_data_len: size_t,
+            p_data_len: usize,
             shape: *const i64,
-            shape_len: size_t,
+            shape_len: usize,
             type_: ONNXTensorElementDataType,
             out: *mut *mut OrtValue,
         ) -> OrtStatusPtr,
@@ -3552,19 +3552,19 @@ pub struct OrtApi {
         unsafe extern "stdcall" fn(
             value: *mut OrtValue,
             s: *const *const ::std::os::raw::c_char,
-            s_len: size_t,
+            s_len: usize,
         ) -> OrtStatusPtr,
     >,
     pub GetStringTensorDataLength: ::std::option::Option<
-        unsafe extern "stdcall" fn(value: *const OrtValue, len: *mut size_t) -> OrtStatusPtr,
+        unsafe extern "stdcall" fn(value: *const OrtValue, len: *mut usize) -> OrtStatusPtr,
     >,
     pub GetStringTensorContent: ::std::option::Option<
         unsafe extern "stdcall" fn(
             value: *const OrtValue,
             s: *mut ::std::os::raw::c_void,
-            s_len: size_t,
-            offsets: *mut size_t,
-            offsets_len: size_t,
+            s_len: usize,
+            offsets: *mut usize,
+            offsets_len: usize,
         ) -> OrtStatusPtr,
     >,
     pub CastTypeInfoToTensorInfo: ::std::option::Option<
@@ -3589,7 +3589,7 @@ pub struct OrtApi {
         unsafe extern "stdcall" fn(
             info: *mut OrtTensorTypeAndShapeInfo,
             dim_values: *const i64,
-            dim_count: size_t,
+            dim_count: usize,
         ) -> OrtStatusPtr,
     >,
     pub GetTensorElementType: ::std::option::Option<
@@ -3601,27 +3601,27 @@ pub struct OrtApi {
     pub GetDimensionsCount: ::std::option::Option<
         unsafe extern "stdcall" fn(
             info: *const OrtTensorTypeAndShapeInfo,
-            out: *mut size_t,
+            out: *mut usize,
         ) -> OrtStatusPtr,
     >,
     pub GetDimensions: ::std::option::Option<
         unsafe extern "stdcall" fn(
             info: *const OrtTensorTypeAndShapeInfo,
             dim_values: *mut i64,
-            dim_values_length: size_t,
+            dim_values_length: usize,
         ) -> OrtStatusPtr,
     >,
     pub GetSymbolicDimensions: ::std::option::Option<
         unsafe extern "stdcall" fn(
             info: *const OrtTensorTypeAndShapeInfo,
             dim_params: *mut *const ::std::os::raw::c_char,
-            dim_params_length: size_t,
+            dim_params_length: usize,
         ) -> OrtStatusPtr,
     >,
     pub GetTensorShapeElementCount: ::std::option::Option<
         unsafe extern "stdcall" fn(
             info: *const OrtTensorTypeAndShapeInfo,
-            out: *mut size_t,
+            out: *mut usize,
         ) -> OrtStatusPtr,
     >,
     pub GetTensorTypeAndShape: ::std::option::Option<
@@ -3686,7 +3686,7 @@ pub struct OrtApi {
     pub AllocatorAlloc: ::std::option::Option<
         unsafe extern "stdcall" fn(
             ptr: *mut OrtAllocator,
-            size: size_t,
+            size: usize,
             out: *mut *mut ::std::os::raw::c_void,
         ) -> OrtStatusPtr,
     >,
@@ -3721,12 +3721,12 @@ pub struct OrtApi {
         ) -> OrtStatusPtr,
     >,
     pub GetValueCount: ::std::option::Option<
-        unsafe extern "stdcall" fn(value: *const OrtValue, out: *mut size_t) -> OrtStatusPtr,
+        unsafe extern "stdcall" fn(value: *const OrtValue, out: *mut usize) -> OrtStatusPtr,
     >,
     pub CreateValue: ::std::option::Option<
         unsafe extern "stdcall" fn(
             in_: *const *const OrtValue,
-            num_values: size_t,
+            num_values: usize,
             value_type: ONNXType,
             out: *mut *mut OrtValue,
         ) -> OrtStatusPtr,
@@ -3736,7 +3736,7 @@ pub struct OrtApi {
             domain_name: *const ::std::os::raw::c_char,
             type_name: *const ::std::os::raw::c_char,
             data_container: *const ::std::os::raw::c_void,
-            data_container_size: size_t,
+            data_container_size: usize,
             out: *mut *mut OrtValue,
         ) -> OrtStatusPtr,
     >,
@@ -3746,7 +3746,7 @@ pub struct OrtApi {
             type_name: *const ::std::os::raw::c_char,
             in_: *const OrtValue,
             data_container: *mut ::std::os::raw::c_void,
-            data_container_size: size_t,
+            data_container_size: usize,
         ) -> OrtStatusPtr,
     >,
     pub KernelInfoGetAttribute_float: ::std::option::Option<
@@ -3768,34 +3768,34 @@ pub struct OrtApi {
             info: *const OrtKernelInfo,
             name: *const ::std::os::raw::c_char,
             out: *mut ::std::os::raw::c_char,
-            size: *mut size_t,
+            size: *mut usize,
         ) -> OrtStatusPtr,
     >,
     pub KernelContext_GetInputCount: ::std::option::Option<
         unsafe extern "stdcall" fn(
             context: *const OrtKernelContext,
-            out: *mut size_t,
+            out: *mut usize,
         ) -> OrtStatusPtr,
     >,
     pub KernelContext_GetOutputCount: ::std::option::Option<
         unsafe extern "stdcall" fn(
             context: *const OrtKernelContext,
-            out: *mut size_t,
+            out: *mut usize,
         ) -> OrtStatusPtr,
     >,
     pub KernelContext_GetInput: ::std::option::Option<
         unsafe extern "stdcall" fn(
             context: *const OrtKernelContext,
-            index: size_t,
+            index: usize,
             out: *mut *const OrtValue,
         ) -> OrtStatusPtr,
     >,
     pub KernelContext_GetOutput: ::std::option::Option<
         unsafe extern "stdcall" fn(
             context: *mut OrtKernelContext,
-            index: size_t,
+            index: usize,
             dim_values: *const i64,
-            dim_count: size_t,
+            dim_count: usize,
             out: *mut *mut OrtValue,
         ) -> OrtStatusPtr,
     >,
@@ -3818,7 +3818,7 @@ pub struct OrtApi {
         unsafe extern "stdcall" fn(
             arg1: *const OrtTypeInfo,
             denotation: *mut *const ::std::os::raw::c_char,
-            len: *mut size_t,
+            len: *mut usize,
         ) -> OrtStatusPtr,
     >,
     pub CastTypeInfoToMapTypeInfo: ::std::option::Option<
@@ -3958,15 +3958,15 @@ pub struct OrtApi {
     pub GetStringTensorElementLength: ::std::option::Option<
         unsafe extern "stdcall" fn(
             value: *const OrtValue,
-            index: size_t,
-            out: *mut size_t,
+            index: usize,
+            out: *mut usize,
         ) -> OrtStatusPtr,
     >,
     pub GetStringTensorElement: ::std::option::Option<
         unsafe extern "stdcall" fn(
             value: *const OrtValue,
-            s_len: size_t,
-            index: size_t,
+            s_len: usize,
+            index: usize,
             s: *mut ::std::os::raw::c_void,
         ) -> OrtStatusPtr,
     >,
@@ -3974,7 +3974,7 @@ pub struct OrtApi {
         unsafe extern "stdcall" fn(
             value: *mut OrtValue,
             s: *const ::std::os::raw::c_char,
-            index: size_t,
+            index: usize,
         ) -> OrtStatusPtr,
     >,
     pub AddSessionConfigEntry: ::std::option::Option<
@@ -4034,8 +4034,8 @@ pub struct OrtApi {
             binding_ptr: *const OrtIoBinding,
             allocator: *mut OrtAllocator,
             buffer: *mut *mut ::std::os::raw::c_char,
-            lengths: *mut *mut size_t,
-            count: *mut size_t,
+            lengths: *mut *mut usize,
+            count: *mut usize,
         ) -> OrtStatusPtr,
     >,
     pub GetBoundOutputValues: ::std::option::Option<
@@ -4043,7 +4043,7 @@ pub struct OrtApi {
             binding_ptr: *const OrtIoBinding,
             allocator: *mut OrtAllocator,
             output: *mut *mut *mut OrtValue,
-            output_count: *mut size_t,
+            output_count: *mut usize,
         ) -> OrtStatusPtr,
     >,
     #[doc = " Clears any previously specified bindings for inputs/outputs"]
@@ -4055,7 +4055,7 @@ pub struct OrtApi {
         unsafe extern "stdcall" fn(
             value: *mut OrtValue,
             location_values: *const i64,
-            location_values_count: size_t,
+            location_values_count: usize,
             out: *mut *mut ::std::os::raw::c_void,
         ) -> OrtStatusPtr,
     >,
@@ -4127,7 +4127,7 @@ pub struct OrtApi {
     >,
     pub CreateArenaCfg: ::std::option::Option<
         unsafe extern "stdcall" fn(
-            max_mem: size_t,
+            max_mem: usize,
             arena_extend_strategy: ::std::os::raw::c_int,
             initial_chunk_size_bytes: ::std::os::raw::c_int,
             max_dead_bytes_per_chunk: ::std::os::raw::c_int,
@@ -5833,19 +5833,19 @@ pub struct OrtCustomOp {
     pub GetInputType: ::std::option::Option<
         unsafe extern "stdcall" fn(
             op: *const OrtCustomOp,
-            index: size_t,
+            index: usize,
         ) -> ONNXTensorElementDataType,
     >,
     pub GetInputTypeCount:
-        ::std::option::Option<unsafe extern "stdcall" fn(op: *const OrtCustomOp) -> size_t>,
+        ::std::option::Option<unsafe extern "stdcall" fn(op: *const OrtCustomOp) -> usize>,
     pub GetOutputType: ::std::option::Option<
         unsafe extern "stdcall" fn(
             op: *const OrtCustomOp,
-            index: size_t,
+            index: usize,
         ) -> ONNXTensorElementDataType,
     >,
     pub GetOutputTypeCount:
-        ::std::option::Option<unsafe extern "stdcall" fn(op: *const OrtCustomOp) -> size_t>,
+        ::std::option::Option<unsafe extern "stdcall" fn(op: *const OrtCustomOp) -> usize>,
     pub KernelCompute: ::std::option::Option<
         unsafe extern "stdcall" fn(
             op_kernel: *mut ::std::os::raw::c_void,

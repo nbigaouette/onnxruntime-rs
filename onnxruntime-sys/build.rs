@@ -94,6 +94,8 @@ fn generate_bindings(include_dir: &Path) {
         // Tell cargo to invalidate the built crate whenever any of the
         // included header files changed.
         .parse_callbacks(Box::new(bindgen::CargoCallbacks))
+        // Set `size_t` to be translated to `usize` for win32 compatibility.
+        .size_t_is_usize(true)
         // Format using rustfmt
         .rustfmt_bindings(true)
         .rustified_enum("*")

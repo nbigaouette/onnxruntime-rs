@@ -121,6 +121,26 @@ use lazy_static::lazy_static;
 
 use onnxruntime_sys as sys;
 
+// Make functions `extern "stdcall"` for Windows 32bit.
+// This behaviors like `extern "system"`.
+#[cfg(all(target_os = "windows", target_arch = "x86"))]
+macro_rules! extern_system_fn {
+    ($(#[$meta:meta])* fn $($tt:tt)*) => ($(#[$meta])* extern "stdcall" fn $($tt)*);
+    ($(#[$meta:meta])* $vis:vis fn $($tt:tt)*) => ($(#[$meta])* $vis extern "stdcall" fn $($tt)*);
+    ($(#[$meta:meta])* unsafe fn $($tt:tt)*) => ($(#[$meta])* unsafe extern "stdcall" fn $($tt)*);
+    ($(#[$meta:meta])* $vis:vis unsafe fn $($tt:tt)*) => ($(#[$meta])* $vis unsafe extern "stdcall" fn $($tt)*);
+}
+
+// Make functions `extern "C"` for normal targets.
+// This behaviors like `extern "system"`.
+#[cfg(not(all(target_os = "windows", target_arch = "x86")))]
+macro_rules! extern_system_fn {
+    ($(#[$meta:meta])* fn $($tt:tt)*) => ($(#[$meta])* extern "C" fn $($tt)*);
+    ($(#[$meta:meta])* $vis:vis fn $($tt:tt)*) => ($(#[$meta])* $vis extern "C" fn $($tt)*);
+    ($(#[$meta:meta])* unsafe fn $($tt:tt)*) => ($(#[$meta])* unsafe extern "C" fn $($tt)*);
+    ($(#[$meta:meta])* $vis:vis unsafe fn $($tt:tt)*) => ($(#[$meta])* $vis unsafe extern "C" fn $($tt)*);
+}
+
 pub mod download;
 pub mod environment;
 pub mod error;
@@ -143,7 +163,7 @@ lazy_static! {
     static ref G_ORT_API: Arc<Mutex<AtomicPtr<sys::OrtApi>>> = {
         let base: *const sys::OrtApiBase = unsafe { sys::OrtGetApiBase() };
         assert_ne!(base, std::ptr::null());
-        let get_api: unsafe extern "C" fn(u32) -> *const onnxruntime_sys::OrtApi =
+        let get_api: extern_system_fn!{ unsafe fn(u32) -> *const onnxruntime_sys::OrtApi } =
             unsafe { (*base).GetApi.unwrap() };
         let api: *const sys::OrtApi = unsafe { get_api(sys::ORT_API_VERSION) };
         Arc::new(Mutex::new(AtomicPtr::new(api as *mut sys::OrtApi)))
@@ -210,55 +230,57 @@ mod onnxruntime {
         }
     }
 
-    /// Callback from C that will handle the logging, forwarding the runtime's logs to the tracing crate.
-    pub(crate) extern "C" fn custom_logger(
-        _params: *mut std::ffi::c_void,
-        severity: sys::OrtLoggingLevel,
-        category: *const i8,
-        logid: *const i8,
-        code_location: *const i8,
-        message: *const i8,
-    ) {
-        let log_level = match severity {
-            sys::OrtLoggingLevel::ORT_LOGGING_LEVEL_VERBOSE => Level::TRACE,
-            sys::OrtLoggingLevel::ORT_LOGGING_LEVEL_INFO => Level::DEBUG,
-            sys::OrtLoggingLevel::ORT_LOGGING_LEVEL_WARNING => Level::INFO,
-            sys::OrtLoggingLevel::ORT_LOGGING_LEVEL_ERROR => Level::WARN,
-            sys::OrtLoggingLevel::ORT_LOGGING_LEVEL_FATAL => Level::ERROR,
-        };
+    extern_system_fn! {
+        /// Callback from C that will handle the logging, forwarding the runtime's logs to the tracing crate.
+        pub(crate) fn custom_logger(
+            _params: *mut std::ffi::c_void,
+            severity: sys::OrtLoggingLevel,
+            category: *const i8,
+            logid: *const i8,
+            code_location: *const i8,
+            message: *const i8,
+        ) {
+            let log_level = match severity {
+                sys::OrtLoggingLevel::ORT_LOGGING_LEVEL_VERBOSE => Level::TRACE,
+                sys::OrtLoggingLevel::ORT_LOGGING_LEVEL_INFO => Level::DEBUG,
+                sys::OrtLoggingLevel::ORT_LOGGING_LEVEL_WARNING => Level::INFO,
+                sys::OrtLoggingLevel::ORT_LOGGING_LEVEL_ERROR => Level::WARN,
+                sys::OrtLoggingLevel::ORT_LOGGING_LEVEL_FATAL => Level::ERROR,
+            };
 
-        assert_ne!(category, std::ptr::null());
-        let category = unsafe { CStr::from_ptr(category) };
-        assert_ne!(code_location, std::ptr::null());
-        let code_location = unsafe { CStr::from_ptr(code_location) }
-            .to_str()
-            .unwrap_or("unknown");
-        assert_ne!(message, std::ptr::null());
-        let message = unsafe { CStr::from_ptr(message) };
+            assert_ne!(category, std::ptr::null());
+            let category = unsafe { CStr::from_ptr(category) };
+            assert_ne!(code_location, std::ptr::null());
+            let code_location = unsafe { CStr::from_ptr(code_location) }
+                .to_str()
+                .unwrap_or("unknown");
+            assert_ne!(message, std::ptr::null());
+            let message = unsafe { CStr::from_ptr(message) };
 
-        assert_ne!(logid, std::ptr::null());
-        let logid = unsafe { CStr::from_ptr(logid) };
+            assert_ne!(logid, std::ptr::null());
+            let logid = unsafe { CStr::from_ptr(logid) };
 
-        // Parse the code location
-        let code_location: CodeLocation = code_location.into();
+            // Parse the code location
+            let code_location: CodeLocation = code_location.into();
 
-        let span = span!(
-            Level::TRACE,
-            "onnxruntime",
-            category = category.to_str().unwrap_or("<unknown>"),
-            file = code_location.file,
-            line_number = code_location.line_number,
-            function = code_location.function,
-            logid = logid.to_str().unwrap_or("<unknown>"),
-        );
-        let _enter = span.enter();
+            let span = span!(
+                Level::TRACE,
+                "onnxruntime",
+                category = category.to_str().unwrap_or("<unknown>"),
+                file = code_location.file,
+                line_number = code_location.line_number,
+                function = code_location.function,
+                logid = logid.to_str().unwrap_or("<unknown>"),
+            );
+            let _enter = span.enter();
 
-        match log_level {
-            Level::TRACE => trace!("{:?}", message),
-            Level::DEBUG => debug!("{:?}", message),
-            Level::INFO => info!("{:?}", message),
-            Level::WARN => warn!("{:?}", message),
-            Level::ERROR => error!("{:?}", message),
+            match log_level {
+                Level::TRACE => trace!("{:?}", message),
+                Level::DEBUG => debug!("{:?}", message),
+                Level::INFO => info!("{:?}", message),
+                Level::WARN => warn!("{:?}", message),
+                Level::ERROR => error!("{:?}", message),
+            }
         }
     }
 }

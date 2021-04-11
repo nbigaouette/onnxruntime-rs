@@ -54,14 +54,14 @@ jobs:
           args: --target x86_64-apple-darwin
       - name: Verify prebuilt archive downloaded (CPU, x86_64-apple-darwin)
         run: ls -lh target/x86_64-apple-darwin/debug/build/onnxruntime-sys-*/out/onnxruntime-osx-x64-1.*.tgz
-      # # ******************************************************************
-      # - name: Download prebuilt archive (CPU, i686-pc-windows-msvc)
-      #   uses: actions-rs/cargo@v1
-      #   with:
-      #     command: build
-      #     args: --target i686-pc-windows-msvc
-      # - name: Verify prebuilt archive downloaded (CPU, i686-pc-windows-msvc)
-      #   run: ls -lh target/i686-pc-windows-msvc/debug/build/onnxruntime-sys-*/out/onnxruntime-win-x86-1.*.zip
+      # ******************************************************************
+      - name: Download prebuilt archive (CPU, i686-pc-windows-msvc)
+        uses: actions-rs/cargo@v1
+        with:
+          command: build
+          args: --target i686-pc-windows-msvc
+      - name: Verify prebuilt archive downloaded (CPU, i686-pc-windows-msvc)
+        run: ls -lh target/i686-pc-windows-msvc/debug/build/onnxruntime-sys-*/out/onnxruntime-win-x86-1.*.zip
       # ******************************************************************
       - name: Download prebuilt archive (CPU, x86_64-pc-windows-msvc)
         uses: actions-rs/cargo@v1
@@ -97,20 +97,22 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [
-          ubuntu-latest,
-          macos-latest,
-          windows-latest
-        ]
+        target:
+          [
+            x86_64-unknown-linux-gnu,
+            x86_64-apple-darwin,
+            x86_64-pc-windows-msvc,
+            i686-pc-windows-msvc,
+          ]
         include:
-          - os: ubuntu-latest
-            target: x86_64-unknown-linux-gnu
-          - os: macos-latest
-            target: x86_64-apple-darwin
-          - os: windows-latest
-            target: x86_64-pc-windows-msvc
-          # - os: windows-latest
-          #   target: i686-pc-windows-msvc
+          - target: x86_64-unknown-linux-gnu
+            os: ubuntu-latest
+          - target: x86_64-apple-darwin
+            os: macos-latest
+          - target: x86_64-pc-windows-msvc
+            os: windows-latest
+          - target: i686-pc-windows-msvc
+            os: windows-latest
     env:
       CARGO_BUILD_TARGET: ${{ matrix.target }}
     steps:
