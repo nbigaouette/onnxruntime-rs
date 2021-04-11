@@ -8,6 +8,8 @@ brew install llvm cmake
 
 # bindgen needs this to find llvm/clang
 export LLVM_CONFIG_PATH=/usr/local/opt/llvm/bin/llvm-config
+# Or on macOS Big Sur:
+export LLVM_CONFIG_PATH=/opt/homebrew/opt/llvm/bin/llvm-config
 ```
 
 The `build.rs` script uses the `ONNXRUNTIME_INSTALL_DIR` environment variable to
