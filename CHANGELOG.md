@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - Fix Windows i686 compilation ([#70](https://github.com/nbigaouette/onnxruntime-rs/pull/70))
+- Upgrade dependencies ([#75](https://github.com/nbigaouette/onnxruntime-rs/pull/75))
 
 ## [0.0.11] - 2021-02-22
 
