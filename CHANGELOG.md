@@ -12,6 +12,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add `String` datatype ([#58](https://github.com/nbigaouette/onnxruntime-rs/pull/58))
 - Initial support for Apple M1 ([#74](https://github.com/nbigaouette/onnxruntime-rs/pull/74))
 
+### Changed
+
+- Fix Windows i686 compilation ([#70](https://github.com/nbigaouette/onnxruntime-rs/pull/70))
+
 ## [0.0.11] - 2021-02-22
 
 ### Changed
