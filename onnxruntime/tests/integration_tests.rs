@@ -5,6 +5,8 @@ use std::{
     time::Duration,
 };
 
+use onnxruntime::error::OrtDownloadError;
+
 mod download {
     use super::*;
 
@@ -294,16 +296,15 @@ mod download {
     }
 }
 
-fn get_imagenet_labels() -> Result<Vec<String>, io::Error> {
+fn get_imagenet_labels() -> Result<Vec<String>, OrtDownloadError> {
     // Download the ImageNet class labels, matching SqueezeNet's classes.
     let labels_path = Path::new(env!("CARGO_MANIFEST_DIR")).join("synset.txt");
     if !labels_path.exists() {
         let url = "https://s3.amazonaws.com/onnx-model-zoo/synset.txt";
         println!("Downloading {:?} to {:?}...", url, labels_path);
         let resp = ureq::get(url)
-            .timeout_connect(1_000) // 1 second
             .timeout(Duration::from_secs(180)) // 3 minutes
-            .call();
+            .call()?;
 
         assert!(resp.has("Content-Length"));
         let len = resp
@@ -323,5 +324,7 @@ fn get_imagenet_labels() -> Result<Vec<String>, io::Error> {
     }
     let file = BufReader::new(fs::File::open(labels_path).unwrap());
 
-    file.lines().collect()
+    file.lines()
+        .map(|line| line.map_err(|io_err| OrtDownloadError::IoError(io_err)))
+        .collect()
 }

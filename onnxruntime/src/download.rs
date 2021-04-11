@@ -79,9 +79,9 @@ impl AvailableOnnxModel {
             );
 
             let resp = ureq::get(url)
-                .timeout_connect(1_000) // 1 second
                 .timeout(Duration::from_secs(180)) // 3 minutes
-                .call();
+                .call()
+                .map_err(OrtDownloadError::UreqError)?;
 
             assert!(resp.has("Content-Length"));
             let len = resp

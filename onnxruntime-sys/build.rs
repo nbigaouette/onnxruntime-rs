@@ -122,13 +122,9 @@ where
     P: AsRef<Path>,
 {
     let resp = ureq::get(source_url)
-        .timeout_connect(1_000) // 1 second
         .timeout(std::time::Duration::from_secs(300))
-        .call();
-
-    if resp.error() {
-        panic!("ERROR: Failed to download {}: {:#?}", source_url, resp);
-    }
+        .call()
+        .unwrap_or_else(|err| panic!("ERROR: Failed to download {}: {:?}", source_url, err));
 
     let len = resp
         .header("Content-Length")
