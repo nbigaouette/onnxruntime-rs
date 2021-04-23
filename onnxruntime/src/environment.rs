@@ -3,6 +3,7 @@
 use std::{
     ffi::CString,
     sync::{atomic::AtomicPtr, Arc, Mutex},
+    os::raw::c_char
 };
 
 use lazy_static::lazy_static;
