@@ -165,7 +165,7 @@ pub const ETIMEDOUT: u32 = 138;
 pub const ETXTBSY: u32 = 139;
 pub const EWOULDBLOCK: u32 = 140;
 pub const _NLSCMPERROR: u32 = 2147483647;
-pub const ORT_API_VERSION: u32 = 6;
+pub const ORT_API_VERSION: u32 = 7;
 pub const __SAL_H_FULL_VER: u32 = 140050727;
 pub const __SPECSTRINGS_STRICT_LEVEL: u32 = 1;
 pub const __drv_typeConst: u32 = 0;
@@ -3049,12 +3049,14 @@ pub struct OrtCUDAProviderOptions {
     pub cuda_mem_limit: usize,
     pub arena_extend_strategy: ::std::os::raw::c_int,
     pub do_copy_in_default_stream: ::std::os::raw::c_int,
+    pub has_user_compute_stream: ::std::os::raw::c_int,
+    pub user_compute_stream: *mut ::std::os::raw::c_void,
 }
 #[test]
 fn bindgen_test_layout_OrtCUDAProviderOptions() {
     assert_eq!(
         ::std::mem::size_of::<OrtCUDAProviderOptions>(),
-        24usize,
+        40usize,
         concat!("Size of: ", stringify!(OrtCUDAProviderOptions))
     );
     assert_eq!(
@@ -3123,6 +3125,93 @@ fn bindgen_test_layout_OrtCUDAProviderOptions() {
             stringify!(OrtCUDAProviderOptions),
             "::",
             stringify!(do_copy_in_default_stream)
+        )
+    );
+    assert_eq!(
+        unsafe {
+            &(*(::std::ptr::null::<OrtCUDAProviderOptions>())).has_user_compute_stream as *const _
+                as usize
+        },
+        24usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(OrtCUDAProviderOptions),
+            "::",
+            stringify!(has_user_compute_stream)
+        )
+    );
+    assert_eq!(
+        unsafe {
+            &(*(::std::ptr::null::<OrtCUDAProviderOptions>())).user_compute_stream as *const _
+                as usize
+        },
+        32usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(OrtCUDAProviderOptions),
+            "::",
+            stringify!(user_compute_stream)
+        )
+    );
+}
+#[doc = " <summary>"]
+#[doc = " Options for the TensorRT provider that are passed to SessionOptionsAppendExecutionProvider_TensorRT"]
+#[doc = " </summary>"]
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct OrtTensorRTProviderOptions {
+    pub device_id: ::std::os::raw::c_int,
+    pub has_user_compute_stream: ::std::os::raw::c_int,
+    pub user_compute_stream: *mut ::std::os::raw::c_void,
+}
+#[test]
+fn bindgen_test_layout_OrtTensorRTProviderOptions() {
+    assert_eq!(
+        ::std::mem::size_of::<OrtTensorRTProviderOptions>(),
+        16usize,
+        concat!("Size of: ", stringify!(OrtTensorRTProviderOptions))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<OrtTensorRTProviderOptions>(),
+        8usize,
+        concat!("Alignment of ", stringify!(OrtTensorRTProviderOptions))
+    );
+    assert_eq!(
+        unsafe {
+            &(*(::std::ptr::null::<OrtTensorRTProviderOptions>())).device_id as *const _ as usize
+        },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(OrtTensorRTProviderOptions),
+            "::",
+            stringify!(device_id)
+        )
+    );
+    assert_eq!(
+        unsafe {
+            &(*(::std::ptr::null::<OrtTensorRTProviderOptions>())).has_user_compute_stream
+                as *const _ as usize
+        },
+        4usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(OrtTensorRTProviderOptions),
+            "::",
+            stringify!(has_user_compute_stream)
+        )
+    );
+    assert_eq!(
+        unsafe {
+            &(*(::std::ptr::null::<OrtTensorRTProviderOptions>())).user_compute_stream as *const _
+                as usize
+        },
+        8usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(OrtTensorRTProviderOptions),
+            "::",
+            stringify!(user_compute_stream)
         )
     );
 }
@@ -4102,12 +4191,31 @@ pub struct OrtApi {
         ) -> OrtStatusPtr,
     >,
     pub ReleaseArenaCfg: ::std::option::Option<unsafe extern "C" fn(input: *mut OrtArenaCfg)>,
+    pub ModelMetadataGetGraphDescription: ::std::option::Option<
+        unsafe extern "C" fn(
+            model_metadata: *const OrtModelMetadata,
+            allocator: *mut OrtAllocator,
+            value: *mut *mut ::std::os::raw::c_char,
+        ) -> OrtStatusPtr,
+    >,
+    pub SessionOptionsAppendExecutionProvider_TensorRT: ::std::option::Option<
+        unsafe extern "C" fn(
+            options: *mut OrtSessionOptions,
+            tensorrt_options: *const OrtTensorRTProviderOptions,
+        ) -> OrtStatusPtr,
+    >,
+    pub SetCurrentGpuDeviceId: ::std::option::Option<
+        unsafe extern "C" fn(device_id: ::std::os::raw::c_int) -> OrtStatusPtr,
+    >,
+    pub GetCurrentGpuDeviceId: ::std::option::Option<
+        unsafe extern "C" fn(device_id: *mut ::std::os::raw::c_int) -> OrtStatusPtr,
+    >,
 }
 #[test]
 fn bindgen_test_layout_OrtApi() {
     assert_eq!(
         ::std::mem::size_of::<OrtApi>(),
-        1256usize,
+        1288usize,
         concat!("Size of: ", stringify!(OrtApi))
     );
     assert_eq!(
@@ -5777,6 +5885,51 @@ fn bindgen_test_layout_OrtApi() {
             stringify!(OrtApi),
             "::",
             stringify!(ReleaseArenaCfg)
+        )
+    );
+    assert_eq!(
+        unsafe {
+            &(*(::std::ptr::null::<OrtApi>())).ModelMetadataGetGraphDescription as *const _ as usize
+        },
+        1256usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(OrtApi),
+            "::",
+            stringify!(ModelMetadataGetGraphDescription)
+        )
+    );
+    assert_eq!(
+        unsafe {
+            &(*(::std::ptr::null::<OrtApi>())).SessionOptionsAppendExecutionProvider_TensorRT
+                as *const _ as usize
+        },
+        1264usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(OrtApi),
+            "::",
+            stringify!(SessionOptionsAppendExecutionProvider_TensorRT)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(::std::ptr::null::<OrtApi>())).SetCurrentGpuDeviceId as *const _ as usize },
+        1272usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(OrtApi),
+            "::",
+            stringify!(SetCurrentGpuDeviceId)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(::std::ptr::null::<OrtApi>())).GetCurrentGpuDeviceId as *const _ as usize },
+        1280usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(OrtApi),
+            "::",
+            stringify!(GetCurrentGpuDeviceId)
         )
     );
 }

@@ -23,10 +23,9 @@ pub const _STDC_PREDEF_H: u32 = 1;
 pub const __STDC_IEC_559__: u32 = 1;
 pub const __STDC_IEC_559_COMPLEX__: u32 = 1;
 pub const __STDC_ISO_10646__: u32 = 201706;
-pub const __STDC_NO_THREADS__: u32 = 1;
 pub const __GNU_LIBRARY__: u32 = 6;
 pub const __GLIBC__: u32 = 2;
-pub const __GLIBC_MINOR__: u32 = 27;
+pub const __GLIBC_MINOR__: u32 = 28;
 pub const _SYS_CDEFS_H: u32 = 1;
 pub const __glibc_c99_flexarr_available: u32 = 1;
 pub const __WORDSIZE: u32 = 64;
@@ -102,8 +101,6 @@ pub const __sigset_t_defined: u32 = 1;
 pub const __timeval_defined: u32 = 1;
 pub const _STRUCT_TIMESPEC: u32 = 1;
 pub const FD_SETSIZE: u32 = 1024;
-pub const _SYS_SYSMACROS_H: u32 = 1;
-pub const _BITS_SYSMACROS_H: u32 = 1;
 pub const _BITS_PTHREADTYPES_COMMON_H: u32 = 1;
 pub const _THREAD_SHARED_TYPES_H: u32 = 1;
 pub const _BITS_PTHREADTYPES_ARCH_H: u32 = 1;
@@ -167,7 +164,7 @@ pub const _STRING_H: u32 = 1;
 pub const _BITS_TYPES_LOCALE_T_H: u32 = 1;
 pub const _BITS_TYPES___LOCALE_T_H: u32 = 1;
 pub const _STRINGS_H: u32 = 1;
-pub const ORT_API_VERSION: u32 = 6;
+pub const ORT_API_VERSION: u32 = 7;
 pub type wchar_t = ::std::os::raw::c_int;
 #[repr(u32)]
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
@@ -390,6 +387,14 @@ pub type __int32_t = ::std::os::raw::c_int;
 pub type __uint32_t = ::std::os::raw::c_uint;
 pub type __int64_t = ::std::os::raw::c_long;
 pub type __uint64_t = ::std::os::raw::c_ulong;
+pub type __int_least8_t = __int8_t;
+pub type __uint_least8_t = __uint8_t;
+pub type __int_least16_t = __int16_t;
+pub type __uint_least16_t = __uint16_t;
+pub type __int_least32_t = __int32_t;
+pub type __uint_least32_t = __uint32_t;
+pub type __int_least64_t = __int64_t;
+pub type __uint_least64_t = __uint64_t;
 pub type __quad_t = ::std::os::raw::c_long;
 pub type __u_quad_t = ::std::os::raw::c_ulong;
 pub type __intmax_t = ::std::os::raw::c_long;
@@ -647,18 +652,6 @@ extern "C" {
         __timeout: *const timespec,
         __sigmask: *const __sigset_t,
     ) -> ::std::os::raw::c_int;
-}
-extern "C" {
-    pub fn gnu_dev_major(__dev: __dev_t) -> ::std::os::raw::c_uint;
-}
-extern "C" {
-    pub fn gnu_dev_minor(__dev: __dev_t) -> ::std::os::raw::c_uint;
-}
-extern "C" {
-    pub fn gnu_dev_makedev(
-        __major: ::std::os::raw::c_uint,
-        __minor: ::std::os::raw::c_uint,
-    ) -> __dev_t;
 }
 pub type blksize_t = __blksize_t;
 pub type blkcnt_t = __blkcnt_t;
@@ -2201,14 +2194,14 @@ extern "C" {
     pub fn getloadavg(__loadavg: *mut f64, __nelem: ::std::os::raw::c_int)
         -> ::std::os::raw::c_int;
 }
-pub type int_least8_t = ::std::os::raw::c_schar;
-pub type int_least16_t = ::std::os::raw::c_short;
-pub type int_least32_t = ::std::os::raw::c_int;
-pub type int_least64_t = ::std::os::raw::c_long;
-pub type uint_least8_t = ::std::os::raw::c_uchar;
-pub type uint_least16_t = ::std::os::raw::c_ushort;
-pub type uint_least32_t = ::std::os::raw::c_uint;
-pub type uint_least64_t = ::std::os::raw::c_ulong;
+pub type int_least8_t = __int_least8_t;
+pub type int_least16_t = __int_least16_t;
+pub type int_least32_t = __int_least32_t;
+pub type int_least64_t = __int_least64_t;
+pub type uint_least8_t = __uint_least8_t;
+pub type uint_least16_t = __uint_least16_t;
+pub type uint_least32_t = __uint_least32_t;
+pub type uint_least64_t = __uint_least64_t;
 pub type int_fast8_t = ::std::os::raw::c_schar;
 pub type int_fast16_t = ::std::os::raw::c_long;
 pub type int_fast32_t = ::std::os::raw::c_long;
@@ -2886,12 +2879,14 @@ pub struct OrtCUDAProviderOptions {
     pub cuda_mem_limit: usize,
     pub arena_extend_strategy: ::std::os::raw::c_int,
     pub do_copy_in_default_stream: ::std::os::raw::c_int,
+    pub has_user_compute_stream: ::std::os::raw::c_int,
+    pub user_compute_stream: *mut ::std::os::raw::c_void,
 }
 #[test]
 fn bindgen_test_layout_OrtCUDAProviderOptions() {
     assert_eq!(
         ::std::mem::size_of::<OrtCUDAProviderOptions>(),
-        24usize,
+        40usize,
         concat!("Size of: ", stringify!(OrtCUDAProviderOptions))
     );
     assert_eq!(
@@ -2960,6 +2955,93 @@ fn bindgen_test_layout_OrtCUDAProviderOptions() {
             stringify!(OrtCUDAProviderOptions),
             "::",
             stringify!(do_copy_in_default_stream)
+        )
+    );
+    assert_eq!(
+        unsafe {
+            &(*(::std::ptr::null::<OrtCUDAProviderOptions>())).has_user_compute_stream as *const _
+                as usize
+        },
+        24usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(OrtCUDAProviderOptions),
+            "::",
+            stringify!(has_user_compute_stream)
+        )
+    );
+    assert_eq!(
+        unsafe {
+            &(*(::std::ptr::null::<OrtCUDAProviderOptions>())).user_compute_stream as *const _
+                as usize
+        },
+        32usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(OrtCUDAProviderOptions),
+            "::",
+            stringify!(user_compute_stream)
+        )
+    );
+}
+#[doc = " <summary>"]
+#[doc = " Options for the TensorRT provider that are passed to SessionOptionsAppendExecutionProvider_TensorRT"]
+#[doc = " </summary>"]
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct OrtTensorRTProviderOptions {
+    pub device_id: ::std::os::raw::c_int,
+    pub has_user_compute_stream: ::std::os::raw::c_int,
+    pub user_compute_stream: *mut ::std::os::raw::c_void,
+}
+#[test]
+fn bindgen_test_layout_OrtTensorRTProviderOptions() {
+    assert_eq!(
+        ::std::mem::size_of::<OrtTensorRTProviderOptions>(),
+        16usize,
+        concat!("Size of: ", stringify!(OrtTensorRTProviderOptions))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<OrtTensorRTProviderOptions>(),
+        8usize,
+        concat!("Alignment of ", stringify!(OrtTensorRTProviderOptions))
+    );
+    assert_eq!(
+        unsafe {
+            &(*(::std::ptr::null::<OrtTensorRTProviderOptions>())).device_id as *const _ as usize
+        },
+        0usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(OrtTensorRTProviderOptions),
+            "::",
+            stringify!(device_id)
+        )
+    );
+    assert_eq!(
+        unsafe {
+            &(*(::std::ptr::null::<OrtTensorRTProviderOptions>())).has_user_compute_stream
+                as *const _ as usize
+        },
+        4usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(OrtTensorRTProviderOptions),
+            "::",
+            stringify!(has_user_compute_stream)
+        )
+    );
+    assert_eq!(
+        unsafe {
+            &(*(::std::ptr::null::<OrtTensorRTProviderOptions>())).user_compute_stream as *const _
+                as usize
+        },
+        8usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(OrtTensorRTProviderOptions),
+            "::",
+            stringify!(user_compute_stream)
         )
     );
 }
@@ -3939,12 +4021,31 @@ pub struct OrtApi {
         ) -> OrtStatusPtr,
     >,
     pub ReleaseArenaCfg: ::std::option::Option<unsafe extern "C" fn(input: *mut OrtArenaCfg)>,
+    pub ModelMetadataGetGraphDescription: ::std::option::Option<
+        unsafe extern "C" fn(
+            model_metadata: *const OrtModelMetadata,
+            allocator: *mut OrtAllocator,
+            value: *mut *mut ::std::os::raw::c_char,
+        ) -> OrtStatusPtr,
+    >,
+    pub SessionOptionsAppendExecutionProvider_TensorRT: ::std::option::Option<
+        unsafe extern "C" fn(
+            options: *mut OrtSessionOptions,
+            tensorrt_options: *const OrtTensorRTProviderOptions,
+        ) -> OrtStatusPtr,
+    >,
+    pub SetCurrentGpuDeviceId: ::std::option::Option<
+        unsafe extern "C" fn(device_id: ::std::os::raw::c_int) -> OrtStatusPtr,
+    >,
+    pub GetCurrentGpuDeviceId: ::std::option::Option<
+        unsafe extern "C" fn(device_id: *mut ::std::os::raw::c_int) -> OrtStatusPtr,
+    >,
 }
 #[test]
 fn bindgen_test_layout_OrtApi() {
     assert_eq!(
         ::std::mem::size_of::<OrtApi>(),
-        1256usize,
+        1288usize,
         concat!("Size of: ", stringify!(OrtApi))
     );
     assert_eq!(
@@ -5614,6 +5715,51 @@ fn bindgen_test_layout_OrtApi() {
             stringify!(OrtApi),
             "::",
             stringify!(ReleaseArenaCfg)
+        )
+    );
+    assert_eq!(
+        unsafe {
+            &(*(::std::ptr::null::<OrtApi>())).ModelMetadataGetGraphDescription as *const _ as usize
+        },
+        1256usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(OrtApi),
+            "::",
+            stringify!(ModelMetadataGetGraphDescription)
+        )
+    );
+    assert_eq!(
+        unsafe {
+            &(*(::std::ptr::null::<OrtApi>())).SessionOptionsAppendExecutionProvider_TensorRT
+                as *const _ as usize
+        },
+        1264usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(OrtApi),
+            "::",
+            stringify!(SessionOptionsAppendExecutionProvider_TensorRT)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(::std::ptr::null::<OrtApi>())).SetCurrentGpuDeviceId as *const _ as usize },
+        1272usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(OrtApi),
+            "::",
+            stringify!(SetCurrentGpuDeviceId)
+        )
+    );
+    assert_eq!(
+        unsafe { &(*(::std::ptr::null::<OrtApi>())).GetCurrentGpuDeviceId as *const _ as usize },
+        1280usize,
+        concat!(
+            "Offset of field: ",
+            stringify!(OrtApi),
+            "::",
+            stringify!(GetCurrentGpuDeviceId)
         )
     );
 }
