@@ -2,7 +2,7 @@
 authors = ["Nicolas Bigaouette <nbigaouette@gmail.com>"]
 edition = "2018"
 name = "onnxruntime"
-version = "0.0.11"
+version = "0.0.12"
 
 description = "Wrapper around Microsoft's ONNX Runtime"
 documentation = "https://docs.rs/onnxruntime"
@@ -19,21 +19,21 @@ name = "integration_tests"
 required-features = ["model-fetching"]
 
 [dependencies]
-onnxruntime-sys = {version = "0.0.11", path = "../onnxruntime-sys"}
+onnxruntime-sys = { version = "0.0.12", path = "../onnxruntime-sys" }
 
 lazy_static = "1.4"
-ndarray = "0.13"
+ndarray = "0.15"
 thiserror = "1.0"
 tracing = "0.1"
 
 # Enabled with 'model-fetching' feature
-ureq = {version = "1.5.1", optional = true}
+ureq = { version = "2.1", optional = true }
 
 [dev-dependencies]
 image = "0.23"
-test-env-log = {version = "0.2", default-features = false, features = ["trace"]}
+test-env-log = { version = "0.2", default-features = false, features = ["trace"] }
 tracing-subscriber = "0.2"
-ureq = "1.5.1"
+ureq = "2.1"
 
 [features]
 # Fetch model from ONNX Model Zoo (https://github.com/onnx/models)

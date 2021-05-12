@@ -119,6 +119,14 @@ pub enum NonMatchingDimensionsError {
         /// Input dimensions defined in model
         model_input: Vec<Vec<Option<u32>>>,
     },
+    /// Inputs length from model does not match the expected input from inference call
+    #[error("Different input lengths: Expected Input: {model_input:?} vs Received Input: {inference_input:?}")]
+    InputsLength {
+        /// Input dimensions used by inference call
+        inference_input: Vec<Vec<usize>>,
+        /// Input dimensions defined in model
+        model_input: Vec<Vec<Option<u32>>>,
+    },
 }
 
 /// Error details when ONNX C API fail
@@ -140,6 +148,10 @@ pub enum OrtDownloadError {
     /// Generic input/output error
     #[error("Error downloading data to file: {0}")]
     IoError(#[from] io::Error),
+    #[cfg(feature = "model-fetching")]
+    /// Download error by ureq
+    #[error("Error downloading data to file: {0}")]
+    UreqError(#[from] Box<ureq::Error>),
     /// Error getting content-length from an HTTP GET request
     #[error("Error getting content-length")]
     ContentLengthError,

@@ -122,6 +122,26 @@ use lazy_static::lazy_static;
 
 use onnxruntime_sys as sys;
 
+// Make functions `extern "stdcall"` for Windows 32bit.
+// This behaviors like `extern "system"`.
+#[cfg(all(target_os = "windows", target_arch = "x86"))]
+macro_rules! extern_system_fn {
+    ($(#[$meta:meta])* fn $($tt:tt)*) => ($(#[$meta])* extern "stdcall" fn $($tt)*);
+    ($(#[$meta:meta])* $vis:vis fn $($tt:tt)*) => ($(#[$meta])* $vis extern "stdcall" fn $($tt)*);
+    ($(#[$meta:meta])* unsafe fn $($tt:tt)*) => ($(#[$meta])* unsafe extern "stdcall" fn $($tt)*);
+    ($(#[$meta:meta])* $vis:vis unsafe fn $($tt:tt)*) => ($(#[$meta])* $vis unsafe extern "stdcall" fn $($tt)*);
+}
+
+// Make functions `extern "C"` for normal targets.
+// This behaviors like `extern "system"`.
+#[cfg(not(all(target_os = "windows", target_arch = "x86")))]
+macro_rules! extern_system_fn {
+    ($(#[$meta:meta])* fn $($tt:tt)*) => ($(#[$meta])* extern "C" fn $($tt)*);
+    ($(#[$meta:meta])* $vis:vis fn $($tt:tt)*) => ($(#[$meta])* $vis extern "C" fn $($tt)*);
+    ($(#[$meta:meta])* unsafe fn $($tt:tt)*) => ($(#[$meta])* unsafe extern "C" fn $($tt)*);
+    ($(#[$meta:meta])* $vis:vis unsafe fn $($tt:tt)*) => ($(#[$meta])* $vis unsafe extern "C" fn $($tt)*);
+}
+
 pub mod download;
 pub mod environment;
 pub mod error;
@@ -144,7 +164,7 @@ lazy_static! {
     static ref G_ORT_API: Arc<Mutex<AtomicPtr<sys::OrtApi>>> = {
         let base: *const sys::OrtApiBase = unsafe { sys::OrtGetApiBase() };
         assert_ne!(base, std::ptr::null());
-        let get_api: unsafe extern "C" fn(u32) -> *const onnxruntime_sys::OrtApi =
+        let get_api: extern_system_fn!{ unsafe fn(u32) -> *const onnxruntime_sys::OrtApi } =
             unsafe { (*base).GetApi.unwrap() };
         let api: *const sys::OrtApi = unsafe { get_api(sys::ORT_API_VERSION) };
         Arc::new(Mutex::new(AtomicPtr::new(api as *mut sys::OrtApi)))
@@ -282,9 +302,9 @@ pub enum LoggingLevel {
     Fatal = sys::OrtLoggingLevel::ORT_LOGGING_LEVEL_FATAL as OnnxEnumInt,
 }
 
-impl Into<sys::OrtLoggingLevel> for LoggingLevel {
-    fn into(self) -> sys::OrtLoggingLevel {
-        match self {
+impl From<LoggingLevel> for sys::OrtLoggingLevel {
+    fn from(val: LoggingLevel) -> Self {
+        match val {
             LoggingLevel::Verbose => sys::OrtLoggingLevel::ORT_LOGGING_LEVEL_VERBOSE,
             LoggingLevel::Info => sys::OrtLoggingLevel::ORT_LOGGING_LEVEL_INFO,
             LoggingLevel::Warning => sys::OrtLoggingLevel::ORT_LOGGING_LEVEL_WARNING,
@@ -312,10 +332,10 @@ pub enum GraphOptimizationLevel {
     All = sys::GraphOptimizationLevel::ORT_ENABLE_ALL as OnnxEnumInt,
 }
 
-impl Into<sys::GraphOptimizationLevel> for GraphOptimizationLevel {
-    fn into(self) -> sys::GraphOptimizationLevel {
+impl From<GraphOptimizationLevel> for sys::GraphOptimizationLevel {
+    fn from(val: GraphOptimizationLevel) -> Self {
         use GraphOptimizationLevel::*;
-        match self {
+        match val {
             DisableAll => sys::GraphOptimizationLevel::ORT_DISABLE_ALL,
             Basic => sys::GraphOptimizationLevel::ORT_ENABLE_BASIC,
             Extended => sys::GraphOptimizationLevel::ORT_ENABLE_EXTENDED,
@@ -365,10 +385,10 @@ pub enum TensorElementDataType {
     // Bfloat16 = sys::ONNXTensorElementDataType::ONNX_TENSOR_ELEMENT_DATA_TYPE_BFLOAT16 as OnnxEnumInt,
 }
 
-impl Into<sys::ONNXTensorElementDataType> for TensorElementDataType {
-    fn into(self) -> sys::ONNXTensorElementDataType {
+impl From<TensorElementDataType> for sys::ONNXTensorElementDataType {
+    fn from(val: TensorElementDataType) -> Self {
         use TensorElementDataType::*;
-        match self {
+        match val {
             Float => sys::ONNXTensorElementDataType::ONNX_TENSOR_ELEMENT_DATA_TYPE_FLOAT,
             Uint8 => sys::ONNXTensorElementDataType::ONNX_TENSOR_ELEMENT_DATA_TYPE_UINT8,
             Int8 => sys::ONNXTensorElementDataType::ONNX_TENSOR_ELEMENT_DATA_TYPE_INT8,
@@ -483,10 +503,10 @@ pub enum AllocatorType {
     Arena = sys::OrtAllocatorType::OrtArenaAllocator as i32,
 }
 
-impl Into<sys::OrtAllocatorType> for AllocatorType {
-    fn into(self) -> sys::OrtAllocatorType {
+impl From<AllocatorType> for sys::OrtAllocatorType {
+    fn from(val: AllocatorType) -> Self {
         use AllocatorType::*;
-        match self {
+        match val {
             // Invalid => sys::OrtAllocatorType::Invalid,
             Device => sys::OrtAllocatorType::OrtDeviceAllocator,
             Arena => sys::OrtAllocatorType::OrtArenaAllocator,
@@ -508,10 +528,10 @@ pub enum MemType {
     Default = sys::OrtMemType::OrtMemTypeDefault as i32,
 }
 
-impl Into<sys::OrtMemType> for MemType {
-    fn into(self) -> sys::OrtMemType {
+impl From<MemType> for sys::OrtMemType {
+    fn from(val: MemType) -> Self {
         use MemType::*;
-        match self {
+        match val {
             // CPUInput => sys::OrtMemType::OrtMemTypeCPUInput,
             // CPUOutput => sys::OrtMemType::OrtMemTypeCPUOutput,
             // CPU => sys::OrtMemType::OrtMemTypeCPU,

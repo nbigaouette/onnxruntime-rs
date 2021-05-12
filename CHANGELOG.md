@@ -7,9 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.0.12] - 2021-04-11
+
 ### Added
 
 - Add `String` datatype ([#58](https://github.com/nbigaouette/onnxruntime-rs/pull/58))
+- Initial support for Apple M1 ([#74](https://github.com/nbigaouette/onnxruntime-rs/pull/74))
+
+### Changed
+
+- Fix Windows i686 compilation ([#70](https://github.com/nbigaouette/onnxruntime-rs/pull/70))
+- Upgrade dependencies ([#75](https://github.com/nbigaouette/onnxruntime-rs/pull/75))
 
 ## [0.0.11] - 2021-02-22
 
@@ -69,7 +77,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Initial working version
 
-[Unreleased]: https://github.com/nbigaouette/onnxruntime-rs/compare/v0.0.11...HEAD
+[Unreleased]: https://github.com/nbigaouette/onnxruntime-rs/compare/v0.0.12...HEAD
+[0.0.12]: https://github.com/nbigaouette/onnxruntime-rs/compare/v0.0.11...v0.0.12
 [0.0.11]: https://github.com/nbigaouette/onnxruntime-rs/compare/v0.0.10...v0.0.11
 [0.0.10]: https://github.com/nbigaouette/onnxruntime-rs/compare/v0.0.9...v0.0.10
 [0.0.9]: https://github.com/nbigaouette/onnxruntime-rs/compare/v0.0.8...v0.0.9
