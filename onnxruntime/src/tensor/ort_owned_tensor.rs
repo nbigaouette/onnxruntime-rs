@@ -95,7 +95,9 @@ where
         let mut is_tensor = 0;
         let status = unsafe { g_ort().IsTensor.unwrap()(self.tensor_ptr, &mut is_tensor) };
         status_to_result(status).map_err(OrtError::IsTensor)?;
-        assert_eq!(is_tensor, 1);
+        (is_tensor == 1)
+            .then(|| ())
+            .ok_or(OrtError::IsTensorCheck)?;
 
         // Get pointer to output tensor float values
         let mut output_array_ptr: *mut T = std::ptr::null_mut();
