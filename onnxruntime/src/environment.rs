@@ -6,7 +6,7 @@ use std::{
 };
 
 use lazy_static::lazy_static;
-use tracing::{debug, warn};
+use tracing::{debug, error, warn};
 
 use onnxruntime_sys as sys;
 
@@ -182,7 +182,11 @@ impl Drop for Environment {
             );
 
             assert_ne!(env_ptr, std::ptr::null_mut());
-            unsafe { release_env(env_ptr) };
+            if env_ptr.is_null() {
+                error!("Environment pointer is null, not dropping!");
+            } else {
+                unsafe { release_env(env_ptr) };
+            }
 
             environment_guard.env_ptr = AtomicPtr::new(std::ptr::null_mut());
             environment_guard.name = String::from("uninitialized");

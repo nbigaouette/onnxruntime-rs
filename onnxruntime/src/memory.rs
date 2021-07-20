@@ -2,8 +2,10 @@ use tracing::debug;
 
 use onnxruntime_sys as sys;
 
+use tracing::error;
+
 use crate::{
-    error::{status_to_result, OrtError, Result},
+    error::{assert_not_null_pointer, status_to_result, OrtError, Result},
     g_ort, AllocatorType, MemType,
 };
 
@@ -25,7 +27,7 @@ impl MemoryInfo {
             )
         };
         status_to_result(status).map_err(OrtError::CreateCpuMemoryInfo)?;
-        assert_ne!(memory_info_ptr, std::ptr::null_mut());
+        assert_not_null_pointer(memory_info_ptr, "MemoryInfo")?;
 
         Ok(Self {
             ptr: memory_info_ptr,
@@ -36,10 +38,12 @@ impl MemoryInfo {
 impl Drop for MemoryInfo {
     #[tracing::instrument]
     fn drop(&mut self) {
-        debug!("Dropping the memory information.");
-        assert_ne!(self.ptr, std::ptr::null_mut());
-
-        unsafe { g_ort().ReleaseMemoryInfo.unwrap()(self.ptr) };
+        if self.ptr.is_null() {
+            error!("MemoryInfo pointer is null, not dropping.");
+        } else {
+            debug!("Dropping the memory information.");
+            unsafe { g_ort().ReleaseMemoryInfo.unwrap()(self.ptr) };
+        }
 
         self.ptr = std::ptr::null_mut();
     }
