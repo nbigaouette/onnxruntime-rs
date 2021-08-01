@@ -384,6 +384,8 @@ fn prepare_libort_dir_prebuilt() -> PathBuf {
     let extract_dir = out_dir.join(ORT_PREBUILT_EXTRACT_DIR);
     let downloaded_file = out_dir.join(&prebuilt_archive);
 
+    println!("cargo:rerun-if-changed={}", downloaded_file.display());
+
     if !downloaded_file.exists() {
         println!("Creating directory {:?}", out_dir);
         fs::create_dir_all(&out_dir).unwrap();
