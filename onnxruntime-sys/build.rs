@@ -63,14 +63,15 @@ fn generate_bindings(_include_dir: &Path) {
     println!("Bindings not generated automatically, using committed files instead.");
     println!("Enable with the 'generate-bindings' cargo feature.");
 
-    let os = env::var("CARGO_CFG_TARGET_OS").expect("Unable to get TARGET_OS");
-    let arch = env::var("CARGO_CFG_TARGET_ARCH").expect("Unable to get TARGET_ARCH");
-    if os == "macos" && arch == "aarch64" {
-        panic!(
-            "OnnxRuntime {} bindings for Apple M1 are not available",
-            ORT_VERSION
-        );
-    }
+    // NOTE: If bindings could not be be generated for Apple Sillicon M1, please uncomment the following
+    // let os = env::var("CARGO_CFG_TARGET_OS").expect("Unable to get TARGET_OS");
+    // let arch = env::var("CARGO_CFG_TARGET_ARCH").expect("Unable to get TARGET_ARCH");
+    // if os == "macos" && arch == "aarch64" {
+    //     panic!(
+    //         "OnnxRuntime {} bindings for Apple M1 are not available",
+    //         ORT_VERSION
+    //     );
+    // }
 }
 
 #[cfg(feature = "generate-bindings")]
