@@ -242,10 +242,21 @@ fn prebuilt_archive_url() -> (PathBuf, String) {
         _ => panic!("Unsupported target os {:?}", os),
     };
 
-    let prebuilt_archive = format!(
-        "onnxruntime-{}-{}{}-{}.{}",
-        os_str, arch_str, gpu_str, ORT_VERSION, archive_extension
-    );
+    // Windows and Linux's '-gpu' strings appear at different location
+    // https://github.com/microsoft/onnxruntime/releases/tag/v1.8.1
+    // onnxruntime-win-gpu-x64-1.8.1.zip
+    // onnxruntime-linux-x64-gpu-1.8.1.tgz
+    let prebuilt_archive = if os_str == "windows" {
+        format!(
+            "onnxruntime-{}-{}{}-{}.{}",
+            os_str, gpu_str, arch_str, ORT_VERSION, archive_extension
+        )
+    } else {
+        format!(
+            "onnxruntime-{}-{}{}-{}.{}",
+            os_str, arch_str, gpu_str, ORT_VERSION, archive_extension
+        )
+    };
     let prebuilt_url = format!(
         "{}/v{}/{}",
         ORT_RELEASE_BASE_URL, ORT_VERSION, prebuilt_archive
