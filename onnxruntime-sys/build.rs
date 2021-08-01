@@ -215,6 +215,8 @@ impl FromStr for Architecture {
         match s.to_lowercase().as_str() {
             "x86" => Ok(Architecture::X86),
             "x86_64" => Ok(Architecture::X86_64),
+            "arm" => Ok(Architecture::Arm),
+            "aarch64" => Ok(Architecture::Arm64),
             _ => Err(format!("Unsupported architecture: {}", s)),
         }
     }
