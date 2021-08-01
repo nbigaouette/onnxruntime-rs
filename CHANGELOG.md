@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.0.13] - 2021-08-01
+
+### Changed
+
+- Update to OnnxRuntime v1.7.0
+
 ## [0.0.12] - 2021-04-11
 
 ### Added
