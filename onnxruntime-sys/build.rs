@@ -30,7 +30,7 @@ const ORT_ENV_SYSTEM_LIB_LOCATION: &str = "ORT_LIB_LOCATION";
 const ORT_ENV_GPU: &str = "ORT_USE_CUDA";
 
 /// Subdirectory (of the 'target' directory) into which to extract the prebuilt library.
-const ORT_PREBUILT_EXTRACT_DIR: &str = "onnxruntime";
+const ORT_EXTRACT_DIR: &str = "onnxruntime";
 
 #[cfg(feature = "disable-sys-build-script")]
 fn main() {
@@ -215,6 +215,7 @@ fn prebuilt_archive_url() -> (PathBuf, String) {
     let arch_str = match arch.as_str() {
         "x86_64" => "x64",
         "x86" => "x86",
+        "aarch64" => "arm64",
         unsupported => panic!("Unsupported architecture {:?}", unsupported),
     };
 
@@ -222,6 +223,14 @@ fn prebuilt_archive_url() -> (PathBuf, String) {
         panic!(
             "ONNX Runtime only supports x86 (i686) architecture on Windows (not {:?}).",
             os
+        );
+    }
+
+    if arch_str == "arm64" {
+        panic!(
+            "{}",
+            "ONNX on ARM64 has no prebuilt packages - ".to_string() +
+            "run again with ORT_STRATEGY=\"compile\""
         );
     }
 
@@ -250,14 +259,23 @@ fn prebuilt_archive_url() -> (PathBuf, String) {
         ORT_RELEASE_BASE_URL, ORT_VERSION, prebuilt_archive
     );
 
+
     (PathBuf::from(prebuilt_archive), prebuilt_url)
+}
+
+// Get URL of source archive corresponding to release, can't be a simple
+// constant because of formatting macro.
+fn get_source_url(ort_version: String) -> String {
+    // FIXME: This won't work because of submodules, need to download git repo
+    // in order to get version with submodules.
+    format!("https://github.com/microsoft/onnxruntime/archive/refs/tags/v{}.tar.gz", ort_version)
 }
 
 fn prepare_libort_dir_prebuilt() -> PathBuf {
     let (prebuilt_archive, prebuilt_url) = prebuilt_archive_url();
 
     let out_dir = PathBuf::from(env::var("OUT_DIR").unwrap());
-    let extract_dir = out_dir.join(ORT_PREBUILT_EXTRACT_DIR);
+    let extract_dir = out_dir.join(ORT_EXTRACT_DIR);
     let downloaded_file = out_dir.join(&prebuilt_archive);
 
     if !downloaded_file.exists() {
@@ -279,6 +297,15 @@ fn prepare_libort_dir_prebuilt() -> PathBuf {
 
     extract_dir.join(prebuilt_archive.file_stem().unwrap())
 }
+
+// Compiles ONNX runtime lib from scratch
+// TODO: Clone repo, checkout tag version, run build.sh script with passed-in
+// settings.
+// Then have to copy over the artifacts.
+// fn prepare_libort_dir_compile() -> PathBuf {
+//     let out_dir = PathBuf::from(env::var("OUT_DIR").unwrap());
+//     out_dir
+// }
 
 fn prepare_libort_dir() -> PathBuf {
     let strategy = env::var(ORT_ENV_STRATEGY);

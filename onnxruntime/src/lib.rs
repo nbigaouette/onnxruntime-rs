@@ -116,6 +116,7 @@ to download.
 //! example for more details.
 
 use std::sync::{atomic::AtomicPtr, Arc, Mutex};
+use std::os::raw::c_char;
 
 use lazy_static::lazy_static;
 
@@ -182,8 +183,8 @@ fn g_ort() -> sys::OrtApi {
     unsafe { *api_ptr_mut }
 }
 
-fn char_p_to_string(raw: *const i8) -> Result<String> {
-    let c_string = unsafe { std::ffi::CStr::from_ptr(raw as *mut i8).to_owned() };
+fn char_p_to_string(raw: *const c_char) -> Result<String> {
+    let c_string = unsafe { std::ffi::CStr::from_ptr(raw as *mut c_char).to_owned() };
 
     match c_string.into_string() {
         Ok(string) => Ok(string),
@@ -198,6 +199,7 @@ mod onnxruntime {
 
     use std::ffi::CStr;
     use tracing::{debug, error, info, span, trace, warn, Level};
+    use super::c_char;
 
     use onnxruntime_sys as sys;
 
@@ -230,57 +232,55 @@ mod onnxruntime {
         }
     }
 
-    extern_system_fn! {
-        /// Callback from C that will handle the logging, forwarding the runtime's logs to the tracing crate.
-        pub(crate) fn custom_logger(
-            _params: *mut std::ffi::c_void,
-            severity: sys::OrtLoggingLevel,
-            category: *const i8,
-            logid: *const i8,
-            code_location: *const i8,
-            message: *const i8,
-        ) {
-            let log_level = match severity {
-                sys::OrtLoggingLevel::ORT_LOGGING_LEVEL_VERBOSE => Level::TRACE,
-                sys::OrtLoggingLevel::ORT_LOGGING_LEVEL_INFO => Level::DEBUG,
-                sys::OrtLoggingLevel::ORT_LOGGING_LEVEL_WARNING => Level::INFO,
-                sys::OrtLoggingLevel::ORT_LOGGING_LEVEL_ERROR => Level::WARN,
-                sys::OrtLoggingLevel::ORT_LOGGING_LEVEL_FATAL => Level::ERROR,
-            };
+    /// Callback from C that will handle the logging, forwarding the runtime's logs to the tracing crate.
+    pub(crate) extern "C" fn custom_logger(
+        _params: *mut std::ffi::c_void,
+        severity: sys::OrtLoggingLevel,
+        category: *const c_char,
+        logid: *const c_char,
+        code_location: *const c_char,
+        message: *const c_char,
+    ) {
+        let log_level = match severity {
+            sys::OrtLoggingLevel::ORT_LOGGING_LEVEL_VERBOSE => Level::TRACE,
+            sys::OrtLoggingLevel::ORT_LOGGING_LEVEL_INFO => Level::DEBUG,
+            sys::OrtLoggingLevel::ORT_LOGGING_LEVEL_WARNING => Level::INFO,
+            sys::OrtLoggingLevel::ORT_LOGGING_LEVEL_ERROR => Level::WARN,
+            sys::OrtLoggingLevel::ORT_LOGGING_LEVEL_FATAL => Level::ERROR,
+        };
 
-            assert_ne!(category, std::ptr::null());
-            let category = unsafe { CStr::from_ptr(category) };
-            assert_ne!(code_location, std::ptr::null());
-            let code_location = unsafe { CStr::from_ptr(code_location) }
-                .to_str()
-                .unwrap_or("unknown");
-            assert_ne!(message, std::ptr::null());
-            let message = unsafe { CStr::from_ptr(message) };
+        assert_ne!(category, std::ptr::null());
+        let category = unsafe { CStr::from_ptr(category) };
+        assert_ne!(code_location, std::ptr::null());
+        let code_location = unsafe { CStr::from_ptr(code_location) }
+            .to_str()
+            .unwrap_or("unknown");
+        assert_ne!(message, std::ptr::null());
+        let message = unsafe { CStr::from_ptr(message) };
 
-            assert_ne!(logid, std::ptr::null());
-            let logid = unsafe { CStr::from_ptr(logid) };
+        assert_ne!(logid, std::ptr::null());
+        let logid = unsafe { CStr::from_ptr(logid) };
 
-            // Parse the code location
-            let code_location: CodeLocation = code_location.into();
+        // Parse the code location
+        let code_location: CodeLocation = code_location.into();
 
-            let span = span!(
-                Level::TRACE,
-                "onnxruntime",
-                category = category.to_str().unwrap_or("<unknown>"),
-                file = code_location.file,
-                line_number = code_location.line_number,
-                function = code_location.function,
-                logid = logid.to_str().unwrap_or("<unknown>"),
-            );
-            let _enter = span.enter();
+        let span = span!(
+            Level::TRACE,
+            "onnxruntime",
+            category = category.to_str().unwrap_or("<unknown>"),
+            file = code_location.file,
+            line_number = code_location.line_number,
+            function = code_location.function,
+            logid = logid.to_str().unwrap_or("<unknown>"),
+        );
+        let _enter = span.enter();
 
-            match log_level {
-                Level::TRACE => trace!("{:?}", message),
-                Level::DEBUG => debug!("{:?}", message),
-                Level::INFO => info!("{:?}", message),
-                Level::WARN => warn!("{:?}", message),
-                Level::ERROR => error!("{:?}", message),
-            }
+        match log_level {
+            Level::TRACE => trace!("{:?}", message),
+            Level::DEBUG => debug!("{:?}", message),
+            Level::INFO => info!("{:?}", message),
+            Level::WARN => warn!("{:?}", message),
+            Level::ERROR => error!("{:?}", message),
         }
     }
 }

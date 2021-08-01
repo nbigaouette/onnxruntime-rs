@@ -1,6 +1,6 @@
 //! Module containing session types
 
-use std::{ffi::CString, fmt::Debug, path::Path};
+use std::{ffi::CString, fmt::Debug, path::Path, os::raw::c_char};
 
 #[cfg(not(target_family = "windows"))]
 use std::os::unix::ffi::OsStrExt;
@@ -386,9 +386,9 @@ impl<'a> Session<'a> {
             .cloned()
             .map(|n| CString::new(n).unwrap())
             .collect();
-        let input_names_ptr: Vec<*const i8> = input_names_cstring
+        let input_names_ptr: Vec<*const c_char> = input_names_cstring
             .into_iter()
-            .map(|n| n.into_raw() as *const i8)
+            .map(|n| n.into_raw() as *const c_char)
             .collect();
 
         let output_names: Vec<String> = self
@@ -400,9 +400,9 @@ impl<'a> Session<'a> {
             .into_iter()
             .map(|n| CString::new(n).unwrap())
             .collect();
-        let output_names_ptr: Vec<*const i8> = output_names_cstring
+        let output_names_ptr: Vec<*const c_char> = output_names_cstring
             .iter()
-            .map(|n| n.as_ptr() as *const i8)
+            .map(|n| n.as_ptr() as *const c_char)
             .collect();
 
         let mut output_tensor_extractors_ptrs: Vec<*mut sys::OrtValue> =
@@ -463,7 +463,7 @@ impl<'a> Session<'a> {
             .into_iter()
             .map(|p| {
                 assert_ne!(p, std::ptr::null());
-                unsafe { CString::from_raw(p as *mut i8) }
+                unsafe { CString::from_raw(p as *mut c_char) }
             })
             .collect();
 
@@ -637,13 +637,13 @@ mod dangerous {
             *const sys::OrtSession,
             usize,
             *mut sys::OrtAllocator,
-            *mut *mut i8,
+            *mut *mut c_char,
         ) -> *mut sys::OrtStatus },
         session_ptr: *mut sys::OrtSession,
         allocator_ptr: *mut sys::OrtAllocator,
         i: usize,
     ) -> Result<String> {
-        let mut name_bytes: *mut i8 = std::ptr::null_mut();
+        let mut name_bytes: *mut c_char = std::ptr::null_mut();
 
         let status = unsafe { f(session_ptr, i, allocator_ptr, &mut name_bytes) };
         status_to_result(status).map_err(OrtError::InputName)?;
