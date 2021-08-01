@@ -172,7 +172,7 @@ mod download {
             input0_shape[3] as u32,
             FilterType::Nearest,
         )
-        .to_luma();
+        .to_luma8();
 
         let array = ndarray::Array::from_shape_fn((1, 1, 28, 28), |(_, c, j, i)| {
             let pixel = image_buffer.get_pixel(i as u32, j as u32);
