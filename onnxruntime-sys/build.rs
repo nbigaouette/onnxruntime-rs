@@ -344,8 +344,8 @@ impl OnnxPrebuiltArchive for Triplet {
             )),
             _ => {
                 panic!(
-                    "Unsupported prebuilt triplet: {:?}, {:?}, {:?}",
-                    self.os, self.arch, self.accelerator
+                    "Unsupported prebuilt triplet: {:?}, {:?}, {:?}. Please use {}=system and {}=/path/to/onnxruntime",
+                    self.os, self.arch, self.accelerator, ORT_ENV_STRATEGY, ORT_ENV_SYSTEM_LIB_LOCATION
                 );
             }
         }
