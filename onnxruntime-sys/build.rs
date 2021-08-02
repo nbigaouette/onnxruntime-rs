@@ -1,9 +1,11 @@
 #![allow(dead_code)]
 
 use std::{
+    borrow::Cow,
     env, fs,
     io::{self, Read, Write},
     path::{Path, PathBuf},
+    str::FromStr,
 };
 
 /// ONNX Runtime version
@@ -11,7 +13,7 @@ use std::{
 /// WARNING: If version is changed, bindings for all platforms will have to be re-generated.
 ///          To do so, run this:
 ///              cargo build --package onnxruntime-sys --features generate-bindings
-const ORT_VERSION: &str = "1.7.0";
+const ORT_VERSION: &str = "1.8.1";
 
 /// Base Url from which to download pre-built releases/
 const ORT_RELEASE_BASE_URL: &str = "https://github.com/microsoft/onnxruntime/releases/download";
@@ -63,14 +65,15 @@ fn generate_bindings(_include_dir: &Path) {
     println!("Bindings not generated automatically, using committed files instead.");
     println!("Enable with the 'generate-bindings' cargo feature.");
 
-    let os = env::var("CARGO_CFG_TARGET_OS").expect("Unable to get TARGET_OS");
-    let arch = env::var("CARGO_CFG_TARGET_ARCH").expect("Unable to get TARGET_ARCH");
-    if os == "macos" && arch == "aarch64" {
-        panic!(
-            "OnnxRuntime {} bindings for Apple M1 are not available",
-            ORT_VERSION
-        );
-    }
+    // NOTE: If bindings could not be be generated for Apple Sillicon M1, please uncomment the following
+    // let os = env::var("CARGO_CFG_TARGET_OS").expect("Unable to get TARGET_OS");
+    // let arch = env::var("CARGO_CFG_TARGET_ARCH").expect("Unable to get TARGET_ARCH");
+    // if os == "macos" && arch == "aarch64" {
+    //     panic!(
+    //         "OnnxRuntime {} bindings for Apple M1 are not available",
+    //         ORT_VERSION
+    //     );
+    // }
 }
 
 #[cfg(feature = "generate-bindings")]
@@ -193,57 +196,180 @@ fn extract_zip(filename: &Path, outpath: &Path) {
     }
 }
 
-fn prebuilt_archive_url() -> (PathBuf, String) {
-    let os = env::var("CARGO_CFG_TARGET_OS").expect("Unable to get TARGET_OS");
-    let arch = env::var("CARGO_CFG_TARGET_ARCH").expect("Unable to get TARGET_ARCH");
+trait OnnxPrebuiltArchive {
+    fn as_onnx_str(&self) -> Cow<str>;
+}
 
-    let gpu_str = match env::var(ORT_ENV_GPU) {
-        Ok(cuda_env) => match cuda_env.to_lowercase().as_str() {
-            "1" | "yes" | "true" | "on" => match os.as_str() {
-                "linux" | "windows" => "-gpu",
-                os_str => panic!(
-                    "Use of CUDA was specified with `{}` environment variable, but pre-built \
-                             binaries with CUDA are only available for Linux and Windows, not: {}.",
-                    ORT_ENV_GPU, os_str
-                ),
-            },
-            _ => "",
-        },
-        Err(_) => "",
-    };
+#[derive(Debug)]
+enum Architecture {
+    X86,
+    X86_64,
+    Arm,
+    Arm64,
+}
 
-    let arch_str = match arch.as_str() {
-        "x86_64" => "x64",
-        "x86" => "x86",
-        unsupported => panic!("Unsupported architecture {:?}", unsupported),
-    };
+impl FromStr for Architecture {
+    type Err = String;
 
-    if arch.as_str() == "x86" && os.as_str() != "windows" {
-        panic!(
-            "ONNX Runtime only supports x86 (i686) architecture on Windows (not {:?}).",
-            os
-        );
-    }
-
-    // Only Windows and Linux x64 support GPU
-    if !gpu_str.is_empty() {
-        if arch_str == "x64" && (os == "windows" || os == "linux") {
-            println!("Supported GPU platform: {} {}", os, arch_str);
-        } else {
-            panic!("Unsupported GPU platform: {} {}", os, arch_str);
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s.to_lowercase().as_str() {
+            "x86" => Ok(Architecture::X86),
+            "x86_64" => Ok(Architecture::X86_64),
+            "arm" => Ok(Architecture::Arm),
+            "aarch64" => Ok(Architecture::Arm64),
+            _ => Err(format!("Unsupported architecture: {}", s)),
         }
     }
+}
 
-    let (os_str, archive_extension) = match os.as_str() {
-        "windows" => ("win", "zip"),
-        "macos" => ("osx", "tgz"),
-        "linux" => ("linux", "tgz"),
-        _ => panic!("Unsupported target os {:?}", os),
+impl OnnxPrebuiltArchive for Architecture {
+    fn as_onnx_str(&self) -> Cow<str> {
+        match self {
+            Architecture::X86 => Cow::from("x86"),
+            Architecture::X86_64 => Cow::from("x64"),
+            Architecture::Arm => Cow::from("arm"),
+            Architecture::Arm64 => Cow::from("arm64"),
+        }
+    }
+}
+
+#[derive(Debug)]
+#[allow(clippy::enum_variant_names)]
+enum Os {
+    Windows,
+    Linux,
+    MacOs,
+}
+
+impl Os {
+    fn archive_extension(&self) -> &'static str {
+        match self {
+            Os::Windows => "zip",
+            Os::Linux => "tgz",
+            Os::MacOs => "tgz",
+        }
+    }
+}
+
+impl FromStr for Os {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s.to_lowercase().as_str() {
+            "windows" => Ok(Os::Windows),
+            "macos" => Ok(Os::MacOs),
+            "linux" => Ok(Os::Linux),
+            _ => Err(format!("Unsupported os: {}", s)),
+        }
+    }
+}
+
+impl OnnxPrebuiltArchive for Os {
+    fn as_onnx_str(&self) -> Cow<str> {
+        match self {
+            Os::Windows => Cow::from("win"),
+            Os::Linux => Cow::from("linux"),
+            Os::MacOs => Cow::from("osx"),
+        }
+    }
+}
+
+#[derive(Debug)]
+enum Accelerator {
+    None,
+    Gpu,
+}
+
+impl FromStr for Accelerator {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s.to_lowercase().as_str() {
+            "1" | "yes" | "true" | "on" => Ok(Accelerator::Gpu),
+            _ => Ok(Accelerator::None),
+        }
+    }
+}
+
+impl OnnxPrebuiltArchive for Accelerator {
+    fn as_onnx_str(&self) -> Cow<str> {
+        match self {
+            Accelerator::None => Cow::from(""),
+            Accelerator::Gpu => Cow::from("gpu"),
+        }
+    }
+}
+
+#[derive(Debug)]
+struct Triplet {
+    os: Os,
+    arch: Architecture,
+    accelerator: Accelerator,
+}
+
+impl OnnxPrebuiltArchive for Triplet {
+    fn as_onnx_str(&self) -> Cow<str> {
+        match (&self.os, &self.arch, &self.accelerator) {
+            // onnxruntime-win-x86-1.8.1.zip
+            // onnxruntime-win-x64-1.8.1.zip
+            // onnxruntime-win-arm-1.8.1.zip
+            // onnxruntime-win-arm64-1.8.1.zip
+            // onnxruntime-linux-x64-1.8.1.tgz
+            // onnxruntime-osx-x64-1.8.1.tgz
+            (Os::Windows, Architecture::X86, Accelerator::None)
+            | (Os::Windows, Architecture::X86_64, Accelerator::None)
+            | (Os::Windows, Architecture::Arm, Accelerator::None)
+            | (Os::Windows, Architecture::Arm64, Accelerator::None)
+            | (Os::Linux, Architecture::X86_64, Accelerator::None)
+            | (Os::MacOs, Architecture::X86_64, Accelerator::None) => Cow::from(format!(
+                "{}-{}",
+                self.os.as_onnx_str(),
+                self.arch.as_onnx_str()
+            )),
+            // onnxruntime-win-gpu-x64-1.8.1.zip
+            // Note how this one is inverted from the linux one next
+            (Os::Windows, Architecture::X86_64, Accelerator::Gpu) => Cow::from(format!(
+                "{}-{}-{}",
+                self.os.as_onnx_str(),
+                self.accelerator.as_onnx_str(),
+                self.arch.as_onnx_str(),
+            )),
+            // onnxruntime-linux-x64-gpu-1.8.1.tgz
+            // Note how this one is inverted from the windows one above
+            (Os::Linux, Architecture::X86_64, Accelerator::Gpu) => Cow::from(format!(
+                "{}-{}-{}",
+                self.os.as_onnx_str(),
+                self.arch.as_onnx_str(),
+                self.accelerator.as_onnx_str(),
+            )),
+            _ => {
+                panic!(
+                    "Unsupported prebuilt triplet: {:?}, {:?}, {:?}. Please use {}=system and {}=/path/to/onnxruntime",
+                    self.os, self.arch, self.accelerator, ORT_ENV_STRATEGY, ORT_ENV_SYSTEM_LIB_LOCATION
+                );
+            }
+        }
+    }
+}
+
+fn prebuilt_archive_url() -> (PathBuf, String) {
+    let triplet = Triplet {
+        os: env::var("CARGO_CFG_TARGET_OS")
+            .expect("Unable to get TARGET_OS")
+            .parse()
+            .unwrap(),
+        arch: env::var("CARGO_CFG_TARGET_ARCH")
+            .expect("Unable to get TARGET_ARCH")
+            .parse()
+            .unwrap(),
+        accelerator: env::var(ORT_ENV_GPU).unwrap_or_default().parse().unwrap(),
     };
 
     let prebuilt_archive = format!(
-        "onnxruntime-{}-{}{}-{}.{}",
-        os_str, arch_str, gpu_str, ORT_VERSION, archive_extension
+        "onnxruntime-{}-{}.{}",
+        triplet.as_onnx_str(),
+        ORT_VERSION,
+        triplet.os.archive_extension()
     );
     let prebuilt_url = format!(
         "{}/v{}/{}",
@@ -259,6 +385,8 @@ fn prepare_libort_dir_prebuilt() -> PathBuf {
     let out_dir = PathBuf::from(env::var("OUT_DIR").unwrap());
     let extract_dir = out_dir.join(ORT_PREBUILT_EXTRACT_DIR);
     let downloaded_file = out_dir.join(&prebuilt_archive);
+
+    println!("cargo:rerun-if-changed={}", downloaded_file.display());
 
     if !downloaded_file.exists() {
         println!("Creating directory {:?}", out_dir);

@@ -28,7 +28,7 @@ find the built library and its headers. Make sure to point to the proper locatio
 ❯ git checkout v1.3.1
 # Debug build with install directory inside our own 'target' directory
 # Takes ~1/2 hour on a macbook pro 2.9 GHz 16 GB
-❯ ./build.sh --config Debug --build_shared_lib --parallel --cmake_extra_defines="CMAKE_INSTALL_PREFIX=../../../../target/onnxruntime"
+❯ ./build.sh --config Debug --build_shared_lib --parallel --cmake_extra_defines="CMAKE_INSTALL_PREFIX=/path/to/onnxruntime-rs/target/onnxruntime"
 ❯ cd build/Linux/Debug
 ❯ make install
 ```

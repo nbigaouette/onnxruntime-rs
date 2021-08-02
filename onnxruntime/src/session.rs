@@ -380,24 +380,18 @@ impl<'a> Session<'a> {
 
         // Build arguments to Run()
 
-        let input_names: Vec<String> = self.inputs.iter().map(|input| input.name.clone()).collect();
-        let input_names_cstring: Vec<CString> = input_names
+        let input_names_ptr: Vec<*const i8> = self
+            .inputs
             .iter()
-            .cloned()
+            .map(|input| input.name.clone())
             .map(|n| CString::new(n).unwrap())
-            .collect();
-        let input_names_ptr: Vec<*const i8> = input_names_cstring
-            .into_iter()
             .map(|n| n.into_raw() as *const i8)
             .collect();
 
-        let output_names: Vec<String> = self
+        let output_names_cstring: Vec<CString> = self
             .outputs
             .iter()
             .map(|output| output.name.clone())
-            .collect();
-        let output_names_cstring: Vec<CString> = output_names
-            .into_iter()
             .map(|n| CString::new(n).unwrap())
             .collect();
         let output_names_ptr: Vec<*const i8> = output_names_cstring

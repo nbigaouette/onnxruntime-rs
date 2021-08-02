@@ -22,7 +22,8 @@ required-features = ["model-fetching"]
 onnxruntime-sys = { version = "0.0.13", path = "../onnxruntime-sys" }
 
 lazy_static = "1.4"
-ndarray = "0.15"
+# FIXME: ndarray >=0.15.2 breaks the build
+ndarray = ">=0.15.0,<0.15.2"
 thiserror = "1.0"
 tracing = "0.1"
 
