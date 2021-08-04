@@ -18,7 +18,10 @@ use onnxruntime_sys as sys;
 use crate::{
     char_p_to_string,
     environment::Environment,
-    error::{status_to_result, NonMatchingDimensionsError, OrtError, Result},
+    error::{
+        assert_not_null_pointer, assert_null_pointer, status_to_result, NonMatchingDimensionsError,
+        OrtApiError, OrtError, Result,
+    },
     g_ort,
     memory::MemoryInfo,
     tensor::{
@@ -73,9 +76,12 @@ pub struct SessionBuilder<'a> {
 impl<'a> Drop for SessionBuilder<'a> {
     #[tracing::instrument]
     fn drop(&mut self) {
-        debug!("Dropping the session options.");
-        assert_ne!(self.session_options_ptr, std::ptr::null_mut());
-        unsafe { g_ort().ReleaseSessionOptions.unwrap()(self.session_options_ptr) };
+        if self.session_options_ptr.is_null() {
+            error!("Session options pointer is null, not dropping");
+        } else {
+            debug!("Dropping the session options.");
+            unsafe { g_ort().ReleaseSessionOptions.unwrap()(self.session_options_ptr) };
+        }
     }
 }
 
@@ -85,8 +91,8 @@ impl<'a> SessionBuilder<'a> {
         let status = unsafe { g_ort().CreateSessionOptions.unwrap()(&mut session_options_ptr) };
 
         status_to_result(status).map_err(OrtError::SessionOptions)?;
-        assert_eq!(status, std::ptr::null_mut());
-        assert_ne!(session_options_ptr, std::ptr::null_mut());
+        assert_null_pointer(status, "SessionStatus")?;
+        assert_not_null_pointer(session_options_ptr, "SessionOptions")?;
 
         Ok(SessionBuilder {
             env,
@@ -105,7 +111,7 @@ impl<'a> SessionBuilder<'a> {
         let status =
             unsafe { g_ort().SetIntraOpNumThreads.unwrap()(self.session_options_ptr, num_threads) };
         status_to_result(status).map_err(OrtError::SessionOptions)?;
-        assert_eq!(status, std::ptr::null_mut());
+        assert_null_pointer(status, "SessionStatus")?;
         Ok(self)
     }
 
@@ -199,14 +205,14 @@ impl<'a> SessionBuilder<'a> {
             )
         };
         status_to_result(status).map_err(OrtError::Session)?;
-        assert_eq!(status, std::ptr::null_mut());
-        assert_ne!(session_ptr, std::ptr::null_mut());
+        assert_null_pointer(status, "SessionStatus")?;
+        assert_not_null_pointer(session_ptr, "Session")?;
 
         let mut allocator_ptr: *mut sys::OrtAllocator = std::ptr::null_mut();
         let status = unsafe { g_ort().GetAllocatorWithDefaultOptions.unwrap()(&mut allocator_ptr) };
         status_to_result(status).map_err(OrtError::Allocator)?;
-        assert_eq!(status, std::ptr::null_mut());
-        assert_ne!(allocator_ptr, std::ptr::null_mut());
+        assert_null_pointer(status, "SessionStatus")?;
+        assert_not_null_pointer(allocator_ptr, "Allocator")?;
 
         let memory_info = MemoryInfo::new(AllocatorType::Arena, MemType::Default)?;
 
@@ -255,14 +261,14 @@ impl<'a> SessionBuilder<'a> {
             )
         };
         status_to_result(status).map_err(OrtError::Session)?;
-        assert_eq!(status, std::ptr::null_mut());
-        assert_ne!(session_ptr, std::ptr::null_mut());
+        assert_null_pointer(status, "SessionStatus")?;
+        assert_not_null_pointer(session_ptr, "Session")?;
 
         let mut allocator_ptr: *mut sys::OrtAllocator = std::ptr::null_mut();
         let status = unsafe { g_ort().GetAllocatorWithDefaultOptions.unwrap()(&mut allocator_ptr) };
         status_to_result(status).map_err(OrtError::Allocator)?;
-        assert_eq!(status, std::ptr::null_mut());
-        assert_ne!(allocator_ptr, std::ptr::null_mut());
+        assert_null_pointer(status, "SessionStatus")?;
+        assert_not_null_pointer(allocator_ptr, "Allocator")?;
 
         let memory_info = MemoryInfo::new(AllocatorType::Arena, MemType::Default)?;
 
@@ -352,7 +358,11 @@ impl<'a> Drop for Session<'a> {
     #[tracing::instrument]
     fn drop(&mut self) {
         debug!("Dropping the session.");
-        unsafe { g_ort().ReleaseSession.unwrap()(self.session_ptr) };
+        if self.session_ptr.is_null() {
+            error!("Session pointer is null, not dropping.");
+        } else {
+            unsafe { g_ort().ReleaseSession.unwrap()(self.session_ptr) };
+        }
         // FIXME: There is no C function to release the allocator?
 
         self.session_ptr = std::ptr::null_mut();
@@ -453,13 +463,14 @@ impl<'a> Session<'a> {
                 .collect();
 
         // Reconvert to CString so drop impl is called and memory is freed
-        let _: Vec<CString> = input_names_ptr
+        let cstrings: Result<Vec<CString>> = input_names_ptr
             .into_iter()
             .map(|p| {
-                assert_ne!(p, std::ptr::null());
-                unsafe { CString::from_raw(p as *mut i8) }
+                assert_not_null_pointer(p, "i8 for CString")?;
+                unsafe { Ok(CString::from_raw(p as *mut i8)) }
             })
             .collect();
+        cstrings?;
 
         outputs
     }
@@ -568,7 +579,9 @@ unsafe fn get_tensor_dimensions(
     let mut num_dims = 0;
     let status = g_ort().GetDimensionsCount.unwrap()(tensor_info_ptr, &mut num_dims);
     status_to_result(status).map_err(OrtError::GetDimensionsCount)?;
-    assert_ne!(num_dims, 0);
+    (num_dims != 0)
+        .then(|| ())
+        .ok_or(OrtError::InvalidDimensions)?;
 
     let mut node_dims: Vec<i64> = vec![0; num_dims as usize];
     let status = g_ort().GetDimensions.unwrap()(
@@ -603,8 +616,10 @@ mod dangerous {
         let mut num_nodes: usize = 0;
         let status = unsafe { f(session_ptr, &mut num_nodes) };
         status_to_result(status).map_err(OrtError::InOutCount)?;
-        assert_eq!(status, std::ptr::null_mut());
-        assert_ne!(num_nodes, 0);
+        assert_null_pointer(status, "SessionStatus")?;
+        (num_nodes != 0).then(|| ()).ok_or_else(|| {
+            OrtError::InOutCount(OrtApiError::Msg("No nodes in model".to_owned()))
+        })?;
         Ok(num_nodes)
     }
 
@@ -641,7 +656,7 @@ mod dangerous {
 
         let status = unsafe { f(session_ptr, i, allocator_ptr, &mut name_bytes) };
         status_to_result(status).map_err(OrtError::InputName)?;
-        assert_ne!(name_bytes, std::ptr::null_mut());
+        assert_not_null_pointer(name_bytes, "InputName")?;
 
         // FIXME: Is it safe to keep ownership of the memory?
         let name = char_p_to_string(name_bytes)?;
@@ -692,23 +707,22 @@ mod dangerous {
 
         let status = unsafe { f(session_ptr, i, &mut typeinfo_ptr) };
         status_to_result(status).map_err(OrtError::GetTypeInfo)?;
-        assert_ne!(typeinfo_ptr, std::ptr::null_mut());
+        assert_not_null_pointer(typeinfo_ptr, "TypeInfo")?;
 
         let mut tensor_info_ptr: *const sys::OrtTensorTypeAndShapeInfo = std::ptr::null_mut();
         let status = unsafe {
             g_ort().CastTypeInfoToTensorInfo.unwrap()(typeinfo_ptr, &mut tensor_info_ptr)
         };
         status_to_result(status).map_err(OrtError::CastTypeInfoToTensorInfo)?;
-        assert_ne!(tensor_info_ptr, std::ptr::null_mut());
+        assert_not_null_pointer(tensor_info_ptr, "TensorInfo")?;
 
         let mut type_sys = sys::ONNXTensorElementDataType::ONNX_TENSOR_ELEMENT_DATA_TYPE_UNDEFINED;
         let status =
             unsafe { g_ort().GetTensorElementType.unwrap()(tensor_info_ptr, &mut type_sys) };
         status_to_result(status).map_err(OrtError::TensorElementType)?;
-        assert_ne!(
-            type_sys,
-            sys::ONNXTensorElementDataType::ONNX_TENSOR_ELEMENT_DATA_TYPE_UNDEFINED
-        );
+        (type_sys != sys::ONNXTensorElementDataType::ONNX_TENSOR_ELEMENT_DATA_TYPE_UNDEFINED)
+            .then(|| ())
+            .ok_or(OrtError::UndefinedTensorElementType)?;
         // This transmute should be safe since its value is read from GetTensorElementType which we must trust.
         let io_type: TensorElementDataType = unsafe { std::mem::transmute(type_sys) };
 

@@ -6,6 +6,7 @@ use std::{
 };
 
 use onnxruntime::error::OrtDownloadError;
+use onnxruntime::tensor::OrtOwnedTensor;
 
 mod download {
     use super::*;
@@ -101,7 +102,8 @@ mod download {
 
         // Downloaded model does not have a softmax as final layer; call softmax on second axis
         // and iterate on resulting probabilities, creating an index to later access labels.
-        let mut probabilities: Vec<(usize, f32)> = outputs[0]
+        let output: &OrtOwnedTensor<f32, _> = &outputs[0];
+        let mut probabilities: Vec<(usize, f32)> = output
             .softmax(ndarray::Axis(1))
             .iter()
             .copied()
@@ -190,7 +192,8 @@ mod download {
             onnxruntime::tensor::OrtOwnedTensor<f32, ndarray::Dim<ndarray::IxDynImpl>>,
         > = session.run(input_tensor_values).unwrap();
 
-        let mut probabilities: Vec<(usize, f32)> = outputs[0]
+        let output: &OrtOwnedTensor<f32, _> = &outputs[0];
+        let mut probabilities: Vec<(usize, f32)> = output
             .softmax(ndarray::Axis(1))
             .iter()
             .copied()

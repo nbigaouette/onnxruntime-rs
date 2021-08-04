@@ -100,6 +100,21 @@ pub enum OrtError {
     /// Attempt to build a Rust `CString` from a null pointer
     #[error("Failed to build CString when original contains null: {0}")]
     CStringNulError(#[from] std::ffi::NulError),
+    #[error("{0} pointer should be null")]
+    /// Ort Pointer should have been null
+    PointerShouldBeNull(String),
+    /// Ort pointer should not have been null
+    #[error("{0} pointer should not be null")]
+    PointerShouldNotBeNull(String),
+    /// ONNX Model has invalid dimensions
+    #[error("Invalid dimensions")]
+    InvalidDimensions,
+    /// The runtime type was undefined
+    #[error("Undefined Tensor Element Type")]
+    UndefinedTensorElementType,
+    /// Error occurred when checking if ONNX tensor was properly initialized
+    #[error("Failed to check if tensor")]
+    IsTensorCheck,
 }
 
 /// Error used when dimensions of input (from model and from inference call)
@@ -174,6 +189,18 @@ impl From<*const sys::OrtStatus> for OrtStatusWrapper {
     fn from(status: *const sys::OrtStatus) -> Self {
         OrtStatusWrapper(status)
     }
+}
+
+pub(crate) fn assert_null_pointer<T>(ptr: *const T, name: &str) -> Result<()> {
+    ptr.is_null()
+        .then(|| ())
+        .ok_or_else(|| OrtError::PointerShouldBeNull(name.to_owned()))
+}
+
+pub(crate) fn assert_not_null_pointer<T>(ptr: *const T, name: &str) -> Result<()> {
+    (!ptr.is_null())
+        .then(|| ())
+        .ok_or_else(|| OrtError::PointerShouldBeNull(name.to_owned()))
 }
 
 impl From<OrtStatusWrapper> for std::result::Result<(), OrtApiError> {
