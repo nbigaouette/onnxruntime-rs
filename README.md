@@ -63,6 +63,16 @@ environment variable `ORT_USE_CUDA=1` (only supports Linux or Windows).
 Until the build script allow compilation of the runtime, see the [compilation notes](ONNX_Compilation_Notes.md)
 for some details on the process.
 
+### Note on using CUDA
+
+To use CUDA you will need to set `ORT_USE_CUDA=1` but also to set your session with the method `use_cuda` as such:
+
+```
+    let mut session = environment
+        .new_session_builder()?
+        .use_cuda(0)?
+```
+
 ### Note on 'ORT_STRATEGY=system'
 
 When using `ORT_STRATEGY=system`, executing a built crate binary (for example the tests) might fail, at least on macOS,
