@@ -242,7 +242,7 @@ Generate the bindings:
 ```sh
 ❯ docker exec -it --user "$(id -u)":"$(id -g)" rustbuilder /bin/bash
 ❯ cd onnxruntime-sys
-❯ cargo build --features generate-bindings
+❯ cargo build --features 'generate-bindings, cuda'
 ```
 
 ### Generating Bindings for Windows With Vagrant
@@ -255,8 +255,8 @@ Windows can build both x86 and x86_64 bindings:
 ```sh
 ❯ rustup target add i686-pc-windows-msvc x86_64-pc-windows-msvc
 ❯ cd onnxruntime-sys
-❯ cargo build --features generate-bindings --target i686-pc-windows-msvc
-❯ cargo build --features generate-bindings --target x86_64-pc-windows-msvc
+❯ cargo build --features 'generate-bindings, cuda' --target i686-pc-windows-msvc
+❯ cargo build --features 'generate-bindings, cuda' --target x86_64-pc-windows-msvc
 ```
 
 ## Conduct
