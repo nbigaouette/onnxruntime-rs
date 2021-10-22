@@ -26,6 +26,9 @@
 pub mod ndarray_tensor;
 pub mod ort_owned_tensor;
 pub mod ort_tensor;
+pub mod type_dynamic_tensor;
 
 pub use ort_owned_tensor::OrtOwnedTensor;
 pub use ort_tensor::OrtTensor;
+pub use type_dynamic_tensor::InputTensor;
+pub use type_dynamic_tensor::FromArray;

@@ -10,7 +10,6 @@ use std::os::windows::ffi::OsStrExt;
 #[cfg(feature = "model-fetching")]
 use std::env;
 
-use ndarray::Array;
 use tracing::{debug, error};
 
 use onnxruntime_sys as sys;
@@ -25,8 +24,7 @@ use crate::{
     g_ort,
     memory::MemoryInfo,
     tensor::{
-        ort_owned_tensor::{OrtOwnedTensor, OrtOwnedTensorExtractor},
-        OrtTensor,
+        ort_owned_tensor::{OrtOwnedTensor, OrtOwnedTensorExtractor}
     },
     AllocatorType, GraphOptimizationLevel, MemType, TensorElementDataType,
     TypeToTensorElementDataType,
@@ -370,17 +368,18 @@ impl<'a> Drop for Session<'a> {
     }
 }
 
+use crate::tensor::type_dynamic_tensor::{InputTensor, InputOrtTensor};
+
 impl<'a> Session<'a> {
     /// Run the input data through the ONNX graph, performing inference.
     ///
     /// Note that ONNX models can have multiple inputs; a `Vec<_>` is thus
     /// used for the input data here.
-    pub fn run<'s, 't, 'm, TIn, TOut, D>(
+    pub fn run<'s, 't, 'm, TOut, D>(
         &'s mut self,
-        input_arrays: Vec<Array<TIn, D>>,
+        input_arrays: Vec<InputTensor<D>>,
     ) -> Result<Vec<OrtOwnedTensor<'t, 'm, TOut, ndarray::IxDyn>>>
     where
-        TIn: TypeToTensorElementDataType + Debug + Clone,
         TOut: TypeToTensorElementDataType + Debug + Clone,
         D: ndarray::Dimension,
         'm: 't, // 'm outlives 't (memory info outlives tensor)
@@ -413,15 +412,15 @@ impl<'a> Session<'a> {
             vec![std::ptr::null_mut(); self.outputs.len()];
 
         // The C API expects pointers for the arrays (pointers to C-arrays)
-        let input_ort_tensors: Vec<OrtTensor<TIn, D>> = input_arrays
+        let input_ort_tensors: Vec<InputOrtTensor<D>> = input_arrays
             .into_iter()
-            .map(|input_array| {
-                OrtTensor::from_array(&self.memory_info, self.allocator_ptr, input_array)
+            .map(|input_tensor| {
+                InputOrtTensor::from_input_tensor(&self.memory_info, self.allocator_ptr, input_tensor)
             })
-            .collect::<Result<Vec<OrtTensor<TIn, D>>>>()?;
+            .collect::<Result<Vec<InputOrtTensor<D>>>>()?;
         let input_ort_values: Vec<*const sys::OrtValue> = input_ort_tensors
             .iter()
-            .map(|input_array_ort| input_array_ort.c_ptr as *const sys::OrtValue)
+            .map(|input_array_ort| input_array_ort.c_ptr())
             .collect();
 
         let run_options_ptr: *const sys::OrtRunOptions = std::ptr::null();
@@ -482,9 +481,8 @@ impl<'a> Session<'a> {
     //     Tensor::from_array(self, array)
     // }
 
-    fn validate_input_shapes<TIn, D>(&mut self, input_arrays: &[Array<TIn, D>]) -> Result<()>
+    fn validate_input_shapes<D>(&mut self, input_arrays: &[InputTensor<D>]) -> Result<()>
     where
-        TIn: TypeToTensorElementDataType + Debug + Clone,
         D: ndarray::Dimension,
     {
         // ******************************************************************
@@ -519,7 +517,21 @@ impl<'a> Session<'a> {
         let inputs_different_length = input_arrays
             .iter()
             .zip(self.inputs.iter())
-            .any(|(l, r)| l.shape().len() != r.dimensions.len());
+            .any(|(l, r)|
+                match l {
+                    InputTensor::FloatTensor(input) => { input.shape().len() != r.dimensions.len() }
+                    InputTensor::Uint8Tensor(input) => { input.shape().len() != r.dimensions.len() }
+                    InputTensor::Int8Tensor(input) => { input.shape().len() != r.dimensions.len() }
+                    InputTensor::Uint16Tensor(input) => { input.shape().len() != r.dimensions.len() }
+                    InputTensor::Int16Tensor(input) => { input.shape().len() != r.dimensions.len() }
+                    InputTensor::Int32Tensor(input) => { input.shape().len() != r.dimensions.len() }
+                    InputTensor::Int64Tensor(input) => { input.shape().len() != r.dimensions.len() }
+                    InputTensor::DoubleTensor(input) => { input.shape().len() != r.dimensions.len() }
+                    InputTensor::Uint32Tensor(input) => { input.shape().len() != r.dimensions.len() }
+                    InputTensor::Uint64Tensor(input) => { input.shape().len() != r.dimensions.len() }
+                    InputTensor::StringTensor(input) => { input.shape().len() != r.dimensions.len() }
+                }
+            );
         if inputs_different_length {
             error!(
                 "Different input lengths: {:?} vs {:?}",
