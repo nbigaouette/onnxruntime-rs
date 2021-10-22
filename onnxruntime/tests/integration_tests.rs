@@ -6,7 +6,7 @@ use std::{
 };
 
 use onnxruntime::error::OrtDownloadError;
-use onnxruntime::tensor::OrtOwnedTensor;
+use onnxruntime::tensor::{OrtOwnedTensor,InputTensor,FromArray};
 
 mod download {
     use super::*;
@@ -93,7 +93,7 @@ mod download {
         }
 
         // Batch of 1
-        let input_tensor_values = vec![array];
+        let input_tensor_values = vec![InputTensor::from_array(array)];
 
         // Perform the inference
         let outputs: Vec<
@@ -185,7 +185,7 @@ mod download {
         });
 
         // Batch of 1
-        let input_tensor_values = vec![array];
+        let input_tensor_values = vec![InputTensor::from_array(array)];
 
         // Perform the inference
         let outputs: Vec<
@@ -284,7 +284,7 @@ mod download {
         });
 
         // Just one input
-        let input_tensor_values = vec![array];
+        let input_tensor_values = vec![InputTensor::from_array(array)];
 
         // Perform the inference
         let outputs: Vec<

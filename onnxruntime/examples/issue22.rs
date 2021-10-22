@@ -5,6 +5,7 @@
 
 use ndarray::Array2;
 use onnxruntime::{environment::Environment, tensor::OrtOwnedTensor, GraphOptimizationLevel};
+use onnxruntime::tensor::{InputTensor, FromArray};
 use tracing::Level;
 use tracing_subscriber::FmtSubscriber;
 
@@ -35,6 +36,6 @@ fn main() {
     let attention_mask = Array2::<i64>::from_shape_vec((1, 3), vec![1, 1, 1]).unwrap();
 
     let outputs: Vec<OrtOwnedTensor<f32, _>> =
-        session.run(vec![input_ids, attention_mask]).unwrap();
+        session.run(vec![InputTensor::from_array(input_ids), InputTensor::from_array(attention_mask)]).unwrap();
     print!("outputs: {:#?}", outputs);
 }
