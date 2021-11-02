@@ -1,8 +1,8 @@
 //! Module containing tensor enums allowing for multiple input types simultaneously.
 
+use crate::memory::MemoryInfo;
 use crate::ndarray::Array;
 use crate::tensor::OrtTensor;
-use crate::memory::MemoryInfo;
 use crate::Result;
 use std::fmt::Debug;
 
@@ -68,17 +68,17 @@ impl<D: ndarray::Dimension> InputTensor<D> {
     /// Get shape of the underlying array.
     pub fn shape(&self) -> &[usize] {
         match self {
-            InputTensor::FloatTensor(x) => { x.shape() }
-            InputTensor::Uint8Tensor(x) => { x.shape() }
-            InputTensor::Int8Tensor(x) => { x.shape() }
-            InputTensor::Uint16Tensor(x) => { x.shape() }
-            InputTensor::Int16Tensor(x) => { x.shape() }
-            InputTensor::Int32Tensor(x) => { x.shape() }
-            InputTensor::Int64Tensor(x) => { x.shape() }
-            InputTensor::DoubleTensor(x) => { x.shape() }
-            InputTensor::Uint32Tensor(x) => { x.shape() }
-            InputTensor::Uint64Tensor(x) => { x.shape() }
-            InputTensor::StringTensor(x) => { x.shape() }
+            InputTensor::FloatTensor(x) => x.shape(),
+            InputTensor::Uint8Tensor(x) => x.shape(),
+            InputTensor::Int8Tensor(x) => x.shape(),
+            InputTensor::Uint16Tensor(x) => x.shape(),
+            InputTensor::Int16Tensor(x) => x.shape(),
+            InputTensor::Int32Tensor(x) => x.shape(),
+            InputTensor::Int64Tensor(x) => x.shape(),
+            InputTensor::DoubleTensor(x) => x.shape(),
+            InputTensor::Uint32Tensor(x) => x.shape(),
+            InputTensor::Uint64Tensor(x) => x.shape(),
+            InputTensor::StringTensor(x) => x.shape(),
         }
     }
 }
@@ -102,58 +102,58 @@ impl<'t, D: ndarray::Dimension> InputOrtTensor<'t, D> {
         input_tensor: InputTensor<D>,
     ) -> Result<InputOrtTensor<'t, D>>
     where
-        'm: 't
+        'm: 't,
     {
         match input_tensor {
-            InputTensor::FloatTensor(array) => {
-                Ok(InputOrtTensor::FloatTensor(OrtTensor::from_array(memory_info, allocator_ptr, array)?))
-            }
-            InputTensor::Uint8Tensor(array) => {
-                Ok(InputOrtTensor::Uint8Tensor(OrtTensor::from_array(memory_info, allocator_ptr, array)?))
-            }
-            InputTensor::Int8Tensor(array) => {
-                Ok(InputOrtTensor::Int8Tensor(OrtTensor::from_array(memory_info, allocator_ptr, array)?))
-            }
-            InputTensor::Uint16Tensor(array) => {
-                Ok(InputOrtTensor::Uint16Tensor(OrtTensor::from_array(memory_info, allocator_ptr, array)?))
-            }
-            InputTensor::Int16Tensor(array) => {
-                Ok(InputOrtTensor::Int16Tensor(OrtTensor::from_array(memory_info, allocator_ptr, array)?))
-            }
-            InputTensor::Int32Tensor(array) => {
-                Ok(InputOrtTensor::Int32Tensor(OrtTensor::from_array(memory_info, allocator_ptr, array)?))
-            }
-            InputTensor::Int64Tensor(array) => {
-                Ok(InputOrtTensor::Int64Tensor(OrtTensor::from_array(memory_info, allocator_ptr, array)?))
-            }
-            InputTensor::DoubleTensor(array) => {
-                Ok(InputOrtTensor::DoubleTensor(OrtTensor::from_array(memory_info, allocator_ptr, array)?))
-            }
-            InputTensor::Uint32Tensor(array) => {
-                Ok(InputOrtTensor::Uint32Tensor(OrtTensor::from_array(memory_info, allocator_ptr, array)?))
-            }
-            InputTensor::Uint64Tensor(array) => {
-                Ok(InputOrtTensor::Uint64Tensor(OrtTensor::from_array(memory_info, allocator_ptr, array)?))
-            }
-            InputTensor::StringTensor(array) => {
-                Ok(InputOrtTensor::StringTensor(OrtTensor::from_array(memory_info, allocator_ptr, array)?))
-            }
+            InputTensor::FloatTensor(array) => Ok(InputOrtTensor::FloatTensor(
+                OrtTensor::from_array(memory_info, allocator_ptr, array)?,
+            )),
+            InputTensor::Uint8Tensor(array) => Ok(InputOrtTensor::Uint8Tensor(
+                OrtTensor::from_array(memory_info, allocator_ptr, array)?,
+            )),
+            InputTensor::Int8Tensor(array) => Ok(InputOrtTensor::Int8Tensor(
+                OrtTensor::from_array(memory_info, allocator_ptr, array)?,
+            )),
+            InputTensor::Uint16Tensor(array) => Ok(InputOrtTensor::Uint16Tensor(
+                OrtTensor::from_array(memory_info, allocator_ptr, array)?,
+            )),
+            InputTensor::Int16Tensor(array) => Ok(InputOrtTensor::Int16Tensor(
+                OrtTensor::from_array(memory_info, allocator_ptr, array)?,
+            )),
+            InputTensor::Int32Tensor(array) => Ok(InputOrtTensor::Int32Tensor(
+                OrtTensor::from_array(memory_info, allocator_ptr, array)?,
+            )),
+            InputTensor::Int64Tensor(array) => Ok(InputOrtTensor::Int64Tensor(
+                OrtTensor::from_array(memory_info, allocator_ptr, array)?,
+            )),
+            InputTensor::DoubleTensor(array) => Ok(InputOrtTensor::DoubleTensor(
+                OrtTensor::from_array(memory_info, allocator_ptr, array)?,
+            )),
+            InputTensor::Uint32Tensor(array) => Ok(InputOrtTensor::Uint32Tensor(
+                OrtTensor::from_array(memory_info, allocator_ptr, array)?,
+            )),
+            InputTensor::Uint64Tensor(array) => Ok(InputOrtTensor::Uint64Tensor(
+                OrtTensor::from_array(memory_info, allocator_ptr, array)?,
+            )),
+            InputTensor::StringTensor(array) => Ok(InputOrtTensor::StringTensor(
+                OrtTensor::from_array(memory_info, allocator_ptr, array)?,
+            )),
         }
     }
 
     pub(crate) fn c_ptr(&self) -> *const sys::OrtValue {
         match self {
-            InputOrtTensor::FloatTensor(x) => { x.c_ptr }
-            InputOrtTensor::Uint8Tensor(x) => { x.c_ptr }
-            InputOrtTensor::Int8Tensor(x) => { x.c_ptr }
-            InputOrtTensor::Uint16Tensor(x) => { x.c_ptr }
-            InputOrtTensor::Int16Tensor(x) => { x.c_ptr }
-            InputOrtTensor::Int32Tensor(x) => { x.c_ptr }
-            InputOrtTensor::Int64Tensor(x) => { x.c_ptr }
-            InputOrtTensor::DoubleTensor(x) => { x.c_ptr }
-            InputOrtTensor::Uint32Tensor(x) => { x.c_ptr }
-            InputOrtTensor::Uint64Tensor(x) => { x.c_ptr }
-            InputOrtTensor::StringTensor(x) => { x.c_ptr }
+            InputOrtTensor::FloatTensor(x) => x.c_ptr,
+            InputOrtTensor::Uint8Tensor(x) => x.c_ptr,
+            InputOrtTensor::Int8Tensor(x) => x.c_ptr,
+            InputOrtTensor::Uint16Tensor(x) => x.c_ptr,
+            InputOrtTensor::Int16Tensor(x) => x.c_ptr,
+            InputOrtTensor::Int32Tensor(x) => x.c_ptr,
+            InputOrtTensor::Int64Tensor(x) => x.c_ptr,
+            InputOrtTensor::DoubleTensor(x) => x.c_ptr,
+            InputOrtTensor::Uint32Tensor(x) => x.c_ptr,
+            InputOrtTensor::Uint64Tensor(x) => x.c_ptr,
+            InputOrtTensor::StringTensor(x) => x.c_ptr,
         }
     }
 }

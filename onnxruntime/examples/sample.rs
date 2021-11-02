@@ -1,9 +1,11 @@
 #![forbid(unsafe_code)]
 
 use onnxruntime::{
-    environment::Environment, ndarray::Array, tensor::OrtOwnedTensor, GraphOptimizationLevel,
-    LoggingLevel,
-    tensor::{InputTensor, FromArray},
+    environment::Environment,
+    ndarray::Array,
+    tensor::OrtOwnedTensor,
+    tensor::{FromArray, InputTensor},
+    GraphOptimizationLevel, LoggingLevel,
 };
 use tracing::Level;
 use tracing_subscriber::FmtSubscriber;

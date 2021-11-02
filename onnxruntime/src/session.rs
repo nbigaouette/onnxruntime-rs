@@ -23,9 +23,7 @@ use crate::{
     },
     g_ort,
     memory::MemoryInfo,
-    tensor::{
-        ort_owned_tensor::{OrtOwnedTensor, OrtOwnedTensorExtractor}
-    },
+    tensor::ort_owned_tensor::{OrtOwnedTensor, OrtOwnedTensorExtractor},
     AllocatorType, GraphOptimizationLevel, MemType, TensorElementDataType,
     TypeToTensorElementDataType,
 };
@@ -368,7 +366,7 @@ impl<'a> Drop for Session<'a> {
     }
 }
 
-use crate::tensor::type_dynamic_tensor::{InputTensor, InputOrtTensor};
+use crate::tensor::type_dynamic_tensor::{InputOrtTensor, InputTensor};
 
 impl<'a> Session<'a> {
     /// Run the input data through the ONNX graph, performing inference.
@@ -415,7 +413,11 @@ impl<'a> Session<'a> {
         let input_ort_tensors: Vec<InputOrtTensor<D>> = input_arrays
             .into_iter()
             .map(|input_tensor| {
-                InputOrtTensor::from_input_tensor(&self.memory_info, self.allocator_ptr, input_tensor)
+                InputOrtTensor::from_input_tensor(
+                    &self.memory_info,
+                    self.allocator_ptr,
+                    input_tensor,
+                )
             })
             .collect::<Result<Vec<InputOrtTensor<D>>>>()?;
         let input_ort_values: Vec<*const sys::OrtValue> = input_ort_tensors
@@ -514,24 +516,23 @@ impl<'a> Session<'a> {
         }
 
         // Verify length of each individual inputs
-        let inputs_different_length = input_arrays
-            .iter()
-            .zip(self.inputs.iter())
-            .any(|(l, r)|
-                match l {
-                    InputTensor::FloatTensor(input) => { input.shape().len() != r.dimensions.len() }
-                    InputTensor::Uint8Tensor(input) => { input.shape().len() != r.dimensions.len() }
-                    InputTensor::Int8Tensor(input) => { input.shape().len() != r.dimensions.len() }
-                    InputTensor::Uint16Tensor(input) => { input.shape().len() != r.dimensions.len() }
-                    InputTensor::Int16Tensor(input) => { input.shape().len() != r.dimensions.len() }
-                    InputTensor::Int32Tensor(input) => { input.shape().len() != r.dimensions.len() }
-                    InputTensor::Int64Tensor(input) => { input.shape().len() != r.dimensions.len() }
-                    InputTensor::DoubleTensor(input) => { input.shape().len() != r.dimensions.len() }
-                    InputTensor::Uint32Tensor(input) => { input.shape().len() != r.dimensions.len() }
-                    InputTensor::Uint64Tensor(input) => { input.shape().len() != r.dimensions.len() }
-                    InputTensor::StringTensor(input) => { input.shape().len() != r.dimensions.len() }
-                }
-            );
+        let inputs_different_length =
+            input_arrays
+                .iter()
+                .zip(self.inputs.iter())
+                .any(|(l, r)| match l {
+                    InputTensor::FloatTensor(input) => input.shape().len() != r.dimensions.len(),
+                    InputTensor::Uint8Tensor(input) => input.shape().len() != r.dimensions.len(),
+                    InputTensor::Int8Tensor(input) => input.shape().len() != r.dimensions.len(),
+                    InputTensor::Uint16Tensor(input) => input.shape().len() != r.dimensions.len(),
+                    InputTensor::Int16Tensor(input) => input.shape().len() != r.dimensions.len(),
+                    InputTensor::Int32Tensor(input) => input.shape().len() != r.dimensions.len(),
+                    InputTensor::Int64Tensor(input) => input.shape().len() != r.dimensions.len(),
+                    InputTensor::DoubleTensor(input) => input.shape().len() != r.dimensions.len(),
+                    InputTensor::Uint32Tensor(input) => input.shape().len() != r.dimensions.len(),
+                    InputTensor::Uint64Tensor(input) => input.shape().len() != r.dimensions.len(),
+                    InputTensor::StringTensor(input) => input.shape().len() != r.dimensions.len(),
+                });
         if inputs_different_length {
             error!(
                 "Different input lengths: {:?} vs {:?}",

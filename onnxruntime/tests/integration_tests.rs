@@ -6,7 +6,7 @@ use std::{
 };
 
 use onnxruntime::error::OrtDownloadError;
-use onnxruntime::tensor::{OrtOwnedTensor,InputTensor,FromArray};
+use onnxruntime::tensor::{FromArray, InputTensor, OrtOwnedTensor};
 
 mod download {
     use super::*;
