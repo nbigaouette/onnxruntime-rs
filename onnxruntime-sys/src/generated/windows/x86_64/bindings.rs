@@ -6643,6 +6643,17 @@ extern "C" {
         device_id: ::std::os::raw::c_int,
     ) -> OrtStatusPtr;
 }
+extern "C" {
+    pub fn OrtSessionOptionsAppendExecutionProvider_DML(
+        options: *mut OrtSessionOptions,
+    ) -> OrtStatusPtr;
+}
+extern "C" {
+    pub fn OrtSessionOptionsAppendExecutionProvider_Tensorrt(
+        options: *mut OrtSessionOptions,
+        device_id: ::std::os::raw::c_int,
+    ) -> OrtStatusPtr;
+}
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
 pub struct __crt_locale_data {
