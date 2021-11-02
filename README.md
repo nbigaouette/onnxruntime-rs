@@ -1,18 +1,17 @@
 # ONNX Runtime
 
-[<img alt="github" src="https://img.shields.io/badge/github-nbigaouette/onnxruntime_rs-8da0cb?style=for-the-badge&labelColor=555555&logo=github" height="20">](https://github.com/nbigaouette/onnxruntime-rs)
-[<img alt="crates.io" src="https://img.shields.io/crates/v/onnxruntime.svg?style=for-the-badge&color=fc8d62&logo=rust" height="20">](https://crates.io/crates/onnxruntime)
-[<img alt="docs.rs" src="https://img.shields.io/badge/docs.rs-onnxruntime-66c2a5?style=for-the-badge&labelColor=555555&logoColor=white&logo=data:image/svg+xml;base64,PHN2ZyByb2xlPSJpbWciIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgdmlld0JveD0iMCAwIDUxMiA1MTIiPjxwYXRoIGZpbGw9IiNmNWY1ZjUiIGQ9Ik00ODguNiAyNTAuMkwzOTIgMjE0VjEwNS41YzAtMTUtOS4zLTI4LjQtMjMuNC0zMy43bC0xMDAtMzcuNWMtOC4xLTMuMS0xNy4xLTMuMS0yNS4zIDBsLTEwMCAzNy41Yy0xNC4xIDUuMy0yMy40IDE4LjctMjMuNCAzMy43VjIxNGwtOTYuNiAzNi4yQzkuMyAyNTUuNSAwIDI2OC45IDAgMjgzLjlWMzk0YzAgMTMuNiA3LjcgMjYuMSAxOS45IDMyLjJsMTAwIDUwYzEwLjEgNS4xIDIyLjEgNS4xIDMyLjIgMGwxMDMuOS01MiAxMDMuOSA1MmMxMC4xIDUuMSAyMi4xIDUuMSAzMi4yIDBsMTAwLTUwYzEyLjItNi4xIDE5LjktMTguNiAxOS45LTMyLjJWMjgzLjljMC0xNS05LjMtMjguNC0yMy40LTMzLjd6TTM1OCAyMTQuOGwtODUgMzEuOXYtNjguMmw4NS0zN3Y3My4zek0xNTQgMTA0LjFsMTAyLTM4LjIgMTAyIDM4LjJ2LjZsLTEwMiA0MS40LTEwMi00MS40di0uNnptODQgMjkxLjFsLTg1IDQyLjV2LTc5LjFsODUtMzguOHY3NS40em0wLTExMmwtMTAyIDQxLjQtMTAyLTQxLjR2LS42bDEwMi0zOC4yIDEwMiAzOC4ydi42em0yNDAgMTEybC04NSA0Mi41di03OS4xbDg1LTM4Ljh2NzUuNHptMC0xMTJsLTEwMiA0MS40LTEwMi00MS40di0uNmwxMDItMzguMiAxMDIgMzguMnYuNnoiPjwvcGF0aD48L3N2Zz4K" height="20">](https://docs.rs/onnxruntime)
-[<img alt="build status" src="https://img.shields.io/github/workflow/status/nbigaouette/onnxruntime-rs/Rust/master?style=for-the-badge" height="20">](https://github.com/nbigaouette/onnxruntime-rs/actions?query=branch%3Amaster)
-[![codecov](https://codecov.io/gh/nbigaouette/onnxruntime-rs/branch/master/graph/badge.svg)](https://codecov.io/gh/nbigaouette/onnxruntime-rs)
+[<img alt="github" src="https://img.shields.io/badge/github-haixuantao/onnxruntime_rs-8da0cb?labelColor=555555&logo=github" height="20">](https://github.com/haixuantao/onnxruntime-rs)
+[<img alt="crates.io" src="https://img.shields.io/crates/v/onnxruntime.svg?color=fc8d62&logo=rust" height="20">](https://crates.io/crates/onnxruntime)
+[<img alt="docs.rs" src="https://img.shields.io/badge/docs.rs-onnxruntime-66c2a5?labelColor=555555&logoColor=white&logo=data:image/svg+xml;base64,PHN2ZyByb2xlPSJpbWciIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgdmlld0JveD0iMCAwIDUxMiA1MTIiPjxwYXRoIGZpbGw9IiNmNWY1ZjUiIGQ9Ik00ODguNiAyNTAuMkwzOTIgMjE0VjEwNS41YzAtMTUtOS4zLTI4LjQtMjMuNC0zMy43bC0xMDAtMzcuNWMtOC4xLTMuMS0xNy4xLTMuMS0yNS4zIDBsLTEwMCAzNy41Yy0xNC4xIDUuMy0yMy40IDE4LjctMjMuNCAzMy43VjIxNGwtOTYuNiAzNi4yQzkuMyAyNTUuNSAwIDI2OC45IDAgMjgzLjlWMzk0YzAgMTMuNiA3LjcgMjYuMSAxOS45IDMyLjJsMTAwIDUwYzEwLjEgNS4xIDIyLjEgNS4xIDMyLjIgMGwxMDMuOS01MiAxMDMuOSA1MmMxMC4xIDUuMSAyMi4xIDUuMSAzMi4yIDBsMTAwLTUwYzEyLjItNi4xIDE5LjktMTguNiAxOS45LTMyLjJWMjgzLjljMC0xNS05LjMtMjguNC0yMy40LTMzLjd6TTM1OCAyMTQuOGwtODUgMzEuOXYtNjguMmw4NS0zN3Y3My4zek0xNTQgMTA0LjFsMTAyLTM4LjIgMTAyIDM4LjJ2LjZsLTEwMiA0MS40LTEwMi00MS40di0uNnptODQgMjkxLjFsLTg1IDQyLjV2LTc5LjFsODUtMzguOHY3NS40em0wLTExMmwtMTAyIDQxLjQtMTAyLTQxLjR2LS42bDEwMi0zOC4yIDEwMiAzOC4ydi42em0yNDAgMTEybC04NSA0Mi41di03OS4xbDg1LTM4Ljh2NzUuNHptMC0xMTJsLTEwMiA0MS40LTEwMi00MS40di0uNmwxMDItMzguMiAxMDIgMzguMnYuNnoiPjwvcGF0aD48L3N2Zz4K" height="20">](https://docs.rs/onnxruntime)
+[<img alt="build status" src="https://img.shields.io/github/workflow/status/haixuantao/onnxruntime-rs/Rust/master?" height="20">](https://github.com/haixuantao/onnxruntime-rs/actions?query=branch%3Amaster)
 
 This is an attempt at a Rust wrapper for
 [Microsoft's ONNX Runtime](https://github.com/microsoft/onnxruntime) (version 1.8).
 
 This project consist on two crates:
 
-* [`onnxruntime-sys`](onnxruntime-sys): Low-level binding to the C API;
-* [`onnxruntime`](onnxruntime): High-level and safe API.
+- [`onnxruntime-sys`](onnxruntime-sys): Low-level binding to the C API;
+- [`onnxruntime`](onnxruntime): High-level and safe API.
 
 [Changelog](CHANGELOG.md)
 
@@ -21,25 +20,25 @@ which provides the following targets:
 
 CPU:
 
-* Linux x86_64
-* macOS x86_64
-* macOS aarch64 (no pre-built binaries, no CI testing, see [#74](https://github.com/nbigaouette/onnxruntime-rs/pull/74))
-* Windows i686
-* Windows x86_64
+- Linux x86_64
+- macOS x86_64
+- macOS aarch64 (no pre-built binaries, no CI testing, see [#74](https://github.com/nbigaouette/onnxruntime-rs/pull/74))
+- Windows i686
+- Windows x86_64
 
 GPU:
 
-* Linux x86_64
-* Windows x86_64
+- Linux x86_64
+- Windows x86_64
 
 ---
 
 **WARNING**:
 
-* This is an experiment and work in progress; it is _not_ complete/working/safe. Help welcome!
-* Basic inference works, see [`onnxruntime/examples/sample.rs`](onnxruntime/examples/sample.rs) or [`onnxruntime/tests/integration_tests.rs`](onnxruntime/tests/integration_tests.rs)
-* ONNX Runtime has many options to control the inference process but those options are not yet exposed.
-* This was developed and tested on macOS Catalina. Other platforms should work but have not been tested.
+- This is an experiment and work in progress; it is _not_ complete/working/safe. Help welcome!
+- Basic inference works, see [`onnxruntime/examples/sample.rs`](onnxruntime/examples/sample.rs) or [`onnxruntime/tests/integration_tests.rs`](onnxruntime/tests/integration_tests.rs)
+- ONNX Runtime has many options to control the inference process but those options are not yet exposed.
+- This was developed and tested on macOS Catalina. Other platforms should work but have not been tested.
 
 ---
 
@@ -58,10 +57,20 @@ To select which strategy to use, set the `ORT_STRATEGY` environment variable to:
 3. `compile`: To compile the library
 
 The `download` strategy supports downloading a version of ONNX that supports CUDA. To use this, set the
-environment variable `ORT_USE_CUDA=1` (only supports Linux or Windows).
+feature `cuda` in `Cargo.toml`.
 
 Until the build script allow compilation of the runtime, see the [compilation notes](ONNX_Compilation_Notes.md)
 for some details on the process.
+
+### Note on using CUDA
+
+To use CUDA you will need to set the feature `cuda` but also to set your session with the method `use_cuda` as such:
+
+```
+    let mut session = environment
+        .new_session_builder()?
+        .use_cuda(0)?
+```
 
 ### Note on 'ORT_STRATEGY=system'
 
@@ -76,9 +85,9 @@ dyld: Library not loaded: @rpath/libonnxruntime.1.7.1.dylib
 
 To fix, one can either:
 
-* Set the `LD_LIBRARY_PATH` environment variable to point to the path where the library can be found.
-* Adapt the `.cargo/config` file to contain a linker flag to provide the **full** path:
-  
+- Set the `LD_LIBRARY_PATH` environment variable to point to the path where the library can be found.
+- Adapt the `.cargo/config` file to contain a linker flag to provide the **full** path:
+
   ```toml
   [target.aarch64-apple-darwin]
   rustflags = ["-C", "link-args=-Wl,-rpath,/full/path/to/onnxruntime/lib"]
@@ -232,7 +241,7 @@ Generate the bindings:
 ```sh
 ❯ docker exec -it --user "$(id -u)":"$(id -g)" rustbuilder /bin/bash
 ❯ cd onnxruntime-sys
-❯ cargo build --features generate-bindings
+❯ cargo build --features 'generate-bindings, cuda'
 ```
 
 ### Generating Bindings for Windows With Vagrant
@@ -245,8 +254,8 @@ Windows can build both x86 and x86_64 bindings:
 ```sh
 ❯ rustup target add i686-pc-windows-msvc x86_64-pc-windows-msvc
 ❯ cd onnxruntime-sys
-❯ cargo build --features generate-bindings --target i686-pc-windows-msvc
-❯ cargo build --features generate-bindings --target x86_64-pc-windows-msvc
+❯ cargo build --features 'generate-bindings, cuda' --target i686-pc-windows-msvc
+❯ cargo build --features 'generate-bindings, cuda' --target x86_64-pc-windows-msvc
 ```
 
 ## Conduct
@@ -259,9 +268,9 @@ instead of the Rust moderation team.
 
 This project is licensed under either of
 
-* Apache License, Version 2.0, ([LICENSE-APACHE](LICENSE-APACHE) or
+- Apache License, Version 2.0, ([LICENSE-APACHE](LICENSE-APACHE) or
   http://www.apache.org/licenses/LICENSE-2.0)
-* MIT license ([LICENSE-MIT](LICENSE-MIT) or
+- MIT license ([LICENSE-MIT](LICENSE-MIT) or
   http://opensource.org/licenses/MIT)
 
 at your option.

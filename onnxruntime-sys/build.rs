@@ -28,8 +28,6 @@ const ORT_ENV_STRATEGY: &str = "ORT_STRATEGY";
 /// Name of environment variable that, if present, contains the location of a pre-built library.
 /// Only used if `ORT_STRATEGY=system`.
 const ORT_ENV_SYSTEM_LIB_LOCATION: &str = "ORT_LIB_LOCATION";
-/// Name of environment variable that, if present, controls wether to use CUDA or not.
-const ORT_ENV_GPU: &str = "ORT_USE_CUDA";
 
 /// Subdirectory (of the 'target' directory) into which to extract the prebuilt library.
 const ORT_PREBUILT_EXTRACT_DIR: &str = "onnxruntime";
@@ -54,7 +52,6 @@ fn main() {
     println!("cargo:rustc-link-search=native={}", lib_dir.display());
 
     println!("cargo:rerun-if-env-changed={}", ORT_ENV_STRATEGY);
-    println!("cargo:rerun-if-env-changed={}", ORT_ENV_GPU);
     println!("cargo:rerun-if-env-changed={}", ORT_ENV_SYSTEM_LIB_LOCATION);
 
     generate_bindings(&include_dir);
@@ -280,17 +277,6 @@ enum Accelerator {
     Gpu,
 }
 
-impl FromStr for Accelerator {
-    type Err = String;
-
-    fn from_str(s: &str) -> Result<Self, Self::Err> {
-        match s.to_lowercase().as_str() {
-            "1" | "yes" | "true" | "on" => Ok(Accelerator::Gpu),
-            _ => Ok(Accelerator::None),
-        }
-    }
-}
-
 impl OnnxPrebuiltArchive for Accelerator {
     fn as_onnx_str(&self) -> Cow<str> {
         match self {
@@ -353,6 +339,12 @@ impl OnnxPrebuiltArchive for Triplet {
 }
 
 fn prebuilt_archive_url() -> (PathBuf, String) {
+    let accelerator = if cfg!(feature = "cuda") {
+        Accelerator::Gpu
+    } else {
+        Accelerator::None
+    };
+
     let triplet = Triplet {
         os: env::var("CARGO_CFG_TARGET_OS")
             .expect("Unable to get TARGET_OS")
@@ -362,7 +354,7 @@ fn prebuilt_archive_url() -> (PathBuf, String) {
             .expect("Unable to get TARGET_ARCH")
             .parse()
             .unwrap(),
-        accelerator: env::var(ORT_ENV_GPU).unwrap_or_default().parse().unwrap(),
+        accelerator,
     };
 
     let prebuilt_archive = format!(
