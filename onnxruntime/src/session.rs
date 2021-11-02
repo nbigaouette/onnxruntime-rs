@@ -127,7 +127,7 @@ impl<'a> SessionBuilder<'a> {
     }
 
     /// Set the session to use cpu
-    #[cfg(feature = "cuda")]
+    #[cfg(feature = "cpu")]
     pub fn use_cpu(self, use_arena: i32) -> Result<SessionBuilder<'a>> {
         unsafe {
             sys::OrtSessionOptionsAppendExecutionProvider_CPU(self.session_options_ptr, use_arena);
@@ -140,6 +140,24 @@ impl<'a> SessionBuilder<'a> {
     pub fn use_cuda(self, device_id: i32) -> Result<SessionBuilder<'a>> {
         unsafe {
             sys::OrtSessionOptionsAppendExecutionProvider_CUDA(self.session_options_ptr, device_id);
+        }
+        Ok(self)
+    }
+
+    /// Set the session to use cuda
+    #[cfg(feature = "directml")]
+    pub fn use_dml(self) -> Result<SessionBuilder<'a>> {
+        unsafe {
+            sys::OrtSessionOptionsAppendExecutionProvider_DML(self.session_options_ptr);
+        }
+        Ok(self)
+    }
+
+    /// Set the session to use cuda
+    #[cfg(feature = "tensorrt")]
+    pub fn use_cuda(self, device_id: i32) -> Result<SessionBuilder<'a>> {
+        unsafe {
+            sys::OrtSessionOptionsAppendExecutionProvider_Tensorrt(self.session_options_ptr, device_id);
         }
         Ok(self)
     }
