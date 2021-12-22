@@ -354,6 +354,8 @@ impl Output {
     }
 }
 
+unsafe impl<'a> Send for Session<'a> {}
+
 impl<'a> Drop for Session<'a> {
     #[tracing::instrument]
     fn drop(&mut self) {
