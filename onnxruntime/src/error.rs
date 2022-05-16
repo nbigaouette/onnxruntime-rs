@@ -115,6 +115,10 @@ pub enum OrtError {
     /// Error occurred when checking if ONNX tensor was properly initialized
     #[error("Failed to check if tensor")]
     IsTensorCheck,
+
+    /// Error occurred when getting available providers
+    #[error("Failed to get available providers")]
+    GetAvailableProviders(OrtApiError),
 }
 
 /// Error used when dimensions of input (from model and from inference call)

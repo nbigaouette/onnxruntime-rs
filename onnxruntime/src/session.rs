@@ -1,6 +1,12 @@
 //! Module containing session types
 
-use std::{ffi::CString, fmt::Debug, path::Path};
+use std::{
+    ffi::{CStr, CString},
+    fmt::Debug,
+    os::raw::c_char,
+    path::Path,
+    ptr::null_mut,
+};
 
 #[cfg(not(target_family = "windows"))]
 use std::os::unix::ffi::OsStrExt;
@@ -608,6 +614,26 @@ impl<'a> Session<'a> {
 
         Ok(())
     }
+}
+
+/// Get available providers info
+pub fn get_available_providers() -> Result<Vec<String>> {
+    let mut len = 0;
+    let mut providers: *mut *mut c_char = null_mut();
+    let status = unsafe { g_ort().GetAvailableProviders.unwrap()(&mut providers, &mut len) };
+    status_to_result(status).map_err(OrtError::GetAvailableProviders)?;
+    let mut return_providers = Vec::with_capacity(len as usize);
+    for i in 0..len {
+        return_providers.push(unsafe {
+            CStr::from_ptr(*(providers.offset(i as isize)))
+                .to_str()
+                .unwrap()
+                .to_string()
+        });
+    }
+    let status = unsafe { g_ort().ReleaseAvailableProviders.unwrap()(providers, len) };
+    status_to_result(status).map_err(OrtError::GetAvailableProviders)?;
+    Ok(return_providers)
 }
 
 unsafe fn get_tensor_dimensions(
