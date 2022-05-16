@@ -59,7 +59,7 @@ use crate::{download::AvailableOnnxModel, error::OrtDownloadError};
 /// let mut session = environment
 ///     .new_session_builder()?
 ///     .with_optimization_level(GraphOptimizationLevel::Basic)?
-///     .with_number_threads(1)?
+///     .with_intra_op_num_threads(1)?
 ///     .with_model_from_file("squeezenet.onnx")?;
 /// # Ok(())
 /// # }
@@ -170,12 +170,13 @@ impl<'a> SessionBuilder<'a> {
     /// Set execution provider cuda
     pub fn with_append_execution_provider_cuda(
         self,
-        cuda_provider_options: &CudaProviderOptions,
+        cuda_provider_options: CudaProviderOptions,
     ) -> Result<SessionBuilder<'a>> {
+        let cuda_provider_options: sys::OrtCUDAProviderOptions = cuda_provider_options.into();
         let status = unsafe {
             g_ort().SessionOptionsAppendExecutionProvider_CUDA.unwrap()(
                 self.session_options_ptr,
-                cuda_provider_options as *const CudaProviderOptions,
+                (&cuda_provider_options) as *const sys::OrtCUDAProviderOptions,
             )
         };
         status_to_result(status).map_err(OrtError::SessionOptions)?;

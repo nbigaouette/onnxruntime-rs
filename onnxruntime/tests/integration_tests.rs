@@ -36,7 +36,7 @@ mod download {
             .unwrap()
             .with_optimization_level(GraphOptimizationLevel::Basic)
             .unwrap()
-            .with_number_threads(1)
+            .with_intra_op_num_threads(1)
             .unwrap()
             .with_model_downloaded(ImageClassification::SqueezeNet)
             .expect("Could not download model from file");
@@ -147,7 +147,7 @@ mod download {
             .unwrap()
             .with_optimization_level(GraphOptimizationLevel::Basic)
             .unwrap()
-            .with_number_threads(1)
+            .with_intra_op_num_threads(1)
             .unwrap()
             .with_model_downloaded(DomainBasedImageClassification::Mnist)
             .expect("Could not download model from file");
@@ -246,7 +246,7 @@ mod download {
             .unwrap()
             .with_optimization_level(GraphOptimizationLevel::Basic)
             .unwrap()
-            .with_number_threads(1)
+            .with_intra_op_num_threads(1)
             .unwrap()
             .with_model_from_file(
                 Path::new(env!("CARGO_MANIFEST_DIR"))

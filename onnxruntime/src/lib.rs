@@ -50,7 +50,7 @@
 //! let mut session = environment
 //!     .new_session_builder()?
 //!     .with_optimization_level(GraphOptimizationLevel::Basic)?
-//!     .with_number_threads(1)?
+//!     .with_intra_op_num_threads(1)?
 //!     .with_model_from_file("squeezenet.onnx")?;
 //! # Ok(())
 //! # }
@@ -75,7 +75,7 @@ a model can be fetched directly from the [ONNX Model Zoo](https://github.com/onn
 let mut session = environment
     .new_session_builder()?
     .with_optimization_level(GraphOptimizationLevel::Basic)?
-    .with_number_threads(1)?
+    .with_intra_op_num_threads(1)?
     .with_model_downloaded(ImageClassification::SqueezeNet)?;
 # Ok(())
 # }
@@ -99,7 +99,7 @@ to download.
 //! # let mut session = environment
 //! #     .new_session_builder()?
 //! #     .with_optimization_level(GraphOptimizationLevel::Basic)?
-//! #     .with_number_threads(1)?
+//! #     .with_intra_op_num_threads(1)?
 //! #     .with_model_from_file("squeezenet.onnx")?;
 //! let array = ndarray::Array::linspace(0.0_f32, 1.0, 100);
 //! // Multiple inputs and outputs are possible
@@ -115,7 +115,11 @@ to download.
 //! See the [`sample.rs`](https://github.com/nbigaouette/onnxruntime-rs/blob/master/onnxruntime/examples/sample.rs)
 //! example for more details.
 
-use std::sync::{atomic::AtomicPtr, Arc, Mutex};
+use std::{
+    ffi::c_void,
+    ptr::null_mut,
+    sync::{atomic::AtomicPtr, Arc, Mutex},
+};
 
 use lazy_static::lazy_static;
 
@@ -150,7 +154,7 @@ pub mod tensor;
 
 // Re-export
 pub use error::{OrtApiError, OrtError, Result};
-use sys::OnnxEnumInt;
+use sys::{OnnxEnumInt, OrtArenaCfg};
 
 // Re-export ndarray as it's part of the public API anyway
 pub use ndarray;
@@ -544,7 +548,80 @@ impl From<MemType> for sys::OrtMemType {
 pub type ExecutionMode = sys::ExecutionMode;
 
 /// Session CudaProviderOptions
-pub type CudaProviderOptions = sys::OrtCUDAProviderOptions;
+#[derive(Default)]
+pub struct CudaProviderOptions<'a> {
+    /// device_id
+    pub device_id: i32,
+    /// cudnn_conv_algo_search
+    pub cudnn_conv_algo_search: CudnnConvAlgoSearch,
+    /// gpu_mem_limit
+    pub gpu_mem_limit: usize,
+    /// arena_extend_strategy
+    pub arena_extend_strategy: i32,
+    /// do_copy_in_default_stream
+    pub do_copy_in_default_stream: i32,
+    /// has_user_compute_stream
+    pub has_user_compute_stream: i32,
+    /// user_compute_stream
+    pub user_compute_stream: Option<*mut c_void>,
+    /// default_memory_arena_cfg
+    pub default_memory_arena_cfg: Option<&'a mut ArenaCfg>,
+}
+
+impl<'a> From<CudaProviderOptions<'a>> for sys::OrtCUDAProviderOptions {
+    fn from(options: CudaProviderOptions) -> Self {
+        Self {
+            device_id: options.device_id,
+            cudnn_conv_algo_search: options.cudnn_conv_algo_search.into(),
+            gpu_mem_limit: options.gpu_mem_limit,
+            arena_extend_strategy: options.arena_extend_strategy,
+            do_copy_in_default_stream: options.do_copy_in_default_stream,
+            has_user_compute_stream: options.has_user_compute_stream,
+            user_compute_stream: if let Some(user_compute_stream) = options.user_compute_stream {
+                user_compute_stream
+            } else {
+                null_mut()
+            },
+            default_memory_arena_cfg: if let Some(default_memory_arena_cfg) =
+                options.default_memory_arena_cfg
+            {
+                default_memory_arena_cfg as *mut ArenaCfg
+            } else {
+                null_mut()
+            },
+        }
+    }
+}
+
+/// Session CudnnConvAlgoSearch
+#[repr(i32)]
+pub enum CudnnConvAlgoSearch {
+    /// CudnnConvAlgoSearch Heuristic
+    Heuristic = sys::OrtCudnnConvAlgoSearch::HEURISTIC as i32,
+    /// CudnnConvAlgoSearch Exhaustive
+    Exhaustive = sys::OrtCudnnConvAlgoSearch::EXHAUSTIVE as i32,
+    /// CudnnConvAlgoSearch Default
+    Default = sys::OrtCudnnConvAlgoSearch::DEFAULT as i32,
+}
+
+impl From<CudnnConvAlgoSearch> for sys::OrtCudnnConvAlgoSearch {
+    fn from(cudnn_conv_algo_search: CudnnConvAlgoSearch) -> Self {
+        use CudnnConvAlgoSearch::*;
+        match cudnn_conv_algo_search {
+            Heuristic => sys::OrtCudnnConvAlgoSearch::HEURISTIC,
+            Exhaustive => sys::OrtCudnnConvAlgoSearch::EXHAUSTIVE,
+            Default => sys::OrtCudnnConvAlgoSearch::DEFAULT,
+        }
+    }
+}
+
+/// Onnxruntime Arena config
+pub type ArenaCfg = sys::OrtArenaCfg;
+impl Default for CudnnConvAlgoSearch {
+    fn default() -> Self {
+        Self::Default
+    }
+}
 
 #[cfg(test)]
 mod test {
