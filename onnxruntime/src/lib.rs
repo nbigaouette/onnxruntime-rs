@@ -318,7 +318,7 @@ impl From<LoggingLevel> for sys::OrtLoggingLevel {
 ///
 /// See the [official documentation](https://github.com/microsoft/onnxruntime/blob/master/docs/ONNX_Runtime_Graph_Optimizations.md)
 /// for more information on the different optimization levels.
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 #[cfg_attr(not(windows), repr(u32))]
 #[cfg_attr(windows, repr(i32))]
 pub enum GraphOptimizationLevel {
@@ -539,6 +539,12 @@ impl From<MemType> for sys::OrtMemType {
         }
     }
 }
+
+/// Session ExecutionMode
+pub type ExecutionMode = sys::ExecutionMode;
+
+/// Session CudaProviderOptions
+pub type CudaProviderOptions = sys::OrtCUDAProviderOptions;
 
 #[cfg(test)]
 mod test {

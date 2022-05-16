@@ -28,8 +28,8 @@ use crate::{
         ort_owned_tensor::{OrtOwnedTensor, OrtOwnedTensorExtractor},
         OrtTensor,
     },
-    AllocatorType, GraphOptimizationLevel, MemType, TensorElementDataType,
-    TypeToTensorElementDataType,
+    AllocatorType, CudaProviderOptions, ExecutionMode, GraphOptimizationLevel, MemType,
+    TensorElementDataType, TypeToTensorElementDataType,
 };
 
 #[cfg(feature = "model-fetching")]
@@ -102,16 +102,20 @@ impl<'a> SessionBuilder<'a> {
         })
     }
 
-    /// Configure the session to use a number of threads
-    pub fn with_number_threads(self, num_threads: i16) -> Result<SessionBuilder<'a>> {
-        // FIXME: Pre-built binaries use OpenMP, set env variable instead
-
-        // We use a u16 in the builder to cover the 16-bits positive values of a i32.
-        let num_threads = num_threads as i32;
+    /// Configure the session to use a intra number of threads
+    pub fn with_intra_op_num_threads(self, num_threads: i32) -> Result<SessionBuilder<'a>> {
         let status =
             unsafe { g_ort().SetIntraOpNumThreads.unwrap()(self.session_options_ptr, num_threads) };
         status_to_result(status).map_err(OrtError::SessionOptions)?;
         assert_null_pointer(status, "SessionStatus")?;
+        Ok(self)
+    }
+
+    /// Configure the session to use a inter number of threads
+    pub fn with_inter_op_num_threads(self, num_threads: i32) -> Result<SessionBuilder<'a>> {
+        let status =
+            unsafe { g_ort().SetInterOpNumThreads.unwrap()(self.session_options_ptr, num_threads) };
+        status_to_result(status).map_err(OrtError::SessionOptions)?;
         Ok(self)
     }
 
@@ -121,12 +125,13 @@ impl<'a> SessionBuilder<'a> {
         opt_level: GraphOptimizationLevel,
     ) -> Result<SessionBuilder<'a>> {
         // Sets graph optimization level
-        unsafe {
+        let status = unsafe {
             g_ort().SetSessionGraphOptimizationLevel.unwrap()(
                 self.session_options_ptr,
                 opt_level.into(),
             )
         };
+        status_to_result(status).map_err(OrtError::SessionOptions)?;
         Ok(self)
     }
 
@@ -143,6 +148,37 @@ impl<'a> SessionBuilder<'a> {
     /// Defaults to [`MemType::Default`](../enum.MemType.html#variant.Default)
     pub fn with_memory_type(mut self, memory_type: MemType) -> Result<SessionBuilder<'a>> {
         self.memory_type = memory_type;
+        Ok(self)
+    }
+
+    /// Set the session's disable mem pattern
+    pub fn with_disable_mem_pattern(self) -> Result<SessionBuilder<'a>> {
+        let status = unsafe { g_ort().DisableMemPattern.unwrap()(self.session_options_ptr) };
+        status_to_result(status).map_err(OrtError::SessionOptions)?;
+        Ok(self)
+    }
+
+    /// Set the session's execution mode
+    pub fn with_execution_mode(self, execution_mode: ExecutionMode) -> Result<SessionBuilder<'a>> {
+        let status = unsafe {
+            g_ort().SetSessionExecutionMode.unwrap()(self.session_options_ptr, execution_mode)
+        };
+        status_to_result(status).map_err(OrtError::SessionOptions)?;
+        Ok(self)
+    }
+
+    /// Set execution provider cuda
+    pub fn with_append_execution_provider_cuda(
+        self,
+        cuda_provider_options: &CudaProviderOptions,
+    ) -> Result<SessionBuilder<'a>> {
+        let status = unsafe {
+            g_ort().SessionOptionsAppendExecutionProvider_CUDA.unwrap()(
+                self.session_options_ptr,
+                cuda_provider_options as *const CudaProviderOptions,
+            )
+        };
+        status_to_result(status).map_err(OrtError::SessionOptions)?;
         Ok(self)
     }
 
@@ -214,7 +250,7 @@ impl<'a> SessionBuilder<'a> {
         assert_null_pointer(status, "SessionStatus")?;
         assert_not_null_pointer(allocator_ptr, "Allocator")?;
 
-        let memory_info = MemoryInfo::new(AllocatorType::Arena, MemType::Default)?;
+        let memory_info = MemoryInfo::new(self.allocator.clone(), self.memory_type.clone())?;
 
         // Extract input and output properties
         let num_input_nodes = dangerous::extract_inputs_count(session_ptr)?;
@@ -270,7 +306,7 @@ impl<'a> SessionBuilder<'a> {
         assert_null_pointer(status, "SessionStatus")?;
         assert_not_null_pointer(allocator_ptr, "Allocator")?;
 
-        let memory_info = MemoryInfo::new(AllocatorType::Arena, MemType::Default)?;
+        let memory_info = MemoryInfo::new(self.allocator.clone(), self.memory_type.clone())?;
 
         // Extract input and output properties
         let num_input_nodes = dangerous::extract_inputs_count(session_ptr)?;
