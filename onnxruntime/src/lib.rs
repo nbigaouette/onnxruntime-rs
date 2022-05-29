@@ -597,20 +597,21 @@ impl<'a> From<CudaProviderOptions<'a>> for sys::OrtCUDAProviderOptions {
 #[repr(i32)]
 pub enum CudnnConvAlgoSearch {
     /// CudnnConvAlgoSearch Heuristic
-    Heuristic = sys::OrtCudnnConvAlgoSearch::HEURISTIC as i32,
+    Heuristic = sys::OrtCudnnConvAlgoSearch::OrtCudnnConvAlgoSearchHeuristic as i32,
     /// CudnnConvAlgoSearch Exhaustive
-    Exhaustive = sys::OrtCudnnConvAlgoSearch::EXHAUSTIVE as i32,
+    Exhaustive = sys::OrtCudnnConvAlgoSearch::OrtCudnnConvAlgoSearchExhaustive as i32,
     /// CudnnConvAlgoSearch Default
-    Default = sys::OrtCudnnConvAlgoSearch::DEFAULT as i32,
+    Default = sys::OrtCudnnConvAlgoSearch::OrtCudnnConvAlgoSearchDefault as i32,
 }
+fn hoge() {}
 
 impl From<CudnnConvAlgoSearch> for sys::OrtCudnnConvAlgoSearch {
     fn from(cudnn_conv_algo_search: CudnnConvAlgoSearch) -> Self {
         use CudnnConvAlgoSearch::*;
         match cudnn_conv_algo_search {
-            Heuristic => sys::OrtCudnnConvAlgoSearch::HEURISTIC,
-            Exhaustive => sys::OrtCudnnConvAlgoSearch::EXHAUSTIVE,
-            Default => sys::OrtCudnnConvAlgoSearch::DEFAULT,
+            Heuristic => sys::OrtCudnnConvAlgoSearch::OrtCudnnConvAlgoSearchHeuristic,
+            Exhaustive => sys::OrtCudnnConvAlgoSearch::OrtCudnnConvAlgoSearchExhaustive,
+            Default => sys::OrtCudnnConvAlgoSearch::OrtCudnnConvAlgoSearchDefault,
         }
     }
 }

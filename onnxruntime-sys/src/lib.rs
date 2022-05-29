@@ -7,10 +7,7 @@
 
 #[allow(clippy::all)]
 
-include!(concat!(
-    env!("CARGO_MANIFEST_DIR"),
-    "/src/generated/bindings.rs"
-));
+include!(concat!(env!("OUT_DIR"), "/bindings.rs"));
 
 #[cfg(target_os = "windows")]
 pub type OnnxEnumInt = i32;
