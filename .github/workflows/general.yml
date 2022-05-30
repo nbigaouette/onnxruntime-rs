@@ -138,7 +138,7 @@ jobs:
       - uses: actions-rs/cargo@v1
         with:
           command: clippy
-          args: --all-features -- -D warnings
+          args: -- -D warnings
 
   coverage:
     name: Code coverage
