@@ -6,6 +6,7 @@ env:
   CARGO_TERM_COLOR: always
   RUST_LOG: onnxruntime=debug,onnxruntime-sys=debug
   RUST_BACKTRACE: 1
+  CARGO_CACHE_VERSION: 1 # cacheが原因でなにかおかしいと感じたらこのバージョンを変更する
 
 jobs:
   fmt:
@@ -91,69 +92,37 @@ jobs:
       - name: Verify prebuilt archive downloaded (GPU, x86_64-pc-windows-msvc)
         run: ls -lh target/x86_64-pc-windows-msvc/debug/build/onnxruntime-sys-*/out/onnxruntime-win-gpu-x64-1.*.zip
 
-  test:
-    name: Test Suite
-    runs-on: ${{ matrix.os }}
+  rust-test:
     strategy:
       fail-fast: false
       matrix:
-        target:
-          [
-            x86_64-unknown-linux-gnu,
-            x86_64-apple-darwin,
-            x86_64-pc-windows-msvc,
-            i686-pc-windows-msvc,
-          ]
         include:
-          - target: x86_64-unknown-linux-gnu
-            os: ubuntu-latest
-          - target: x86_64-apple-darwin
-            os: macos-latest
-          - target: x86_64-pc-windows-msvc
-            os: windows-latest
-          - target: i686-pc-windows-msvc
-            os: windows-latest
-    env:
-      CARGO_BUILD_TARGET: ${{ matrix.target }}
+          - os: windows-2019
+          - os: windows-2022
+          - os: macos-10.15
+          - os: macos-11
+          - os: macos-12
+          - os: ubuntu-18.04
+          - os: ubuntu-20.04
+    runs-on: ${{ matrix.os }}
     steps:
+      - name: Install LLVM and Clang # required for bindgen to work, see https://github.com/rust-lang/rust-bindgen/issues/1797
+        uses: KyleMayes/install-llvm-action@32c4866ebb71e0949e8833eb49beeebed48532bd
+        if: matrix.os == 'windows-2019'
+        with:
+          version: "11.0"
+          directory: ${{ runner.temp }}/llvm
+      - name: Set LIBCLANG_PATH
+        run: echo "LIBCLANG_PATH=$((gcm clang).source -replace "clang.exe")" >> $env:GITHUB_ENV
+        if: matrix.os == 'windows-2019'
       - uses: actions/checkout@v2
-      - name: Install Rust
-        uses: actions-rs/toolchain@v1
+      - uses: actions-rs/toolchain@v1
         with:
-          profile: minimal
           toolchain: stable
-          target: ${{ matrix.target }}
-          override: true
-      - name: Install additional packages (macOS)
-        if: contains(matrix.target, 'x86_64-apple-darwin')
-        run: brew install libomp
-      - name: Build (cargo build)
-        uses: actions-rs/cargo@v1
+      - uses: Swatinem/rust-cache@v1
         with:
-          command: build
-          args: --all
-      - name: Build tests (cargo test)
-        uses: actions-rs/cargo@v1
-        with:
-          command: test
-          args: --no-run
-      - name: Build onnxruntime with 'model-fetching' feature
-        uses: actions-rs/cargo@v1
-        with:
-          command: build
-          # Use --manifest-path instead of --package. See https://github.com/actions-rs/cargo/issues/86
-          args: --manifest-path onnxruntime/Cargo.toml --features model-fetching
-      - name: Test onnxruntime-sys
-        uses: actions-rs/cargo@v1
-        with:
-          command: test
-          args: --package onnxruntime-sys -- --test-threads=1 --nocapture
-      - name: Test onnxruntime
-        uses: actions-rs/cargo@v1
-        with:
-          command: test
-          # Use --manifest-path instead of --package. See https://github.com/actions-rs/cargo/issues/86
-          args: --manifest-path onnxruntime/Cargo.toml --features model-fetching -- --test-threads=1 --nocapture
+          key: "cargo-test-cache-${{ matrix.os }}-${{ env.CARGO_CACHE_VERSION }}"
+      - run: cargo test --all-features
 
   clippy:
     name: Clippy
