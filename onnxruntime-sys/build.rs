@@ -13,7 +13,7 @@ use std::{
 /// WARNING: If version is changed, bindings for all platforms will have to be re-generated.
 ///          To do so, run this:
 ///              cargo build --package onnxruntime-sys --features generate-bindings
-const ORT_VERSION: &str = "1.10.0";
+const ORT_VERSION: &str = "1.11.1";
 
 /// Base Url from which to download pre-built releases/
 const ORT_RELEASE_BASE_URL: &str = "https://github.com/microsoft/onnxruntime/releases/download";
@@ -50,7 +50,9 @@ fn main() {
     println!("Lib directory: {:?}", lib_dir);
 
     // Tell cargo to tell rustc to link onnxruntime shared library.
-    println!("cargo:rustc-link-lib=dylib=onnxruntime");
+    println!("cargo:rustc-link-lib=onnxruntime");
+    #[cfg(target_os = "windows")]
+    println!("cargo:rustc-link-lib=onnxruntime_providers_shared");
     println!("cargo:rustc-link-search=native={}", lib_dir.display());
 
     println!("cargo:rerun-if-env-changed={}", ORT_ENV_STRATEGY);
