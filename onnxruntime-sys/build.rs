@@ -72,7 +72,6 @@ fn generate_bindings(include_dir: &Path) {
                 .display()
         ),
     ];
-    let onnxruntime_header_path = format!("{}", include_dir.join("onnxruntime_c_api.h").display());
     let generated_file = format!(
         "{}",
         PathBuf::from(env::var("OUT_DIR").unwrap())
@@ -81,8 +80,7 @@ fn generate_bindings(include_dir: &Path) {
     );
 
     // Tell cargo to invalidate the built crate whenever the wrapper changes
-    println!("cargo:rerun-if-changed={}", onnxruntime_header_path);
-    println!("cargo:rerun-if-changed={}", generated_file);
+    println!("cargo:rerun-if-changed=wrapper.h");
 
     // The bindgen::Builder is the main entry point
     // to bindgen, and lets you build up options for
@@ -90,7 +88,7 @@ fn generate_bindings(include_dir: &Path) {
     let bindings = bindgen::Builder::default()
         // The input header we would like to generate
         // bindings for.
-        .header(&onnxruntime_header_path)
+        .header("wrapper.h")
         // The current working directory is 'onnxruntime-sys'
         .clang_args(clang_args)
         // Tell cargo to invalidate the built crate whenever any of the
@@ -355,7 +353,7 @@ fn prepare_libort_dir_prebuilt() -> PathBuf {
     let (prebuilt_archive, prebuilt_url) = prebuilt_archive_url();
 
     let out_dir = PathBuf::from(env::var("OUT_DIR").unwrap());
-    let extract_dir = out_dir.join(ORT_PREBUILT_EXTRACT_DIR);
+    let extract_dir = out_dir.join(&format!("{}_{}", ORT_PREBUILT_EXTRACT_DIR, ORT_VERSION));
     let downloaded_file = out_dir.join(&prebuilt_archive);
 
     println!("cargo:rerun-if-changed={}", downloaded_file.display());
