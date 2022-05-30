@@ -122,7 +122,7 @@ jobs:
       - uses: Swatinem/rust-cache@v1
         with:
           key: "cargo-test-cache-${{ matrix.os }}-${{ env.CARGO_CACHE_VERSION }}"
-      - run: cargo test --all-features
+      - run: cargo test
 
   clippy:
     name: Clippy
