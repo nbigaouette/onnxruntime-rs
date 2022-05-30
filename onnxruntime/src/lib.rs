@@ -181,7 +181,11 @@ fn g_ort() -> sys::OrtApi {
     let api_ref_mut: &mut *mut sys::OrtApi = api_ref.get_mut();
     let api_ptr_mut: *mut sys::OrtApi = *api_ref_mut;
 
-    assert_ne!(api_ptr_mut, std::ptr::null_mut());
+    assert_ne!(
+        api_ptr_mut,
+        std::ptr::null_mut(),
+        "Can not get ort api ptr."
+    );
 
     unsafe { *api_ptr_mut }
 }
