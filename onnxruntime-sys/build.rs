@@ -51,8 +51,6 @@ fn main() {
 
     // Tell cargo to tell rustc to link onnxruntime shared library.
     println!("cargo:rustc-link-lib=onnxruntime");
-    #[cfg(target_os = "windows")]
-    println!("cargo:rustc-link-lib=onnxruntime_providers_shared");
     println!("cargo:rustc-link-search=native={}", lib_dir.display());
 
     println!("cargo:rerun-if-env-changed={}", ORT_ENV_STRATEGY);
