@@ -209,7 +209,7 @@ impl OnnxPrebuiltArchive for Architecture {
     fn as_onnx_str(&self) -> Cow<str> {
         match self {
             Architecture::X86 => Cow::from("x86"),
-            Architecture::X86_64 => Cow::from("x64"),
+            Architecture::X86_64 => Cow::from("x86_64"),
             Architecture::Arm => Cow::from("arm"),
             Architecture::Arm64 => Cow::from("arm64"),
         }
@@ -293,18 +293,15 @@ struct Triplet {
 impl OnnxPrebuiltArchive for Triplet {
     fn as_onnx_str(&self) -> Cow<str> {
         match (&self.os, &self.arch, &self.accelerator) {
-            (Os::Windows, Architecture::X86, Accelerator::None)
-            | (Os::Windows, Architecture::X86_64, Accelerator::None)
-            | (Os::Windows, Architecture::Arm, Accelerator::None)
-            | (Os::Windows, Architecture::Arm64, Accelerator::None)
-            | (Os::Linux, Architecture::X86_64, Accelerator::None) => Cow::from(format!(
+            (Os::Windows, _, Accelerator::None)
+            | (Os::Linux, Architecture::X86_64, Accelerator::None) => {
+                Cow::from(format!("{}-{}", self.os.as_onnx_str(), "x64"))
+            }
+            (Os::MacOs, Architecture::X86_64, Accelerator::None) => Cow::from(format!(
                 "{}-{}",
                 self.os.as_onnx_str(),
                 self.arch.as_onnx_str()
             )),
-            (Os::MacOs, Architecture::X86_64, Accelerator::None) => {
-                Cow::from(format!("{}-{}", self.os.as_onnx_str(), "x86_64"))
-            }
             (Os::Windows, Architecture::X86_64, Accelerator::Gpu) => Cow::from(format!(
                 "{}-{}-{}",
                 self.os.as_onnx_str(),
