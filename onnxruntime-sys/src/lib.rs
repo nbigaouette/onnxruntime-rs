@@ -5,8 +5,6 @@
 #![allow(clippy::all)]
 #![allow(improper_ctypes)]
 
-#[allow(clippy::all)]
-
 include!(concat!(env!("OUT_DIR"), "/bindings.rs"));
 
 #[cfg(target_os = "windows")]

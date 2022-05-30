@@ -191,7 +191,7 @@ impl<'a> SessionBuilder<'a> {
 
     /// Download an ONNX pre-trained model from the [ONNX Model Zoo](https://github.com/onnx/models) and commit the session
     #[cfg(feature = "model-fetching")]
-    pub fn with_model_downloaded<M>(self, model: M) -> Result<Session<'a>>
+    pub fn with_model_downloaded<M>(self, model: M) -> Result<Session>
     where
         M: Into<AvailableOnnxModel>,
     {
@@ -199,7 +199,7 @@ impl<'a> SessionBuilder<'a> {
     }
 
     #[cfg(feature = "model-fetching")]
-    fn with_model_downloaded_monomorphized(self, model: AvailableOnnxModel) -> Result<Session<'a>> {
+    fn with_model_downloaded_monomorphized(self, model: AvailableOnnxModel) -> Result<Session> {
         let download_dir = env::current_dir().map_err(OrtDownloadError::IoError)?;
         let downloaded_path = model.download_to(download_dir)?;
         self.with_model_from_file(downloaded_path)
@@ -209,7 +209,7 @@ impl<'a> SessionBuilder<'a> {
     //       See all OrtApi methods taking a `options: *mut OrtSessionOptions`.
 
     /// Load an ONNX graph from a file and commit the session
-    pub fn with_model_from_file<P>(self, model_filepath_ref: P) -> Result<Session<'a>>
+    pub fn with_model_from_file<P>(self, model_filepath_ref: P) -> Result<Session>
     where
         P: AsRef<Path> + 'a,
     {
@@ -270,7 +270,6 @@ impl<'a> SessionBuilder<'a> {
             .collect::<Result<Vec<Output>>>()?;
 
         Ok(Session {
-            env: self.env,
             session_ptr,
             allocator_ptr,
             memory_info,
@@ -280,14 +279,14 @@ impl<'a> SessionBuilder<'a> {
     }
 
     /// Load an ONNX graph from memory and commit the session
-    pub fn with_model_from_memory<B>(self, model_bytes: B) -> Result<Session<'a>>
+    pub fn with_model_from_memory<B>(self, model_bytes: B) -> Result<Session>
     where
         B: AsRef<[u8]>,
     {
         self.with_model_from_memory_monomorphized(model_bytes.as_ref())
     }
 
-    fn with_model_from_memory_monomorphized(self, model_bytes: &[u8]) -> Result<Session<'a>> {
+    fn with_model_from_memory_monomorphized(self, model_bytes: &[u8]) -> Result<Session> {
         let mut session_ptr: *mut sys::OrtSession = std::ptr::null_mut();
 
         let env_ptr: *const sys::OrtEnv = self.env.env_ptr();
@@ -326,7 +325,6 @@ impl<'a> SessionBuilder<'a> {
             .collect::<Result<Vec<Output>>>()?;
 
         Ok(Session {
-            env: self.env,
             session_ptr,
             allocator_ptr,
             memory_info,
@@ -338,8 +336,7 @@ impl<'a> SessionBuilder<'a> {
 
 /// Type storing the session information, built from an [`Environment`](environment/struct.Environment.html)
 #[derive(Debug)]
-pub struct Session<'a> {
-    env: &'a Environment,
+pub struct Session {
     session_ptr: *mut sys::OrtSession,
     allocator_ptr: *mut sys::OrtAllocator,
     memory_info: MemoryInfo,
@@ -397,7 +394,7 @@ impl Output {
     }
 }
 
-impl<'a> Drop for Session<'a> {
+impl<'a> Drop for Session {
     #[tracing::instrument]
     fn drop(&mut self) {
         debug!("Dropping the session.");
@@ -413,7 +410,7 @@ impl<'a> Drop for Session<'a> {
     }
 }
 
-impl<'a> Session<'a> {
+impl Session {
     /// Run the input data through the ONNX graph, performing inference.
     ///
     /// Note that ONNX models can have multiple inputs; a `Vec<_>` is thus

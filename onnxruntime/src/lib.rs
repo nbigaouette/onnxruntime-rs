@@ -154,7 +154,7 @@ pub mod tensor;
 
 // Re-export
 pub use error::{OrtApiError, OrtError, Result};
-use sys::{OnnxEnumInt, OrtArenaCfg};
+use sys::OnnxEnumInt;
 
 // Re-export ndarray as it's part of the public API anyway
 pub use ndarray;
@@ -607,7 +607,6 @@ pub enum CudnnConvAlgoSearch {
     /// CudnnConvAlgoSearch Default
     Default = sys::OrtCudnnConvAlgoSearch::OrtCudnnConvAlgoSearchDefault as i32,
 }
-fn hoge() {}
 
 impl From<CudnnConvAlgoSearch> for sys::OrtCudnnConvAlgoSearch {
     fn from(cudnn_conv_algo_search: CudnnConvAlgoSearch) -> Self {
