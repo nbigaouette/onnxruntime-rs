@@ -13,7 +13,7 @@ use std::{
 /// WARNING: If version is changed, bindings for all platforms will have to be re-generated.
 ///          To do so, run this:
 ///              cargo build --package onnxruntime-sys --features generate-bindings
-const ORT_VERSION: &str = "1.11.1";
+const ORT_VERSION: &str = "1.8.1";
 
 /// Base Url from which to download pre-built releases/
 const ORT_RELEASE_BASE_URL: &str = "https://github.com/microsoft/onnxruntime/releases/download";
@@ -60,6 +60,23 @@ fn main() {
     generate_bindings(&include_dir);
 }
 
+#[cfg(not(feature = "generate-bindings"))]
+fn generate_bindings(_include_dir: &Path) {
+    println!("Bindings not generated automatically, using committed files instead.");
+    println!("Enable with the 'generate-bindings' cargo feature.");
+
+    // NOTE: If bindings could not be be generated for Apple Sillicon M1, please uncomment the following
+    // let os = env::var("CARGO_CFG_TARGET_OS").expect("Unable to get TARGET_OS");
+    // let arch = env::var("CARGO_CFG_TARGET_ARCH").expect("Unable to get TARGET_ARCH");
+    // if os == "macos" && arch == "aarch64" {
+    //     panic!(
+    //         "OnnxRuntime {} bindings for Apple M1 are not available",
+    //         ORT_VERSION
+    //     );
+    // }
+}
+
+#[cfg(feature = "generate-bindings")]
 fn generate_bindings(include_dir: &Path) {
     let clang_args = &[
         format!("-I{}", include_dir.display()),
@@ -72,15 +89,10 @@ fn generate_bindings(include_dir: &Path) {
                 .display()
         ),
     ];
-    let generated_file = format!(
-        "{}",
-        PathBuf::from(env::var("OUT_DIR").unwrap())
-            .join("bindings.rs")
-            .display()
-    );
 
     // Tell cargo to invalidate the built crate whenever the wrapper changes
     println!("cargo:rerun-if-changed=wrapper.h");
+    println!("cargo:rerun-if-changed=src/generated/bindings.rs");
 
     // The bindgen::Builder is the main entry point
     // to bindgen, and lets you build up options for
@@ -104,7 +116,14 @@ fn generate_bindings(include_dir: &Path) {
         // Unwrap the Result and panic on failure.
         .expect("Unable to generate bindings");
 
-    println!("cargo:rerun-if-changed={}", generated_file);
+    // Write the bindings to (source controlled) src/generated/<os>/<arch>/bindings.rs
+    let generated_file = PathBuf::from(env::var("CARGO_MANIFEST_DIR").unwrap())
+        .join("src")
+        .join("generated")
+        .join(env::var("CARGO_CFG_TARGET_OS").unwrap())
+        .join(env::var("CARGO_CFG_TARGET_ARCH").unwrap())
+        .join("bindings.rs");
+    println!("cargo:rerun-if-changed={:?}", generated_file);
     bindings
         .write_to_file(&generated_file)
         .expect("Couldn't write bindings!");
@@ -207,7 +226,7 @@ impl OnnxPrebuiltArchive for Architecture {
     fn as_onnx_str(&self) -> Cow<str> {
         match self {
             Architecture::X86 => Cow::from("x86"),
-            Architecture::X86_64 => Cow::from("x86_64"),
+            Architecture::X86_64 => Cow::from("x64"),
             Architecture::Arm => Cow::from("arm"),
             Architecture::Arm64 => Cow::from("arm64"),
         }
@@ -291,21 +310,32 @@ struct Triplet {
 impl OnnxPrebuiltArchive for Triplet {
     fn as_onnx_str(&self) -> Cow<str> {
         match (&self.os, &self.arch, &self.accelerator) {
-            (Os::Windows, _, Accelerator::None)
-            | (Os::Linux, Architecture::X86_64, Accelerator::None) => {
-                Cow::from(format!("{}-{}", self.os.as_onnx_str(), "x64"))
-            }
-            (Os::MacOs, Architecture::X86_64, Accelerator::None) => Cow::from(format!(
+            // onnxruntime-win-x86-1.8.1.zip
+            // onnxruntime-win-x64-1.8.1.zip
+            // onnxruntime-win-arm-1.8.1.zip
+            // onnxruntime-win-arm64-1.8.1.zip
+            // onnxruntime-linux-x64-1.8.1.tgz
+            // onnxruntime-osx-x64-1.8.1.tgz
+            (Os::Windows, Architecture::X86, Accelerator::None)
+            | (Os::Windows, Architecture::X86_64, Accelerator::None)
+            | (Os::Windows, Architecture::Arm, Accelerator::None)
+            | (Os::Windows, Architecture::Arm64, Accelerator::None)
+            | (Os::Linux, Architecture::X86_64, Accelerator::None)
+            | (Os::MacOs, Architecture::X86_64, Accelerator::None) => Cow::from(format!(
                 "{}-{}",
                 self.os.as_onnx_str(),
                 self.arch.as_onnx_str()
             )),
+            // onnxruntime-win-gpu-x64-1.8.1.zip
+            // Note how this one is inverted from the linux one next
             (Os::Windows, Architecture::X86_64, Accelerator::Gpu) => Cow::from(format!(
                 "{}-{}-{}",
                 self.os.as_onnx_str(),
                 self.accelerator.as_onnx_str(),
                 self.arch.as_onnx_str(),
             )),
+            // onnxruntime-linux-x64-gpu-1.8.1.tgz
+            // Note how this one is inverted from the windows one above
             (Os::Linux, Architecture::X86_64, Accelerator::Gpu) => Cow::from(format!(
                 "{}-{}-{}",
                 self.os.as_onnx_str(),
@@ -353,7 +383,7 @@ fn prepare_libort_dir_prebuilt() -> PathBuf {
     let (prebuilt_archive, prebuilt_url) = prebuilt_archive_url();
 
     let out_dir = PathBuf::from(env::var("OUT_DIR").unwrap());
-    let extract_dir = out_dir.join(&format!("{}_{}", ORT_PREBUILT_EXTRACT_DIR, ORT_VERSION));
+    let extract_dir = out_dir.join(ORT_PREBUILT_EXTRACT_DIR);
     let downloaded_file = out_dir.join(&prebuilt_archive);
 
     println!("cargo:rerun-if-changed={}", downloaded_file.display());
