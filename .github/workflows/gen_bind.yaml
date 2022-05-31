@@ -4,31 +4,44 @@ on:
     paths:
       - "onnxruntime-sys/build.rs"
 jobs:
-  generate_bind_linux:
+  generate_bind_x86_64_linux:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v3
+        with:
+          ref: ${{ github.head_ref }}
       - uses: ./.github/actions/auto_gen_bind_pr
         with:
           build_target: x86_64-unknown-linux-gnu
-  generate_bind_windows:
+  generate_bind_x86_64_windows:
     runs-on: windows-latest
-    needs: generate_bind_linux
+    needs: generate_bind_x86_64_linux
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v3
+        with:
+          ref: ${{ github.head_ref }}
       - name: x86_64_windows
         uses: ./.github/actions/auto_gen_bind_pr
         with:
           build_target: x86_64-pc-windows-msvc
+  generate_bind_x86_windows:
+    runs-on: windows-latest
+    needs: generate_bind_x86_64_windows
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          ref: ${{ github.head_ref }}
       - name: x86_windows
         uses: ./.github/actions/auto_gen_bind_pr
         with:
           build_target: i686-pc-windows-msvc
-  generate_bind_mac:
+  generate_bind_x86_64_mac:
     runs-on: macos-latest
-    needs: generate_bind_windows
+    needs: generate_bind_x86_windows
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v3
+        with:
+          ref: ${{ github.head_ref }}
       - uses: ./.github/actions/auto_gen_bind_pr
         with:
           build_target: x86_64-apple-darwin

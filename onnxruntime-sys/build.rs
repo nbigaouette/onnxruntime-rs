@@ -13,7 +13,7 @@ use std::{
 /// WARNING: If version is changed, bindings for all platforms will have to be re-generated.
 ///          To do so, run this:
 ///              cargo build --package onnxruntime-sys --features generate-bindings
-const ORT_VERSION: &str = "1.10.0";
+const ORT_VERSION: &str = "1.11.1";
 
 /// Base Url from which to download pre-built releases/
 const ORT_RELEASE_BASE_URL: &str = "https://github.com/microsoft/onnxruntime/releases/download";
@@ -226,7 +226,7 @@ impl OnnxPrebuiltArchive for Architecture {
     fn as_onnx_str(&self) -> Cow<str> {
         match self {
             Architecture::X86 => Cow::from("x86"),
-            Architecture::X86_64 => Cow::from("x64"),
+            Architecture::X86_64 => Cow::from("x86_x64"),
             Architecture::Arm => Cow::from("arm"),
             Architecture::Arm64 => Cow::from("arm64"),
         }
@@ -320,8 +320,10 @@ impl OnnxPrebuiltArchive for Triplet {
             | (Os::Windows, Architecture::X86_64, Accelerator::None)
             | (Os::Windows, Architecture::Arm, Accelerator::None)
             | (Os::Windows, Architecture::Arm64, Accelerator::None)
-            | (Os::Linux, Architecture::X86_64, Accelerator::None)
-            | (Os::MacOs, Architecture::X86_64, Accelerator::None) => Cow::from(format!(
+            | (Os::Linux, Architecture::X86_64, Accelerator::None) => {
+                Cow::from(format!("{}-{}", self.os.as_onnx_str(), "x64"))
+            }
+            (Os::MacOs, Architecture::X86_64, Accelerator::None) => Cow::from(format!(
                 "{}-{}",
                 self.os.as_onnx_str(),
                 self.arch.as_onnx_str()

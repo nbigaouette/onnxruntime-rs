@@ -7,7 +7,13 @@ inputs:
 runs:
   using: "composite"
   steps:
-    - uses: actions/checkout@v1
+    - name: Extract branch name
+      shell: bash
+      run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
+      id: extract_branch
+    - name: update git
+      run: git pull
+      shell: bash
     - uses: actions-rs/toolchain@v1
       with:
         toolchain: stable
@@ -25,3 +31,4 @@ runs:
       uses: stefanzweifel/git-auto-commit-action@v4
       with:
         commit_message: Automated generate bindings for ${{ inputs.build_target }}
+        branch: ${{ steps.extract_branch.outputs.branch }}
