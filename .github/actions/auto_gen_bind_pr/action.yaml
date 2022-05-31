@@ -7,6 +7,13 @@ inputs:
 runs:
   using: "composite"
   steps:
+    - uses: actions/checkout@v1
+    - uses: actions-rs/toolchain@v1
+      with:
+        toolchain: stable
+    - name: install build_target
+      run: rustup target add ${{ inputs.build_target }}
+      shell: bash
     - name: gen bind
       run: cargo build --target ${{ inputs.build_target }} --features generate-bindings
       shell: bash
@@ -18,14 +25,6 @@ runs:
       shell: bash
     - name: new_branch
       if: success()
-      run: |
-        target_branch=$(git rev-parse --abbrev-ref HEAD)
-        git checkout -b "${target_branch}/auto_bindings_${{ inputs.build_target }}"
-        echo "::set-output name=target_branch::$target_branch"
-      shell: bash
-    - name: commit
-      run: git commit -m "auto generated bindings for ${{ inputs.build_target }}"
-      shell: bash
-    - name: create PR
-      run: gh pr create -B ${{ steps.new_branch.outputs.base_branch }} -t "auto generated bindings ${{ inputs.build_target }}" -b ""
-      shell: bash
+      uses: stefanzweifel/git-auto-commit-action@v4
+      with:
+        commit_message: Automated generate bindings for ${{ inputs.build_target }}
