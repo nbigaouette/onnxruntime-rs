@@ -17,9 +17,6 @@ runs:
     - name: gen bind
       run: cargo build --target ${{ inputs.build_target }} --features generate-bindings
       shell: bash
-    - name: git add
-      run: git add --all
-      shell: bash
     - name: check
       run: git status -s | grep -E "M|A"
       shell: bash
