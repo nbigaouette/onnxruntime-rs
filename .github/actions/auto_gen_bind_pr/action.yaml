@@ -1,0 +1,31 @@
+name: "auto_gen_bind_pr"
+description: "bindコードを生成するためのCIアクションをしてPRを送る"
+inputs:
+  build_target:
+    description: "cargo build target"
+    required: true
+runs:
+  using: "composite"
+  steps:
+    - name: gen bind
+      run: cargo build --target ${{ inputs.build_target }} --features generate-bindings
+      shell: bash
+    - name: git add
+      run: git add --all
+      shell: bash
+    - name: check
+      run: git status -s | grep -E "M|A"
+      shell: bash
+    - name: new_branch
+      if: success()
+      run: |
+        target_branch=$(git rev-parse --abbrev-ref HEAD)
+        git checkout -b "${target_branch}/auto_bindings_${{ inputs.build_target }}"
+        echo "::set-output name=target_branch::$target_branch"
+      shell: bash
+    - name: commit
+      run: git commit -m "auto generated bindings for ${{ inputs.build_target }}"
+      shell: bash
+    - name: create PR
+      run: gh pr create -B ${{ steps.new_branch.outputs.base_branch }} -t "auto generated bindings ${{ inputs.build_target }}" -b ""
+      shell: bash
