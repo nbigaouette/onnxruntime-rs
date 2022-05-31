@@ -4,36 +4,18 @@ on:
     paths:
       - "onnxruntime-sys/build.rs"
 jobs:
-  generate_bind:
-    strategy:
-      fail-fast: false
-      matrix:
-        gen_target:
-          - os: ubuntu-latest
-            build_target: x86_64-unknown-linux-gnu
-          - os: windows-latest
-            build_target: x86_64-pc-windows-msvc
-          - os: windows-latest
-            build_target: i686-pc-windows-msvc
-          - os: macos-latest
-            build_target: x86_64-apple-darwin
-
-    runs-on: ${{ matrix.gen_target.os }}
-    steps:
-      - uses: actions/checkout@v1
-      - uses: ./.github/actions/auto_gen_bind_pr
-        with:
-          build_target: ${{ matrix.gen_target.build_target }}
   generate_bind_linux:
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v1
       - uses: ./.github/actions/auto_gen_bind_pr
         with:
           build_target: x86_64-unknown-linux-gnu
   generate_bind_windows:
     runs-on: windows-latest
-    needs: generate_bind_x86_64_linux
+    needs: generate_bind_linux
     steps:
+      - uses: actions/checkout@v1
       - name: x86_64_windows
         uses: ./.github/actions/auto_gen_bind_pr
         with:
@@ -46,6 +28,7 @@ jobs:
     runs-on: macos-latest
     needs: generate_bind_windows
     steps:
+      - uses: actions/checkout@v1
       - uses: ./.github/actions/auto_gen_bind_pr
         with:
           build_target: x86_64-apple-darwin
