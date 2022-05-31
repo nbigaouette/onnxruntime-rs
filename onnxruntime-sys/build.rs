@@ -13,7 +13,7 @@ use std::{
 /// WARNING: If version is changed, bindings for all platforms will have to be re-generated.
 ///          To do so, run this:
 ///              cargo build --package onnxruntime-sys --features generate-bindings
-const ORT_VERSION: &str = "1.8.1";
+const ORT_VERSION: &str = "1.11.1";
 
 /// Base Url from which to download pre-built releases/
 const ORT_RELEASE_BASE_URL: &str = "https://github.com/microsoft/onnxruntime/releases/download";
@@ -383,7 +383,7 @@ fn prepare_libort_dir_prebuilt() -> PathBuf {
     let (prebuilt_archive, prebuilt_url) = prebuilt_archive_url();
 
     let out_dir = PathBuf::from(env::var("OUT_DIR").unwrap());
-    let extract_dir = out_dir.join(ORT_PREBUILT_EXTRACT_DIR);
+    let extract_dir = out_dir.join(&format!("{}_{}", ORT_PREBUILT_EXTRACT_DIR, ORT_VERSION));
     let downloaded_file = out_dir.join(&prebuilt_archive);
 
     println!("cargo:rerun-if-changed={}", downloaded_file.display());
