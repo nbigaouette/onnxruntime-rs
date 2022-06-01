@@ -14,7 +14,7 @@ jobs:
           ref: ${{ github.head_ref }}
       - uses: ./.github/actions/auto_gen_bind_pr
         with:
-          build_target: x86_64-unknown-linux-gnu
+          triple: x86_64-unknown-linux-gnu
   generate_bind_x86_64_windows:
     runs-on: windows-latest
     steps:
@@ -24,7 +24,7 @@ jobs:
       - name: x86_64_windows
         uses: ./.github/actions/auto_gen_bind_pr
         with:
-          build_target: x86_64-pc-windows-msvc
+          triple: x86_64-pc-windows-msvc
   generate_bind_x86_windows:
     runs-on: windows-latest
     steps:
@@ -34,7 +34,7 @@ jobs:
       - name: x86_windows
         uses: ./.github/actions/auto_gen_bind_pr
         with:
-          build_target: i686-pc-windows-msvc
+          triple: i686-pc-windows-msvc
   generate_bind_x86_64_mac:
     runs-on: macos-latest
     steps:
@@ -43,4 +43,13 @@ jobs:
           ref: ${{ github.head_ref }}
       - uses: ./.github/actions/auto_gen_bind_pr
         with:
-          build_target: x86_64-apple-darwin
+          triple: x86_64-apple-darwin
+  generate_bind_arm64_mac:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          ref: ${{ github.head_ref }}
+      - uses: ./.github/actions/auto_gen_bind_pr
+        with:
+          triple: aarch64-apple-darwin

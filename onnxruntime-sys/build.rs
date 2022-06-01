@@ -228,7 +228,7 @@ impl OnnxPrebuiltArchive for Architecture {
             Architecture::X86 => Cow::from("x86"),
             Architecture::X86_64 => Cow::from("x86_64"),
             Architecture::Arm => Cow::from("arm"),
-            Architecture::Arm64 => Cow::from("arm64"),
+            Architecture::Arm64 => Cow::from("aarch64"),
         }
     }
 }
@@ -328,6 +328,9 @@ impl OnnxPrebuiltArchive for Triplet {
                 self.os.as_onnx_str(),
                 self.arch.as_onnx_str()
             )),
+            (Os::MacOs, Architecture::Arm64, Accelerator::None) => {
+                Cow::from(format!("{}-{}", self.os.as_onnx_str(), "arm64"))
+            }
             // onnxruntime-win-gpu-x64-1.8.1.zip
             // Note how this one is inverted from the linux one next
             (Os::Windows, Architecture::X86_64, Accelerator::Gpu) => Cow::from(format!(
