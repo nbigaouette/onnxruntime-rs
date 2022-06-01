@@ -30,9 +30,13 @@ runs:
     - name: check
       run: git status -s | grep -E "M|A"
       shell: bash
-    - name: new_branch
+    - name: create_pr
       if: success()
-      uses: stefanzweifel/git-auto-commit-action@v4
+      uses: peter-evans/create-pull-request@v4
       with:
-        commit_message: Automated generate bindings for ${{ inputs.build_target }}
+        commit-message: Automated generate bindings for ${{ inputs.build_target }}
         branch: ${{ steps.extract_branch.outputs.branch }}
+        delete-branch: true
+        title: Automated generate bindings for ${{ inputs.build_target }}
+        body: |
+          Automated generate bindings for ${{ inputs.build_target }}
