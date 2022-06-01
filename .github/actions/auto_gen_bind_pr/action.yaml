@@ -20,6 +20,10 @@ runs:
     - name: install build_target
       run: rustup target add ${{ inputs.build_target }}
       shell: bash
+    - uses: Swatinem/rust-cache@v1
+      with:
+        # cargoのキャシュが原因でテストが失敗してることが考えられる場合はバージョン部分を変更する
+        key: "v1-cargo-test-cache-${{ inputs.build_target }}"
     - name: gen bind
       run: cargo build --target ${{ inputs.build_target }} --features generate-bindings
       shell: bash
