@@ -6,7 +6,6 @@ env:
   CARGO_TERM_COLOR: always
   RUST_LOG: onnxruntime=debug,onnxruntime-sys=debug
   RUST_BACKTRACE: 1
-  CARGO_CACHE_VERSION: 1 # cacheが原因でなにかおかしいと感じたらこのバージョンを変更する
 
 jobs:
   fmt:
@@ -121,7 +120,8 @@ jobs:
           toolchain: stable
       - uses: Swatinem/rust-cache@v1
         with:
-          key: "cargo-test-cache-${{ matrix.os }}-${{ env.CARGO_CACHE_VERSION }}"
+          # cargoのキャシュが原因でテストが失敗してることが考えられる場合はバージョン部分を変更する
+          key: "v1-cargo-test-cache-${{ matrix.os }}"
       - run: cargo test
 
   clippy:
