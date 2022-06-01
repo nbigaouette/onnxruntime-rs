@@ -11,9 +11,6 @@ runs:
       shell: bash
       run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
       id: extract_branch
-    - name: update git
-      run: git pull
-      shell: bash
     - uses: actions-rs/toolchain@v1
       with:
         toolchain: stable
@@ -32,10 +29,11 @@ runs:
       shell: bash
     - name: create_pr
       if: success()
+      id: cpr
       uses: peter-evans/create-pull-request@v4
       with:
         commit-message: Automated generate bindings for ${{ inputs.build_target }}
-        branch: ${{ steps.extract_branch.outputs.branch }}
+        branch: ${{ steps.extract_branch.outputs.branch }}_auto_gen_bindings_${{ inputs.build_target }}
         delete-branch: true
         title: Automated generate bindings for ${{ inputs.build_target }}
         body: |

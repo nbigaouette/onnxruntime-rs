@@ -3,6 +3,8 @@ on:
   push:
     paths:
       - "onnxruntime-sys/build.rs"
+      - ".github/workflows/gen_bind.yaml"
+      - ".github/actions/auto_gen_bind_pr/action.yaml"
 jobs:
   generate_bind_x86_64_linux:
     runs-on: ubuntu-latest
