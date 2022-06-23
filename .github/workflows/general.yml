@@ -38,6 +38,7 @@ jobs:
       - run: rustup target install x86_64-apple-darwin
       - run: rustup target install i686-pc-windows-msvc
       - run: rustup target install x86_64-pc-windows-msvc
+      - run: rustup target install aarch64-apple-darwin
       # ******************************************************************
       - name: Download prebuilt archive (CPU, x86_64-unknown-linux-gnu)
         uses: actions-rs/cargo@v1
@@ -90,6 +91,14 @@ jobs:
           args: --target x86_64-pc-windows-msvc
       - name: Verify prebuilt archive downloaded (GPU, x86_64-pc-windows-msvc)
         run: ls -lh target/x86_64-pc-windows-msvc/debug/build/onnxruntime-sys-*/out/onnxruntime-win-x64-gpu-1.*.zip
+      # ******************************************************************
+      - name: Download prebuilt archive (CPU, aarch64-apple-darwin)
+        uses: actions-rs/cargo@v1
+        with:
+          command: build
+          args: --target aarch64-apple-darwin
+      - name: Verify prebuilt archive downloaded (CPU, aarch64-apple-darwin)
+        run: ls -lh target/aarch64-apple-darwin/debug/build/onnxruntime-sys-*/out/onnxruntime-osx-arm64-1.*.tgz
 
   test:
     name: Test Suite
