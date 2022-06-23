@@ -13,7 +13,7 @@ mod download {
 
     use image::{imageops::FilterType, ImageBuffer, Luma, Pixel, Rgb};
     use ndarray::s;
-    use test_env_log::test;
+    use test_log::test;
 
     use onnxruntime::{
         download::vision::{DomainBasedImageClassification, ImageClassification},
