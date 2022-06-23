@@ -23,6 +23,7 @@ use crate::{
 /// `OrtOwnedTensor` implements the [`std::deref::Deref`](#impl-Deref) trait for ergonomic access to
 /// the underlying [`ndarray::ArrayView`](https://docs.rs/ndarray/latest/ndarray/type.ArrayView.html).
 #[derive(Debug)]
+#[allow(dead_code)] // This is to appease clippy as `memory_info` is not read.
 pub struct OrtOwnedTensor<'t, 'm, T, D>
 where
     T: TypeToTensorElementDataType + Debug + Clone,

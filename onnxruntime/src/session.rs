@@ -295,6 +295,7 @@ impl<'a> SessionBuilder<'a> {
 
 /// Type storing the session information, built from an [`Environment`](environment/struct.Environment.html)
 #[derive(Debug)]
+#[allow(dead_code)] // This is to fix a Clippy warning of `env` not being read.
 pub struct Session<'a> {
     env: &'a Environment,
     session_ptr: *mut sys::OrtSession,

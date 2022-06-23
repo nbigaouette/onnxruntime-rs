@@ -23,6 +23,7 @@ use crate::{
 /// **NOTE**: The type is not meant to be used directly, use an [`ndarray::Array`](https://docs.rs/ndarray/latest/ndarray/type.Array.html)
 /// instead.
 #[derive(Debug)]
+#[allow(dead_code)] // This is required to appease clipply as `memory_info` is not read from.
 pub struct OrtTensor<'t, T, D>
 where
     T: TypeToTensorElementDataType + Debug + Clone,
