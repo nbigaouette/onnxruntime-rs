@@ -9,7 +9,7 @@
 //!
 //! > ONNX Runtime is a cross-platform, high performance ML inferencing and training accelerator.
 //!
-//! The (highly) unsafe [C API](https://github.com/microsoft/onnxruntime/blob/master/include/onnxruntime/core/session/onnxruntime_c_api.h)
+//! The (highly) unsafe [C API](https://github.com/microsoft/onnxruntime/blob/main/include/onnxruntime/core/session/onnxruntime_c_api.h)
 //! is wrapped using bindgen as [`onnxruntime-sys`](https://crates.io/crates/onnxruntime-sys).
 //!
 //! The unsafe bindings are wrapped in this crate to expose a safe API.
@@ -21,7 +21,7 @@
 //! The C++ example that uses the C API
 //! ([`C_Api_Sample.cpp`](https://github.com/microsoft/onnxruntime/blob/v1.3.1/csharp/test/Microsoft.ML.OnnxRuntime.EndToEndTests.Capi/C_Api_Sample.cpp))
 //! was ported to
-//! [`onnxruntime`](https://github.com/nbigaouette/onnxruntime-rs/blob/master/onnxruntime/examples/sample.rs).
+//! [`onnxruntime`](https://github.com/nbigaouette/onnxruntime-rs/blob/main/onnxruntime/examples/sample.rs).
 //!
 //! First, an environment must be created using and [`EnvBuilder`](environment/struct.EnvBuilder.html):
 //!
@@ -112,7 +112,7 @@ to download.
 //! The outputs are of type [`OrtOwnedTensor`](tensor/ort_owned_tensor/struct.OrtOwnedTensor.html)s inside a vector,
 //! with the same length as the inputs.
 //!
-//! See the [`sample.rs`](https://github.com/nbigaouette/onnxruntime-rs/blob/master/onnxruntime/examples/sample.rs)
+//! See the [`sample.rs`](https://github.com/nbigaouette/onnxruntime-rs/blob/main/onnxruntime/examples/sample.rs)
 //! example for more details.
 
 use std::sync::{atomic::AtomicPtr, Arc, Mutex};
@@ -316,7 +316,7 @@ impl From<LoggingLevel> for sys::OrtLoggingLevel {
 
 /// Optimization level performed by ONNX Runtime of the loaded graph
 ///
-/// See the [official documentation](https://github.com/microsoft/onnxruntime/blob/master/docs/ONNX_Runtime_Graph_Optimizations.md)
+/// See the [official documentation](https://github.com/microsoft/onnxruntime/blob/main/docs/ONNX_Runtime_Graph_Optimizations.md)
 /// for more information on the different optimization levels.
 #[derive(Debug)]
 #[cfg_attr(not(windows), repr(u32))]

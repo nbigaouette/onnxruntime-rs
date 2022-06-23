@@ -55,10 +55,10 @@ fn main() {
     //*************************************************************************
     // create session and load model into memory
     // NOTE: Original C version loaded SqueezeNet 1.0 (ONNX version: 1.3, Opset version: 8,
-    //       https://github.com/onnx/models/blob/master/vision/classification/squeezenet/model/squeezenet1.0-8.onnx)
+    //       https://github.com/onnx/models/blob/main/vision/classification/squeezenet/model/squeezenet1.0-8.onnx)
     //       Download it:
-    //           curl -LO "https://github.com/onnx/models/raw/master/vision/classification/squeezenet/model/squeezenet1.0-8.onnx"
-    //       Reference: https://github.com/onnx/models/tree/master/vision/classification/squeezenet#model
+    //           curl -LO "https://github.com/onnx/models/raw/main/vision/classification/squeezenet/model/squeezenet1.0-8.onnx"
+    //       Reference: https://github.com/onnx/models/tree/main/vision/classification/squeezenet#model
     let model_path = std::ffi::OsString::from("squeezenet1.0-8.onnx");
 
     #[cfg(target_family = "windows")]
