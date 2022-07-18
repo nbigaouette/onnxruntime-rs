@@ -1,4 +1,4 @@
-//! Module controlling models downloadable from ONNX Model Zoom
+//! Module controlling models downloadable from ONNX Model Zoo
 //!
 //! Pre-trained models are available from the
 //! [ONNX Model Zoo](https://github.com/onnx/models).
