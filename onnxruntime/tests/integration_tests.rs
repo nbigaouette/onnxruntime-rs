@@ -13,7 +13,7 @@ mod download {
 
     use image::{imageops::FilterType, ImageBuffer, Luma, Pixel, Rgb};
     use ndarray::s;
-    use test_env_log::test;
+    use test_log::test;
 
     use onnxruntime::{
         download::vision::{DomainBasedImageClassification, ImageClassification},
@@ -72,7 +72,7 @@ mod download {
         // # x==0 --> left
         // # y==0 --> top
 
-        // See https://github.com/onnx/models/blob/master/vision/classification/imagenet_inference.ipynb
+        // See https://github.com/onnx/models/blob/main/vision/classification/imagenet_inference.ipynb
         // for pre-processing image.
         // WARNING: Note order of declaration of arguments: (_,c,j,i)
         let mut array = ndarray::Array::from_shape_fn((1, 3, 224, 224), |(_, c, j, i)| {

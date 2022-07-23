@@ -23,6 +23,7 @@ use crate::{
 /// **NOTE**: The type is not meant to be used directly, use an [`ndarray::Array`](https://docs.rs/ndarray/latest/ndarray/type.Array.html)
 /// instead.
 #[derive(Debug)]
+#[allow(dead_code)] // This is required to appease clipply as `memory_info` is not read from.
 pub struct OrtTensor<'t, T, D>
 where
     T: TypeToTensorElementDataType + Debug + Clone,
@@ -198,7 +199,7 @@ mod tests {
     use crate::{AllocatorType, MemType};
     use ndarray::{arr0, arr1, arr2, arr3};
     use std::ptr;
-    use test_env_log::test;
+    use test_log::test;
 
     #[test]
     fn orttensor_from_array_0d_i32() {
