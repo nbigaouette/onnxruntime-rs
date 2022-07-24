@@ -154,6 +154,8 @@ use sys::OnnxEnumInt;
 
 // Re-export ndarray as it's part of the public API anyway
 pub use ndarray;
+use ndarray::Array;
+use crate::tensor::OrtTensor;
 
 lazy_static! {
     // static ref G_ORT: Arc<Mutex<AtomicPtr<sys::OrtApi>>> =
@@ -458,6 +460,34 @@ impl_type_trait!(u64, Uint64);
 // impl_type_trait!(, Complex64);
 // impl_type_trait!(, Complex128);
 // impl_type_trait!(, Bfloat16);
+
+#[derive(Debug)]
+pub enum TypedArray<D: ndarray::Dimension> {
+    F32(Array<f32, D>),
+    U8(Array<u8, D>),
+    I8(Array<i8, D>),
+    U16(Array<u16, D>),
+    I16(Array<i16, D>),
+    I32(Array<i32, D>),
+    I64(Array<i64, D>),
+    F64(Array<f64, D>),
+    U32(Array<u32, D>),
+    U64(Array<u64, D>),
+}
+
+#[derive(Debug)]
+pub enum TypedOrtTensor<'t, D: ndarray::Dimension> {
+    F32(OrtTensor<'t, f32, D>),
+    U8(OrtTensor<'t, u8, D>),
+    I8(OrtTensor<'t, i8, D>),
+    U16(OrtTensor<'t, u16, D>),
+    I16(OrtTensor<'t, i16, D>),
+    I32(OrtTensor<'t, i32, D>),
+    I64(OrtTensor<'t, i64, D>),
+    F64(OrtTensor<'t, f64, D>),
+    U32(OrtTensor<'t, u32, D>),
+    U64(OrtTensor<'t, u64, D>),
+}
 
 /// Adapter for common Rust string types to Onnx strings.
 ///
