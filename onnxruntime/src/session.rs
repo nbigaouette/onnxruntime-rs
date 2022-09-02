@@ -1,6 +1,6 @@
 //! Module containing session types
 
-use std::{ffi::CString, fmt::Debug, path::Path};
+use std::{ffi::CString, fmt::Debug, marker::PhantomData, path::Path};
 
 #[cfg(not(target_family = "windows"))]
 use std::os::unix::ffi::OsStrExt;
@@ -227,7 +227,7 @@ impl<'a> SessionBuilder<'a> {
             .collect::<Result<Vec<Output>>>()?;
 
         Ok(Session {
-            env: self.env,
+            env: PhantomData,
             session_ptr,
             allocator_ptr,
             memory_info,
@@ -283,7 +283,7 @@ impl<'a> SessionBuilder<'a> {
             .collect::<Result<Vec<Output>>>()?;
 
         Ok(Session {
-            env: self.env,
+            env: PhantomData,
             session_ptr,
             allocator_ptr,
             memory_info,
@@ -296,7 +296,7 @@ impl<'a> SessionBuilder<'a> {
 /// Type storing the session information, built from an [`Environment`](environment/struct.Environment.html)
 #[derive(Debug)]
 pub struct Session<'a> {
-    env: &'a Environment,
+    env: PhantomData<&'a Environment>,
     session_ptr: *mut sys::OrtSession,
     allocator_ptr: *mut sys::OrtAllocator,
     memory_info: MemoryInfo,

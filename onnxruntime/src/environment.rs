@@ -243,7 +243,7 @@ impl EnvBuilder {
 mod tests {
     use super::*;
     use std::sync::{RwLock, RwLockWriteGuard};
-    use test_env_log::test;
+    use test_log::test;
 
     impl G_ENV {
         fn is_initialized(&self) -> bool {
@@ -328,28 +328,25 @@ mod tests {
         let main_env = Environment::new(initial_name.clone(), LoggingLevel::Warning).unwrap();
         let main_env_ptr = main_env.env_ptr() as usize;
 
-        let children: Vec<_> = (0..10)
-            .map(|t| {
-                let initial_name_cloned = initial_name.clone();
-                std::thread::spawn(move || {
-                    let name = format!("concurrent_environment_creation: {}", t);
-                    let env = Environment::builder()
-                        .with_name(name)
-                        .with_log_level(LoggingLevel::Warning)
-                        .build()
-                        .unwrap();
+        let children = (0..10).map(|t| {
+            let initial_name_cloned = initial_name.clone();
+            std::thread::spawn(move || {
+                let name = format!("concurrent_environment_creation: {}", t);
+                let env = Environment::builder()
+                    .with_name(name)
+                    .with_log_level(LoggingLevel::Warning)
+                    .build()
+                    .unwrap();
 
-                    assert_eq!(env.name(), initial_name_cloned);
-                    assert_eq!(env.env_ptr() as usize, main_env_ptr);
-                })
+                assert_eq!(env.name(), initial_name_cloned);
+                assert_eq!(env.env_ptr() as usize, main_env_ptr);
             })
-            .collect();
+        });
 
         assert_eq!(main_env.name(), initial_name);
         assert_eq!(main_env.env_ptr() as usize, main_env_ptr);
 
-        let res: Vec<std::thread::Result<_>> =
-            children.into_iter().map(|child| child.join()).collect();
-        assert!(res.into_iter().all(|r| std::result::Result::is_ok(&r)));
+        let mut res = children.map(|child| child.join());
+        assert!(res.all(|r| std::result::Result::is_ok(&r)));
     }
 }

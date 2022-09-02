@@ -278,19 +278,16 @@ fn main() {
 
     // score model & input tensor, get back output tensor
 
-    let input_node_names_cstring: Vec<std::ffi::CString> = input_node_names
+    let input_node_names_ptr: Vec<*const i8> = input_node_names
         .into_iter()
         .map(|n| std::ffi::CString::new(n).unwrap())
-        .collect();
-    let input_node_names_ptr: Vec<*const i8> = input_node_names_cstring
-        .into_iter()
         .map(|n| n.into_raw() as *const i8)
         .collect();
     let input_node_names_ptr_ptr: *const *const i8 = input_node_names_ptr.as_ptr();
 
     let output_node_names_cstring: Vec<std::ffi::CString> = output_node_names
-        .into_iter()
-        .map(|n| std::ffi::CString::new(n.clone()).unwrap())
+        .iter()
+        .map(|n| std::ffi::CString::new(n.to_owned()).unwrap())
         .collect();
     let output_node_names_ptr: Vec<*const i8> = output_node_names_cstring
         .iter()
@@ -341,8 +338,8 @@ fn main() {
     // NOTE: The C ONNX Runtime allocated the array, we shouldn't drop the vec
     //       but let C de-allocate instead.
     let floatarr_vec: Vec<f32> = unsafe { Vec::from_raw_parts(floatarr, 5, 5) };
-    for i in 0..5 {
-        println!("Score for class [{}] =  {}", i, floatarr_vec[i]);
+    for (i, class) in floatarr_vec.iter().enumerate() {
+        println!("Score for class [{}] =  {}", i, class);
     }
     std::mem::forget(floatarr_vec);
 
@@ -363,7 +360,7 @@ fn main() {
 }
 
 fn CheckStatus(g_ort: *const OrtApi, status: *const OrtStatus) -> Result<(), String> {
-    if status != std::ptr::null() {
+    if status.is_null() {
         let raw = unsafe { g_ort.as_ref().unwrap().GetErrorMessage.unwrap()(status) };
         Err(char_p_to_str(raw).unwrap().to_string())
     } else {

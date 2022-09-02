@@ -1,6 +1,6 @@
 //! Module containing tensor with memory owned by Rust
 
-use std::{ffi, fmt::Debug, ops::Deref};
+use std::{ffi, fmt::Debug, marker::PhantomData, ops::Deref};
 
 use ndarray::Array;
 use tracing::{debug, error};
@@ -30,7 +30,7 @@ where
 {
     pub(crate) c_ptr: *mut sys::OrtValue,
     array: Array<T, D>,
-    memory_info: &'t MemoryInfo,
+    memory_info: PhantomData<&'t MemoryInfo>,
 }
 
 impl<'t, T, D> OrtTensor<'t, T, D>
@@ -141,7 +141,7 @@ where
         Ok(OrtTensor {
             c_ptr: tensor_ptr,
             array,
-            memory_info,
+            memory_info: PhantomData,
         })
     }
 }
@@ -198,7 +198,7 @@ mod tests {
     use crate::{AllocatorType, MemType};
     use ndarray::{arr0, arr1, arr2, arr3};
     use std::ptr;
-    use test_env_log::test;
+    use test_log::test;
 
     #[test]
     fn orttensor_from_array_0d_i32() {

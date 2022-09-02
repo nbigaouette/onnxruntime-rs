@@ -1,6 +1,6 @@
 //! Module containing tensor with memory owned by the ONNX Runtime
 
-use std::{fmt::Debug, ops::Deref};
+use std::{fmt::Debug, marker::PhantomData, ops::Deref};
 
 use ndarray::{Array, ArrayView};
 use tracing::debug;
@@ -31,7 +31,7 @@ where
 {
     pub(crate) tensor_ptr: *mut sys::OrtValue,
     array_view: ArrayView<'t, T, D>,
-    memory_info: &'m MemoryInfo,
+    memory_info: PhantomData<&'m MemoryInfo>,
 }
 
 impl<'t, 'm, T, D> Deref for OrtOwnedTensor<'t, 'm, T, D>
@@ -67,7 +67,7 @@ where
     D: ndarray::Dimension,
 {
     pub(crate) tensor_ptr: *mut sys::OrtValue,
-    memory_info: &'m MemoryInfo,
+    memory_info: PhantomData<&'m MemoryInfo>,
     shape: D,
 }
 
@@ -75,10 +75,10 @@ impl<'m, D> OrtOwnedTensorExtractor<'m, D>
 where
     D: ndarray::Dimension,
 {
-    pub(crate) fn new(memory_info: &'m MemoryInfo, shape: D) -> OrtOwnedTensorExtractor<'m, D> {
+    pub(crate) fn new(_memory_info: &'m MemoryInfo, shape: D) -> OrtOwnedTensorExtractor<'m, D> {
         OrtOwnedTensorExtractor {
             tensor_ptr: std::ptr::null_mut(),
-            memory_info,
+            memory_info: PhantomData,
             shape,
         }
     }
@@ -115,7 +115,7 @@ where
         Ok(OrtOwnedTensor {
             tensor_ptr: self.tensor_ptr,
             array_view,
-            memory_info: self.memory_info,
+            memory_info: PhantomData,
         })
     }
 }

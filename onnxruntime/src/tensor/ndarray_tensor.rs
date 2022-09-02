@@ -57,7 +57,7 @@ where
 mod tests {
     use super::*;
     use ndarray::{arr1, arr2, arr3};
-    use test_env_log::test;
+    use test_log::test;
 
     #[test]
     fn softmax_1d() {
