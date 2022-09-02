@@ -355,6 +355,7 @@ impl Output {
 }
 
 unsafe impl<'a> Send for Session<'a> {}
+unsafe impl<'a> Sync for Session<'a> {}
 
 impl<'a> Drop for Session<'a> {
     #[tracing::instrument]
