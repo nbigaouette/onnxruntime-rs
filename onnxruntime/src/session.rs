@@ -115,6 +115,22 @@ impl<'a> SessionBuilder<'a> {
         Ok(self)
     }
 
+    /// Call an EP loading function of the form `Fn(*mut OrtSessionOptions) -> OrtStatusPtr`
+    ///
+    /// This function may do anything with the provided `OrtSessionOptions` points, but the
+    /// intended application is loading additional Execution Providers (EPs) as part of
+    /// `Session` initialization.
+    pub fn with_ep_loader<F>(self, init: F) -> Result<SessionBuilder<'a>>
+    where
+        F: Fn(*mut sys::OrtSessionOptions) -> sys::OrtStatusPtr,
+    {
+        let status = init(self.session_options_ptr);
+        status_to_result(status).map_err(OrtError::Session)?;
+        assert_null_pointer(status, "SessionStatus")?;
+
+        Ok(self)
+    }
+
     /// Set the session's optimization level
     pub fn with_optimization_level(
         self,
