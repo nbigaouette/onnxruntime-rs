@@ -21,7 +21,7 @@ bindgen = { version = "0.59", optional = true }
 ureq = "2.1"
 
 # Used on Windows
-zip = "0.5"
+zip = "0.6"
 
 # Used on unix
 flate2 = "1.0"
