@@ -42,3 +42,4 @@ cuda = []
 # Disable the build.rs on https://docs.rs since it can cause
 # issue there and it's not needed.
 features = ["disable-sys-build-script"]
+

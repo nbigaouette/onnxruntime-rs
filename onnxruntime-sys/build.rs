@@ -2,8 +2,7 @@
 
 use std::env::VarError;
 use std::{
-    fs,
-    env,
+    env, fs,
     path::{Path, PathBuf},
 };
 
@@ -45,7 +44,11 @@ fn main() {
 
     // Get the path to the deps directory where the DLLs should be copied to.
     let out_dir = env::var_os("OUT_DIR").unwrap();
-    let deps_dir = Path::new(&out_dir).join("..").join("..").join("..").join("deps");
+    let deps_dir = Path::new(&out_dir)
+        .join("..")
+        .join("..")
+        .join("..")
+        .join("deps");
 
     // Create the deps directory if it doesn't exist.
     if !deps_dir.exists() {
