@@ -155,7 +155,6 @@ impl<'a> SessionBuilder<'a> {
 
     /// Set the session to use tensorrt
     #[cfg(feature = "tensorrt")]
-    #[allow(clippy::dup)]
     pub fn use_tensorrt(self, device_id: i32) -> Result<SessionBuilder<'a>> {
         unsafe {
             sys::OrtSessionOptionsAppendExecutionProvider_Tensorrt(
