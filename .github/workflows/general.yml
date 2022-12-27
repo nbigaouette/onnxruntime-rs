@@ -106,7 +106,7 @@ jobs:
           toolchain: stable
           override: true
       - name: Copy onnxruntime.lib to /usr/lib/
-        run: sudo cp -r onnxruntime-sys/lib/* /usr/lib/ && sudo cp -r onnxruntime-sys/lib/* /usr/lib/ld/
+        run: sudo cp -r onnxruntime-sys/lib/* /usr/lib/
       - name: Run cargo-tarpaulin
         uses: actions-rs/tarpaulin@v0.1
         with:
