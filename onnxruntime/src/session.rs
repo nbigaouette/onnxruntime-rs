@@ -135,7 +135,7 @@ impl<'a> SessionBuilder<'a> {
         Ok(self)
     }
 
-    /// Set the session to use cuda
+    /// Set the session to use cuda if feature cuda and not tensorrt
     #[cfg(feature = "cuda")]
     pub fn use_cuda(self, device_id: i32) -> Result<SessionBuilder<'a>> {
         unsafe {
@@ -153,11 +153,15 @@ impl<'a> SessionBuilder<'a> {
         Ok(self)
     }
 
-    /// Set the session to use cuda
+    /// Set the session to use tensorrt
     #[cfg(feature = "tensorrt")]
-    pub fn use_cuda(self, device_id: i32) -> Result<SessionBuilder<'a>> {
+    #[allow(clippy::dup)]
+    pub fn use_tensorrt(self, device_id: i32) -> Result<SessionBuilder<'a>> {
         unsafe {
-            sys::OrtSessionOptionsAppendExecutionProvider_Tensorrt(self.session_options_ptr, device_id);
+            sys::OrtSessionOptionsAppendExecutionProvider_Tensorrt(
+                self.session_options_ptr,
+                device_id,
+            );
         }
         Ok(self)
     }

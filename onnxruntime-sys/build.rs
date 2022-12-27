@@ -1,5 +1,6 @@
 #![allow(dead_code)]
 
+use std::env::VarError;
 use std::{
     borrow::Cow,
     env, fs,
@@ -7,7 +8,6 @@ use std::{
     path::{Path, PathBuf},
     str::FromStr,
 };
-use std::env::VarError;
 
 /// ONNX Runtime version
 ///
@@ -41,13 +41,12 @@ fn main() {
 
 #[cfg(not(feature = "disable-sys-build-script"))]
 fn main() {
-
     let dir = env::var("CARGO_MANIFEST_DIR").unwrap();
     let include_dir = Path::new(&dir).join("include");
     let lib_dir = Path::new(&dir).join("lib");
 
-    println!("Include directory: {:?}", include_dir);
-    println!("cargo:warning=Lib directory: {:?}", lib_dir);
+    println!("Include directory: {:?}", include_dir.display());
+    println!("cargo:warning=Lib directory: {:?}", lib_dir.display());
 
     // Tell cargo to tell rustc to link onnxruntime shared library.
     println!("cargo:rustc-link-lib=onnxruntime");
