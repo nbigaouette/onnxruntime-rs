@@ -1,8 +1,7 @@
 #![allow(dead_code)]
 
-use std::env::VarError;
 use std::{
-    env, fs,
+    env,
     path::{Path, PathBuf},
 };
 
