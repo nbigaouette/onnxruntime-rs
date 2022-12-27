@@ -19,7 +19,7 @@ name = "integration_tests"
 required-features = ["model-fetching"]
 
 [dependencies]
-onnxruntime-sys = { version = "0.0.14", path = "../onnxruntime-sys" }
+onnxruntime-sys = { git = "https://github.com/npc-engine/onnxruntime-rs.git", branch = "feature/multiple-provider-features"}
 
 lazy_static = "1.4"
 ndarray = "0.15"
