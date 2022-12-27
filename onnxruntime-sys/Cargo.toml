@@ -1,17 +1,21 @@
+[lib]
+
+include = ["src/**/*", "lib/*", "Cargo.toml", "build.rs"]
+
 [package]
-authors = ["Nicolas Bigaouette <nbigaouette@elementai.com>"]
+authors = ["Nicolas Bigaouette <nbigaouette@elementai.com>", "Mykyta Makarov <evil.unicorn1@gmail.com>"]
 edition = "2018"
-name = "onnxruntime-sys"
+name = "npc-engine-onnxruntime-sys"
 version = "0.0.14"
 build = "build.rs"
-include = ["/src/*", "/lib/*", "/Cargo.toml", "/build.rs"]
+links = "onnxruntime"
 
-description = "Unsafe wrapper around Microsoft's ONNX Runtime"
+description = "A fork of unsafe wrapper around Microsoft's ONNX Runtime by Nicolas Bigaouette <nbigaouette@elementai.com>."
 documentation = "https://docs.rs/onnxruntime-sys"
-homepage = "https://github.com/nbigaouette/onnxruntime-rs"
+homepage = "https://github.com/npc-engine/onnxruntime-rs"
 license = "MIT OR Apache-2.0"
 readme = "../README.md"
-repository = "https://github.com/nbigaouette/onnxruntime-rs"
+repository = "https://github.com/npc-engine/onnxruntime-rs"
 
 categories = ["science"]
 keywords = ["neuralnetworks", "onnx", "bindings"]
