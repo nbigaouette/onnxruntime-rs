@@ -5,7 +5,7 @@ include = ["src/**/*", "lib/*", "Cargo.toml", "build.rs"]
 [package]
 authors = ["Nicolas Bigaouette <nbigaouette@elementai.com>", "Mykyta Makarov <evil.unicorn1@gmail.com>"]
 edition = "2018"
-name = "npc-engine-onnxruntime-sys"
+name = "onnxruntime-sys"
 version = "0.0.14"
 build = "build.rs"
 links = "onnxruntime"
