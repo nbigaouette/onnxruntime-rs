@@ -1,6 +1,7 @@
 #![allow(dead_code)]
 
 use std::{
+    fs,
     env,
     path::{Path, PathBuf},
 };
