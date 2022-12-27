@@ -32,7 +32,7 @@ ureq = { version = "2.1", optional = true }
 [dev-dependencies]
 image = "0.24.5"
 test-env-log = { version = "0.2", default-features = false, features = ["trace"] }
-tracing-subscriber = "0.3.16"
+tracing-subscriber = "0.2"
 ureq = "2.1"
 
 [features]

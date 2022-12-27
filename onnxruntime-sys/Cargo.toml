@@ -1,14 +1,10 @@
-[lib]
-
-include = ["src/**/*", "lib/*", "Cargo.toml", "build.rs"]
-
 [package]
 authors = ["Nicolas Bigaouette <nbigaouette@elementai.com>", "Mykyta Makarov <evil.unicorn1@gmail.com>"]
 edition = "2018"
 name = "onnxruntime-sys"
 version = "0.0.14"
 build = "build.rs"
-links = "onnxruntime"
+include = ["src/**/*", "lib/onnxruntime.dll", "lib/onnxruntime.lib", "Cargo.toml", "build.rs"]
 
 description = "A fork of unsafe wrapper around Microsoft's ONNX Runtime by Nicolas Bigaouette <nbigaouette@elementai.com>."
 documentation = "https://docs.rs/onnxruntime-sys"

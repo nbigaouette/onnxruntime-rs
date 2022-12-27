@@ -2,6 +2,7 @@
 
 use std::env::VarError;
 use std::{
+    fs,
     env,
     path::{Path, PathBuf},
 };
@@ -42,8 +43,27 @@ fn main() {
     let include_dir = Path::new(&dir).join("include");
     let lib_dir = Path::new(&dir).join("lib");
 
+    // Get the path to the deps directory where the DLLs should be copied to.
+    let out_dir = env::var_os("OUT_DIR").unwrap();
+    let deps_dir = Path::new(&out_dir).join("..").join("..").join("..").join("deps");
+
+    // Create the deps directory if it doesn't exist.
+    if !deps_dir.exists() {
+        fs::create_dir_all(&deps_dir).unwrap();
+    }
+
+    // Copy the DLLs from the local project folder to the deps directory.
+    for entry in fs::read_dir(lib_dir.clone()).unwrap() {
+        let entry = entry.unwrap();
+        let path = entry.path();
+        if path.extension().unwrap() == "dll" {
+            fs::copy(&path, deps_dir.join(path.file_name().unwrap())).unwrap();
+        }
+    }
+
     println!("Include directory: {:?}", include_dir.display());
     println!("cargo:warning=Lib directory: {:?}", lib_dir.display());
+    println!("cargo:warning=Deps directory: {:?}", deps_dir.display());
 
     // Tell cargo to tell rustc to link onnxruntime shared library.
     println!("cargo:rustc-link-lib=onnxruntime");
