@@ -127,7 +127,6 @@ impl<'a> SessionBuilder<'a> {
     }
 
     /// Set the session to use cpu
-    #[cfg(feature = "cpu")]
     pub fn use_cpu(self, use_arena: i32) -> Result<SessionBuilder<'a>> {
         unsafe {
             sys::OrtSessionOptionsAppendExecutionProvider_CPU(self.session_options_ptr, use_arena);
