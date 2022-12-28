@@ -41,8 +41,9 @@ model-fetching = ["ureq"]
 # Disable build script; used for https://docs.rs
 disable-sys-build-script = ["onnxruntime-sys/disable-sys-build-script"]
 generate-bindings = ["onnxruntime-sys/generate-bindings"]
-cuda = ["onnxruntime-sys/cuda"]
 
+# Enable providers
+cuda = ["onnxruntime-sys/cuda"]
 directml = ["onnxruntime-sys/directml"]
 tensorrt = ["onnxruntime-sys/tensorrt"]
 
