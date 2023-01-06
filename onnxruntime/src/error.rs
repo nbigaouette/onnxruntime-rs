@@ -29,6 +29,9 @@ pub enum OrtError {
     /// Error occurred when creating an ONNX session
     #[error("Failed to create session: {0}")]
     Session(OrtApiError),
+    /// Error occurred when extracting an model metadata
+    #[error("Failed to extract model metadata: {0}")]
+    ModelMetadata(OrtApiError),
     /// Error occurred when creating an ONNX allocator
     #[error("Failed to get allocator: {0}")]
     Allocator(OrtApiError),
