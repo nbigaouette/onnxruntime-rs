@@ -1,15 +1,17 @@
 [package]
-authors = ["Nicolas Bigaouette <nbigaouette@elementai.com>"]
+authors = ["Nicolas Bigaouette <nbigaouette@elementai.com>", "Mykyta Makarov <evil.unicorn1@gmail.com>"]
 edition = "2018"
 name = "onnxruntime-sys"
 version = "0.0.14"
+build = "build.rs"
+include = ["src/**/*", "lib/onnxruntime.dll", "lib/onnxruntime.lib", "Cargo.toml", "build.rs"]
 
-description = "Unsafe wrapper around Microsoft's ONNX Runtime"
+description = "A fork of unsafe wrapper around Microsoft's ONNX Runtime by Nicolas Bigaouette <nbigaouette@elementai.com>."
 documentation = "https://docs.rs/onnxruntime-sys"
-homepage = "https://github.com/nbigaouette/onnxruntime-rs"
+homepage = "https://github.com/npc-engine/onnxruntime-rs"
 license = "MIT OR Apache-2.0"
 readme = "../README.md"
-repository = "https://github.com/nbigaouette/onnxruntime-rs"
+repository = "https://github.com/npc-engine/onnxruntime-rs"
 
 categories = ["science"]
 keywords = ["neuralnetworks", "onnx", "bindings"]
@@ -17,11 +19,11 @@ keywords = ["neuralnetworks", "onnx", "bindings"]
 [dependencies]
 
 [build-dependencies]
-bindgen = { version = "0.59", optional = true }
+bindgen = { version = "0.63.0", optional = true }
 ureq = "2.1"
 
 # Used on Windows
-zip = "0.5"
+zip = "0.6.3"
 
 # Used on unix
 flate2 = "1.0"
@@ -34,8 +36,13 @@ default = []
 disable-sys-build-script = []
 # Use bindgen to generate bindings in build.rs
 generate-bindings = ["bindgen"]
+cuda = []
+directml = []
+tensorrt = []
+
 
 [package.metadata.docs.rs]
 # Disable the build.rs on https://docs.rs since it can cause
 # issue there and it's not needed.
 features = ["disable-sys-build-script"]
+

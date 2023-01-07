@@ -473,7 +473,21 @@ extern "C" {
         _Alignment: usize,
     ) -> *mut ::std::os::raw::c_void;
 }
-pub type max_align_t = f64;
+extern "C" {
+    pub fn _errno() -> *mut ::std::os::raw::c_int;
+}
+extern "C" {
+    pub fn _set_errno(_Value: ::std::os::raw::c_int) -> errno_t;
+}
+extern "C" {
+    pub fn _get_errno(_Value: *mut ::std::os::raw::c_int) -> errno_t;
+}
+extern "C" {
+    pub fn __threadid() -> ::std::os::raw::c_ulong;
+}
+extern "C" {
+    pub fn __threadhandle() -> usize;
+}
 pub type _CoreCrtSecureSearchSortCompareFunction = ::std::option::Option<
     unsafe extern "C" fn(
         arg1: *mut ::std::os::raw::c_void,
@@ -971,15 +985,6 @@ extern "C" {
 }
 extern "C" {
     pub fn _set_error_mode(_Mode: ::std::os::raw::c_int) -> ::std::os::raw::c_int;
-}
-extern "C" {
-    pub fn _errno() -> *mut ::std::os::raw::c_int;
-}
-extern "C" {
-    pub fn _set_errno(_Value: ::std::os::raw::c_int) -> errno_t;
-}
-extern "C" {
-    pub fn _get_errno(_Value: *mut ::std::os::raw::c_int) -> errno_t;
 }
 extern "C" {
     pub fn __doserrno() -> *mut ::std::os::raw::c_ulong;
@@ -6659,6 +6664,18 @@ fn bindgen_test_layout_OrtCustomOp() {
             stringify!(GetOutputCharacteristic)
         )
     );
+}
+extern "stdcall" {
+    pub fn OrtSessionOptionsAppendExecutionProvider_CPU(
+        options: *mut OrtSessionOptions,
+        use_arena: ::std::os::raw::c_int,
+    ) -> OrtStatusPtr;
+}
+extern "stdcall" {
+    pub fn OrtSessionOptionsAppendExecutionProvider_CUDA(
+        options: *mut OrtSessionOptions,
+        device_id: ::std::os::raw::c_int,
+    ) -> OrtStatusPtr;
 }
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]

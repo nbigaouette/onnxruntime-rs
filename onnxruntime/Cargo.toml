@@ -1,15 +1,15 @@
 [package]
-authors = ["Nicolas Bigaouette <nbigaouette@gmail.com>"]
+authors = ["Nicolas Bigaouette <nbigaouette@elementai.com>", "Mykyta Makarov <evil.unicorn1@gmail.com>"]
 edition = "2018"
 name = "onnxruntime"
 version = "0.0.14"
 
-description = "Wrapper around Microsoft's ONNX Runtime"
+description = "A fork of wrapper around Microsoft's ONNX Runtime by Nicolas Bigaouette <nbigaouette@gmail.com>. It introduces DirectML provider support and removes linux and MacOS support for now (to be introduced later)."
 documentation = "https://docs.rs/onnxruntime"
-homepage = "https://github.com/nbigaouette/onnxruntime-rs"
+homepage = "https://github.com/npc-engine/onnxruntime-rs"
 license = "MIT OR Apache-2.0"
 readme = "../README.md"
-repository = "https://github.com/nbigaouette/onnxruntime-rs"
+repository = "https://github.com/npc-engine/onnxruntime-rs"
 
 categories = ["science"]
 keywords = ["neuralnetworks", "onnx", "bindings"]
@@ -19,7 +19,7 @@ name = "integration_tests"
 required-features = ["model-fetching"]
 
 [dependencies]
-onnxruntime-sys = { version = "0.0.14", path = "../onnxruntime-sys" }
+onnxruntime-sys = { git = "https://github.com/npc-engine/onnxruntime-rs.git", branch = "feature/multiple-provider-features"}
 
 lazy_static = "1.4"
 ndarray = "0.15"
@@ -30,7 +30,7 @@ tracing = "0.1"
 ureq = { version = "2.1", optional = true }
 
 [dev-dependencies]
-image = "0.23"
+image = "0.24.5"
 test-env-log = { version = "0.2", default-features = false, features = ["trace"] }
 tracing-subscriber = "0.2"
 ureq = "2.1"
@@ -41,6 +41,11 @@ model-fetching = ["ureq"]
 # Disable build script; used for https://docs.rs
 disable-sys-build-script = ["onnxruntime-sys/disable-sys-build-script"]
 generate-bindings = ["onnxruntime-sys/generate-bindings"]
+
+# Enable providers
+cuda = ["onnxruntime-sys/cuda"]
+directml = ["onnxruntime-sys/directml"]
+tensorrt = ["onnxruntime-sys/tensorrt"]
 
 [package.metadata.docs.rs]
 features = ["disable-sys-build-script", "model-fetching"]
