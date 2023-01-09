@@ -1,8 +1,11 @@
 #![forbid(unsafe_code)]
 
 use onnxruntime::{
-    environment::Environment, ndarray::Array, tensor::OrtOwnedTensor, GraphOptimizationLevel,
-    LoggingLevel,
+    environment::Environment,
+    ndarray::Array,
+    tensor::OrtOwnedTensor,
+    tensor::{FromArray, InputTensor},
+    GraphOptimizationLevel, LoggingLevel,
 };
 use tracing::Level;
 use tracing_subscriber::FmtSubscriber;
@@ -38,7 +41,7 @@ fn run() -> Result<(), Error> {
         // NOTE: The example uses SqueezeNet 1.0 (ONNX version: 1.3, Opset version: 8),
         //       _not_ SqueezeNet 1.1 as downloaded by '.with_model_downloaded(ImageClassification::SqueezeNet)'
         //       Obtain it with:
-        //          curl -LO "https://github.com/onnx/models/raw/master/vision/classification/squeezenet/model/squeezenet1.0-8.onnx"
+        //          curl -LO "https://github.com/onnx/models/raw/main/vision/classification/squeezenet/model/squeezenet1.0-8.onnx"
         .with_model_from_file("squeezenet1.0-8.onnx")?;
 
     let input0_shape: Vec<usize> = session.inputs[0].dimensions().map(|d| d.unwrap()).collect();
@@ -59,7 +62,7 @@ fn run() -> Result<(), Error> {
     let array = Array::linspace(0.0_f32, 1.0, n as usize)
         .into_shape(input0_shape)
         .unwrap();
-    let input_tensor_values = vec![array];
+    let input_tensor_values = vec![InputTensor::from_array(array)];
 
     let outputs: Vec<OrtOwnedTensor<f32, _>> = session.run(input_tensor_values)?;
 
