@@ -296,6 +296,7 @@ impl<'a> SessionBuilder<'a> {
 /// Type storing the session information, built from an [`Environment`](environment/struct.Environment.html)
 #[derive(Debug)]
 pub struct Session<'a> {
+    #[allow(dead_code)]
     env: &'a Environment,
     session_ptr: *mut sys::OrtSession,
     allocator_ptr: *mut sys::OrtAllocator,

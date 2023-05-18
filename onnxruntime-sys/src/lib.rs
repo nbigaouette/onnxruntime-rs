@@ -5,8 +5,6 @@
 #![allow(clippy::all)]
 #![allow(improper_ctypes)]
 
-#[allow(clippy::all)]
-
 include!(concat!(
     env!("CARGO_MANIFEST_DIR"),
     "/src/generated/bindings.rs"
