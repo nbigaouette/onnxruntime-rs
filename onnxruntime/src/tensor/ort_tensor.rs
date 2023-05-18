@@ -30,6 +30,7 @@ where
 {
     pub(crate) c_ptr: *mut sys::OrtValue,
     array: Array<T, D>,
+    #[allow(dead_code)]
     memory_info: &'t MemoryInfo,
 }
 

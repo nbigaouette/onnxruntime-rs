@@ -31,6 +31,7 @@ where
 {
     pub(crate) tensor_ptr: *mut sys::OrtValue,
     array_view: ArrayView<'t, T, D>,
+    #[allow(dead_code)]
     memory_info: &'m MemoryInfo,
 }
 
