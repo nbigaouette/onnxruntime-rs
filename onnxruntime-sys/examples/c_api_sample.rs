@@ -117,7 +117,7 @@ fn main() {
     // iterate over all input nodes
     for i in 0..num_input_nodes {
         // print input node names
-        let mut input_name: *mut i8 = std::ptr::null_mut();
+        let mut input_name: *mut std::os::raw::c_char = std::ptr::null_mut();
         let status = unsafe {
             g_ort.as_ref().unwrap().SessionGetInputName.unwrap()(
                 session_ptr,
@@ -282,24 +282,24 @@ fn main() {
         .into_iter()
         .map(|n| std::ffi::CString::new(n).unwrap())
         .collect();
-    let input_node_names_ptr: Vec<*const i8> = input_node_names_cstring
+    let input_node_names_ptr: Vec<*const std::os::raw::c_char> = input_node_names_cstring
         .into_iter()
-        .map(|n| n.into_raw() as *const i8)
+        .map(|n| n.into_raw() as *const std::os::raw::c_char)
         .collect();
-    let input_node_names_ptr_ptr: *const *const i8 = input_node_names_ptr.as_ptr();
+    let input_node_names_ptr_ptr: *const *const std::os::raw::c_char = input_node_names_ptr.as_ptr();
 
     let output_node_names_cstring: Vec<std::ffi::CString> = output_node_names
         .into_iter()
         .map(|n| std::ffi::CString::new(n.clone()).unwrap())
         .collect();
-    let output_node_names_ptr: Vec<*const i8> = output_node_names_cstring
+    let output_node_names_ptr: Vec<*const std::os::raw::c_char> = output_node_names_cstring
         .iter()
-        .map(|n| n.as_ptr() as *const i8)
+        .map(|n| n.as_ptr() as *const std::os::raw::c_char)
         .collect();
-    let output_node_names_ptr_ptr: *const *const i8 = output_node_names_ptr.as_ptr();
+    let output_node_names_ptr_ptr: *const *const std::os::raw::c_char = output_node_names_ptr.as_ptr();
 
     let _input_node_names_cstring =
-        unsafe { std::ffi::CString::from_raw(input_node_names_ptr[0] as *mut i8) };
+        unsafe { std::ffi::CString::from_raw(input_node_names_ptr[0] as *mut std::os::raw::c_char) };
     let run_options_ptr: *const OrtRunOptions = std::ptr::null();
     let mut output_tensor_ptr: *mut OrtValue = std::ptr::null_mut();
     let output_tensor_ptr_ptr: *mut *mut OrtValue = &mut output_tensor_ptr;
@@ -371,7 +371,7 @@ fn CheckStatus(g_ort: *const OrtApi, status: *const OrtStatus) -> Result<(), Str
     }
 }
 
-fn char_p_to_str<'a>(raw: *const i8) -> Result<&'a str, std::str::Utf8Error> {
-    let c_str = unsafe { std::ffi::CStr::from_ptr(raw as *mut i8) };
+fn char_p_to_str<'a>(raw: *const std::os::raw::c_char) -> Result<&'a str, std::str::Utf8Error> {
+    let c_str = unsafe { std::ffi::CStr::from_ptr(raw as *mut std::os::raw::c_char) };
     c_str.to_str()
 }
