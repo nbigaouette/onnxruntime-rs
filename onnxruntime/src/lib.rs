@@ -115,6 +115,7 @@ to download.
 //! See the [`sample.rs`](https://github.com/nbigaouette/onnxruntime-rs/blob/master/onnxruntime/examples/sample.rs)
 //! example for more details.
 
+use std::ffi::CStr;
 use std::sync::{atomic::AtomicPtr, Arc, Mutex};
 
 use lazy_static::lazy_static;
@@ -154,6 +155,46 @@ use sys::OnnxEnumInt;
 
 // Re-export ndarray as it's part of the public API anyway
 pub use ndarray;
+
+/// Represents the version of the ONNX runtime
+#[derive(Debug, Clone)]
+pub struct OrtVersion {
+    /// The version of the runtime library
+    pub runtime_library_version: Option<String>,
+    /// The version of the API
+    pub api_version: u32,
+}
+
+impl OrtVersion {
+    /// Get the current version of the ONNX runtime
+    pub fn get() -> Self {
+        Self {
+            runtime_library_version: Self::ort_version(),
+            api_version: Self::ort_api_version(),
+        }
+    }
+
+    fn ort_version() -> Option<String> {
+        let api_base: *const sys::OrtApiBase = unsafe { sys::OrtGetApiBase() };
+        if api_base.is_null() {
+            return None;
+        }
+
+        let version_string = unsafe {
+            let api_base = &*api_base;
+            let version_raw_c_str = api_base.GetVersionString?();
+            // The returned C string is owned by the library, so we should wrap it using a `CStr`.
+            // See: https://onnxruntime.ai/docs/api/c/struct_ort_api_base.html#a526ca6b93c227df319c4730974199e59
+            let version_c_str = CStr::from_ptr(version_raw_c_str);
+            version_c_str.to_str().ok()?.to_string()
+        };
+        Some(version_string)
+    }
+
+    fn ort_api_version() -> u32 {
+        sys::ORT_API_VERSION
+    }
+}
 
 lazy_static! {
     // static ref G_ORT: Arc<Mutex<AtomicPtr<sys::OrtApi>>> =
