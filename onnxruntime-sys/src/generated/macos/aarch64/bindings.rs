@@ -81,6 +81,12 @@ where
     }
 }
 pub const __API_TO_BE_DEPRECATED: u32 = 100000;
+pub const __API_TO_BE_DEPRECATED_MACOS: u32 = 100000;
+pub const __API_TO_BE_DEPRECATED_IOS: u32 = 100000;
+pub const __API_TO_BE_DEPRECATED_TVOS: u32 = 100000;
+pub const __API_TO_BE_DEPRECATED_WATCHOS: u32 = 100000;
+pub const __API_TO_BE_DEPRECATED_MACCATALYST: u32 = 100000;
+pub const __API_TO_BE_DEPRECATED_DRIVERKIT: u32 = 100000;
 pub const __MAC_10_0: u32 = 1000;
 pub const __MAC_10_1: u32 = 1010;
 pub const __MAC_10_2: u32 = 1020;
@@ -124,6 +130,10 @@ pub const __MAC_12_0: u32 = 120000;
 pub const __MAC_12_1: u32 = 120100;
 pub const __MAC_12_2: u32 = 120200;
 pub const __MAC_12_3: u32 = 120300;
+pub const __MAC_13_0: u32 = 130000;
+pub const __MAC_13_1: u32 = 130100;
+pub const __MAC_13_2: u32 = 130200;
+pub const __MAC_13_3: u32 = 130300;
 pub const __IPHONE_2_0: u32 = 20000;
 pub const __IPHONE_2_1: u32 = 20100;
 pub const __IPHONE_2_2: u32 = 20200;
@@ -184,6 +194,11 @@ pub const __IPHONE_15_1: u32 = 150100;
 pub const __IPHONE_15_2: u32 = 150200;
 pub const __IPHONE_15_3: u32 = 150300;
 pub const __IPHONE_15_4: u32 = 150400;
+pub const __IPHONE_16_0: u32 = 160000;
+pub const __IPHONE_16_1: u32 = 160100;
+pub const __IPHONE_16_2: u32 = 160200;
+pub const __IPHONE_16_3: u32 = 160300;
+pub const __IPHONE_16_4: u32 = 160400;
 pub const __TVOS_9_0: u32 = 90000;
 pub const __TVOS_9_1: u32 = 90100;
 pub const __TVOS_9_2: u32 = 90200;
@@ -217,6 +232,11 @@ pub const __TVOS_15_1: u32 = 150100;
 pub const __TVOS_15_2: u32 = 150200;
 pub const __TVOS_15_3: u32 = 150300;
 pub const __TVOS_15_4: u32 = 150400;
+pub const __TVOS_16_0: u32 = 160000;
+pub const __TVOS_16_1: u32 = 160100;
+pub const __TVOS_16_2: u32 = 160200;
+pub const __TVOS_16_3: u32 = 160300;
+pub const __TVOS_16_4: u32 = 160400;
 pub const __WATCHOS_1_0: u32 = 10000;
 pub const __WATCHOS_2_0: u32 = 20000;
 pub const __WATCHOS_2_1: u32 = 20100;
@@ -248,6 +268,11 @@ pub const __WATCHOS_8_1: u32 = 80100;
 pub const __WATCHOS_8_3: u32 = 80300;
 pub const __WATCHOS_8_4: u32 = 80400;
 pub const __WATCHOS_8_5: u32 = 80500;
+pub const __WATCHOS_9_0: u32 = 90000;
+pub const __WATCHOS_9_1: u32 = 90100;
+pub const __WATCHOS_9_2: u32 = 90200;
+pub const __WATCHOS_9_3: u32 = 90300;
+pub const __WATCHOS_9_4: u32 = 90400;
 pub const MAC_OS_X_VERSION_10_0: u32 = 1000;
 pub const MAC_OS_X_VERSION_10_1: u32 = 1010;
 pub const MAC_OS_X_VERSION_10_2: u32 = 1020;
@@ -282,10 +307,11 @@ pub const MAC_OS_X_VERSION_10_15_1: u32 = 101501;
 pub const MAC_OS_X_VERSION_10_16: u32 = 101600;
 pub const MAC_OS_VERSION_11_0: u32 = 110000;
 pub const MAC_OS_VERSION_12_0: u32 = 120000;
+pub const MAC_OS_VERSION_13_0: u32 = 130000;
 pub const __DRIVERKIT_19_0: u32 = 190000;
 pub const __DRIVERKIT_20_0: u32 = 200000;
 pub const __DRIVERKIT_21_0: u32 = 210000;
-pub const __MAC_OS_X_VERSION_MAX_ALLOWED: u32 = 120300;
+pub const __MAC_OS_X_VERSION_MAX_ALLOWED: u32 = 130300;
 pub const __ENABLE_LEGACY_MAC_AVAILABILITY: u32 = 1;
 pub const __DARWIN_ONLY_64_BIT_INO_T: u32 = 1;
 pub const __DARWIN_ONLY_UNIX_CONFORMANCE: u32 = 1;
@@ -487,7 +513,8 @@ pub const RUSAGE_INFO_V2: u32 = 2;
 pub const RUSAGE_INFO_V3: u32 = 3;
 pub const RUSAGE_INFO_V4: u32 = 4;
 pub const RUSAGE_INFO_V5: u32 = 5;
-pub const RUSAGE_INFO_CURRENT: u32 = 5;
+pub const RUSAGE_INFO_V6: u32 = 6;
+pub const RUSAGE_INFO_CURRENT: u32 = 6;
 pub const RU_PROC_RUNS_RESLIDE: u32 = 1;
 pub const RLIMIT_CPU: u32 = 0;
 pub const RLIMIT_FSIZE: u32 = 1;
@@ -521,6 +548,7 @@ pub const IOPOL_TYPE_VFS_IGNORE_CONTENT_PROTECTION: u32 = 6;
 pub const IOPOL_TYPE_VFS_IGNORE_PERMISSIONS: u32 = 7;
 pub const IOPOL_TYPE_VFS_SKIP_MTIME_UPDATE: u32 = 8;
 pub const IOPOL_TYPE_VFS_ALLOW_LOW_SPACE_WRITES: u32 = 9;
+pub const IOPOL_TYPE_VFS_DISALLOW_RW_FOR_O_EVTONLY: u32 = 10;
 pub const IOPOL_SCOPE_PROCESS: u32 = 0;
 pub const IOPOL_SCOPE_THREAD: u32 = 1;
 pub const IOPOL_SCOPE_DARWIN_BG: u32 = 2;
@@ -549,6 +577,8 @@ pub const IOPOL_VFS_SKIP_MTIME_UPDATE_OFF: u32 = 0;
 pub const IOPOL_VFS_SKIP_MTIME_UPDATE_ON: u32 = 1;
 pub const IOPOL_VFS_ALLOW_LOW_SPACE_WRITES_OFF: u32 = 0;
 pub const IOPOL_VFS_ALLOW_LOW_SPACE_WRITES_ON: u32 = 1;
+pub const IOPOL_VFS_DISALLOW_RW_FOR_O_EVTONLY_DEFAULT: u32 = 0;
+pub const IOPOL_VFS_DISALLOW_RW_FOR_O_EVTONLY_ON: u32 = 1;
 pub const WNOHANG: u32 = 1;
 pub const WUNTRACED: u32 = 2;
 pub const WCOREFLAG: u32 = 128;
@@ -6447,7 +6477,817 @@ fn bindgen_test_layout_rusage_info_v5() {
     }
     test_field_ri_flags();
 }
-pub type rusage_info_current = rusage_info_v5;
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct rusage_info_v6 {
+    pub ri_uuid: [u8; 16usize],
+    pub ri_user_time: u64,
+    pub ri_system_time: u64,
+    pub ri_pkg_idle_wkups: u64,
+    pub ri_interrupt_wkups: u64,
+    pub ri_pageins: u64,
+    pub ri_wired_size: u64,
+    pub ri_resident_size: u64,
+    pub ri_phys_footprint: u64,
+    pub ri_proc_start_abstime: u64,
+    pub ri_proc_exit_abstime: u64,
+    pub ri_child_user_time: u64,
+    pub ri_child_system_time: u64,
+    pub ri_child_pkg_idle_wkups: u64,
+    pub ri_child_interrupt_wkups: u64,
+    pub ri_child_pageins: u64,
+    pub ri_child_elapsed_abstime: u64,
+    pub ri_diskio_bytesread: u64,
+    pub ri_diskio_byteswritten: u64,
+    pub ri_cpu_time_qos_default: u64,
+    pub ri_cpu_time_qos_maintenance: u64,
+    pub ri_cpu_time_qos_background: u64,
+    pub ri_cpu_time_qos_utility: u64,
+    pub ri_cpu_time_qos_legacy: u64,
+    pub ri_cpu_time_qos_user_initiated: u64,
+    pub ri_cpu_time_qos_user_interactive: u64,
+    pub ri_billed_system_time: u64,
+    pub ri_serviced_system_time: u64,
+    pub ri_logical_writes: u64,
+    pub ri_lifetime_max_phys_footprint: u64,
+    pub ri_instructions: u64,
+    pub ri_cycles: u64,
+    pub ri_billed_energy: u64,
+    pub ri_serviced_energy: u64,
+    pub ri_interval_max_phys_footprint: u64,
+    pub ri_runnable_time: u64,
+    pub ri_flags: u64,
+    pub ri_user_ptime: u64,
+    pub ri_system_ptime: u64,
+    pub ri_pinstructions: u64,
+    pub ri_pcycles: u64,
+    pub ri_energy_nj: u64,
+    pub ri_penergy_nj: u64,
+    pub ri_reserved: [u64; 14usize],
+}
+#[test]
+fn bindgen_test_layout_rusage_info_v6() {
+    assert_eq!(
+        ::std::mem::size_of::<rusage_info_v6>(),
+        464usize,
+        concat!("Size of: ", stringify!(rusage_info_v6))
+    );
+    assert_eq!(
+        ::std::mem::align_of::<rusage_info_v6>(),
+        8usize,
+        concat!("Alignment of ", stringify!(rusage_info_v6))
+    );
+    fn test_field_ri_uuid() {
+        assert_eq!(
+            unsafe {
+                let uninit = ::std::mem::MaybeUninit::<rusage_info_v6>::uninit();
+                let ptr = uninit.as_ptr();
+                ::std::ptr::addr_of!((*ptr).ri_uuid) as usize - ptr as usize
+            },
+            0usize,
+            concat!(
+                "Offset of field: ",
+                stringify!(rusage_info_v6),
+                "::",
+                stringify!(ri_uuid)
+            )
+        );
+    }
+    test_field_ri_uuid();
+    fn test_field_ri_user_time() {
+        assert_eq!(
+            unsafe {
+                let uninit = ::std::mem::MaybeUninit::<rusage_info_v6>::uninit();
+                let ptr = uninit.as_ptr();
+                ::std::ptr::addr_of!((*ptr).ri_user_time) as usize - ptr as usize
+            },
+            16usize,
+            concat!(
+                "Offset of field: ",
+                stringify!(rusage_info_v6),
+                "::",
+                stringify!(ri_user_time)
+            )
+        );
+    }
+    test_field_ri_user_time();
+    fn test_field_ri_system_time() {
+        assert_eq!(
+            unsafe {
+                let uninit = ::std::mem::MaybeUninit::<rusage_info_v6>::uninit();
+                let ptr = uninit.as_ptr();
+                ::std::ptr::addr_of!((*ptr).ri_system_time) as usize - ptr as usize
+            },
+            24usize,
+            concat!(
+                "Offset of field: ",
+                stringify!(rusage_info_v6),
+                "::",
+                stringify!(ri_system_time)
+            )
+        );
+    }
+    test_field_ri_system_time();
+    fn test_field_ri_pkg_idle_wkups() {
+        assert_eq!(
+            unsafe {
+                let uninit = ::std::mem::MaybeUninit::<rusage_info_v6>::uninit();
+                let ptr = uninit.as_ptr();
+                ::std::ptr::addr_of!((*ptr).ri_pkg_idle_wkups) as usize - ptr as usize
+            },
+            32usize,
+            concat!(
+                "Offset of field: ",
+                stringify!(rusage_info_v6),
+                "::",
+                stringify!(ri_pkg_idle_wkups)
+            )
+        );
+    }
+    test_field_ri_pkg_idle_wkups();
+    fn test_field_ri_interrupt_wkups() {
+        assert_eq!(
+            unsafe {
+                let uninit = ::std::mem::MaybeUninit::<rusage_info_v6>::uninit();
+                let ptr = uninit.as_ptr();
+                ::std::ptr::addr_of!((*ptr).ri_interrupt_wkups) as usize - ptr as usize
+            },
+            40usize,
+            concat!(
+                "Offset of field: ",
+                stringify!(rusage_info_v6),
+                "::",
+                stringify!(ri_interrupt_wkups)
+            )
+        );
+    }
+    test_field_ri_interrupt_wkups();
+    fn test_field_ri_pageins() {
+        assert_eq!(
+            unsafe {
+                let uninit = ::std::mem::MaybeUninit::<rusage_info_v6>::uninit();
+                let ptr = uninit.as_ptr();
+                ::std::ptr::addr_of!((*ptr).ri_pageins) as usize - ptr as usize
+            },
+            48usize,
+            concat!(
+                "Offset of field: ",
+                stringify!(rusage_info_v6),
+                "::",
+                stringify!(ri_pageins)
+            )
+        );
+    }
+    test_field_ri_pageins();
+    fn test_field_ri_wired_size() {
+        assert_eq!(
+            unsafe {
+                let uninit = ::std::mem::MaybeUninit::<rusage_info_v6>::uninit();
+                let ptr = uninit.as_ptr();
+                ::std::ptr::addr_of!((*ptr).ri_wired_size) as usize - ptr as usize
+            },
+            56usize,
+            concat!(
+                "Offset of field: ",
+                stringify!(rusage_info_v6),
+                "::",
+                stringify!(ri_wired_size)
+            )
+        );
+    }
+    test_field_ri_wired_size();
+    fn test_field_ri_resident_size() {
+        assert_eq!(
+            unsafe {
+                let uninit = ::std::mem::MaybeUninit::<rusage_info_v6>::uninit();
+                let ptr = uninit.as_ptr();
+                ::std::ptr::addr_of!((*ptr).ri_resident_size) as usize - ptr as usize
+            },
+            64usize,
+            concat!(
+                "Offset of field: ",
+                stringify!(rusage_info_v6),
+                "::",
+                stringify!(ri_resident_size)
+            )
+        );
+    }
+    test_field_ri_resident_size();
+    fn test_field_ri_phys_footprint() {
+        assert_eq!(
+            unsafe {
+                let uninit = ::std::mem::MaybeUninit::<rusage_info_v6>::uninit();
+                let ptr = uninit.as_ptr();
+                ::std::ptr::addr_of!((*ptr).ri_phys_footprint) as usize - ptr as usize
+            },
+            72usize,
+            concat!(
+                "Offset of field: ",
+                stringify!(rusage_info_v6),
+                "::",
+                stringify!(ri_phys_footprint)
+            )
+        );
+    }
+    test_field_ri_phys_footprint();
+    fn test_field_ri_proc_start_abstime() {
+        assert_eq!(
+            unsafe {
+                let uninit = ::std::mem::MaybeUninit::<rusage_info_v6>::uninit();
+                let ptr = uninit.as_ptr();
+                ::std::ptr::addr_of!((*ptr).ri_proc_start_abstime) as usize - ptr as usize
+            },
+            80usize,
+            concat!(
+                "Offset of field: ",
+                stringify!(rusage_info_v6),
+                "::",
+                stringify!(ri_proc_start_abstime)
+            )
+        );
+    }
+    test_field_ri_proc_start_abstime();
+    fn test_field_ri_proc_exit_abstime() {
+        assert_eq!(
+            unsafe {
+                let uninit = ::std::mem::MaybeUninit::<rusage_info_v6>::uninit();
+                let ptr = uninit.as_ptr();
+                ::std::ptr::addr_of!((*ptr).ri_proc_exit_abstime) as usize - ptr as usize
+            },
+            88usize,
+            concat!(
+                "Offset of field: ",
+                stringify!(rusage_info_v6),
+                "::",
+                stringify!(ri_proc_exit_abstime)
+            )
+        );
+    }
+    test_field_ri_proc_exit_abstime();
+    fn test_field_ri_child_user_time() {
+        assert_eq!(
+            unsafe {
+                let uninit = ::std::mem::MaybeUninit::<rusage_info_v6>::uninit();
+                let ptr = uninit.as_ptr();
+                ::std::ptr::addr_of!((*ptr).ri_child_user_time) as usize - ptr as usize
+            },
+            96usize,
+            concat!(
+                "Offset of field: ",
+                stringify!(rusage_info_v6),
+                "::",
+                stringify!(ri_child_user_time)
+            )
+        );
+    }
+    test_field_ri_child_user_time();
+    fn test_field_ri_child_system_time() {
+        assert_eq!(
+            unsafe {
+                let uninit = ::std::mem::MaybeUninit::<rusage_info_v6>::uninit();
+                let ptr = uninit.as_ptr();
+                ::std::ptr::addr_of!((*ptr).ri_child_system_time) as usize - ptr as usize
+            },
+            104usize,
+            concat!(
+                "Offset of field: ",
+                stringify!(rusage_info_v6),
+                "::",
+                stringify!(ri_child_system_time)
+            )
+        );
+    }
+    test_field_ri_child_system_time();
+    fn test_field_ri_child_pkg_idle_wkups() {
+        assert_eq!(
+            unsafe {
+                let uninit = ::std::mem::MaybeUninit::<rusage_info_v6>::uninit();
+                let ptr = uninit.as_ptr();
+                ::std::ptr::addr_of!((*ptr).ri_child_pkg_idle_wkups) as usize - ptr as usize
+            },
+            112usize,
+            concat!(
+                "Offset of field: ",
+                stringify!(rusage_info_v6),
+                "::",
+                stringify!(ri_child_pkg_idle_wkups)
+            )
+        );
+    }
+    test_field_ri_child_pkg_idle_wkups();
+    fn test_field_ri_child_interrupt_wkups() {
+        assert_eq!(
+            unsafe {
+                let uninit = ::std::mem::MaybeUninit::<rusage_info_v6>::uninit();
+                let ptr = uninit.as_ptr();
+                ::std::ptr::addr_of!((*ptr).ri_child_interrupt_wkups) as usize - ptr as usize
+            },
+            120usize,
+            concat!(
+                "Offset of field: ",
+                stringify!(rusage_info_v6),
+                "::",
+                stringify!(ri_child_interrupt_wkups)
+            )
+        );
+    }
+    test_field_ri_child_interrupt_wkups();
+    fn test_field_ri_child_pageins() {
+        assert_eq!(
+            unsafe {
+                let uninit = ::std::mem::MaybeUninit::<rusage_info_v6>::uninit();
+                let ptr = uninit.as_ptr();
+                ::std::ptr::addr_of!((*ptr).ri_child_pageins) as usize - ptr as usize
+            },
+            128usize,
+            concat!(
+                "Offset of field: ",
+                stringify!(rusage_info_v6),
+                "::",
+                stringify!(ri_child_pageins)
+            )
+        );
+    }
+    test_field_ri_child_pageins();
+    fn test_field_ri_child_elapsed_abstime() {
+        assert_eq!(
+            unsafe {
+                let uninit = ::std::mem::MaybeUninit::<rusage_info_v6>::uninit();
+                let ptr = uninit.as_ptr();
+                ::std::ptr::addr_of!((*ptr).ri_child_elapsed_abstime) as usize - ptr as usize
+            },
+            136usize,
+            concat!(
+                "Offset of field: ",
+                stringify!(rusage_info_v6),
+                "::",
+                stringify!(ri_child_elapsed_abstime)
+            )
+        );
+    }
+    test_field_ri_child_elapsed_abstime();
+    fn test_field_ri_diskio_bytesread() {
+        assert_eq!(
+            unsafe {
+                let uninit = ::std::mem::MaybeUninit::<rusage_info_v6>::uninit();
+                let ptr = uninit.as_ptr();
+                ::std::ptr::addr_of!((*ptr).ri_diskio_bytesread) as usize - ptr as usize
+            },
+            144usize,
+            concat!(
+                "Offset of field: ",
+                stringify!(rusage_info_v6),
+                "::",
+                stringify!(ri_diskio_bytesread)
+            )
+        );
+    }
+    test_field_ri_diskio_bytesread();
+    fn test_field_ri_diskio_byteswritten() {
+        assert_eq!(
+            unsafe {
+                let uninit = ::std::mem::MaybeUninit::<rusage_info_v6>::uninit();
+                let ptr = uninit.as_ptr();
+                ::std::ptr::addr_of!((*ptr).ri_diskio_byteswritten) as usize - ptr as usize
+            },
+            152usize,
+            concat!(
+                "Offset of field: ",
+                stringify!(rusage_info_v6),
+                "::",
+                stringify!(ri_diskio_byteswritten)
+            )
+        );
+    }
+    test_field_ri_diskio_byteswritten();
+    fn test_field_ri_cpu_time_qos_default() {
+        assert_eq!(
+            unsafe {
+                let uninit = ::std::mem::MaybeUninit::<rusage_info_v6>::uninit();
+                let ptr = uninit.as_ptr();
+                ::std::ptr::addr_of!((*ptr).ri_cpu_time_qos_default) as usize - ptr as usize
+            },
+            160usize,
+            concat!(
+                "Offset of field: ",
+                stringify!(rusage_info_v6),
+                "::",
+                stringify!(ri_cpu_time_qos_default)
+            )
+        );
+    }
+    test_field_ri_cpu_time_qos_default();
+    fn test_field_ri_cpu_time_qos_maintenance() {
+        assert_eq!(
+            unsafe {
+                let uninit = ::std::mem::MaybeUninit::<rusage_info_v6>::uninit();
+                let ptr = uninit.as_ptr();
+                ::std::ptr::addr_of!((*ptr).ri_cpu_time_qos_maintenance) as usize - ptr as usize
+            },
+            168usize,
+            concat!(
+                "Offset of field: ",
+                stringify!(rusage_info_v6),
+                "::",
+                stringify!(ri_cpu_time_qos_maintenance)
+            )
+        );
+    }
+    test_field_ri_cpu_time_qos_maintenance();
+    fn test_field_ri_cpu_time_qos_background() {
+        assert_eq!(
+            unsafe {
+                let uninit = ::std::mem::MaybeUninit::<rusage_info_v6>::uninit();
+                let ptr = uninit.as_ptr();
+                ::std::ptr::addr_of!((*ptr).ri_cpu_time_qos_background) as usize - ptr as usize
+            },
+            176usize,
+            concat!(
+                "Offset of field: ",
+                stringify!(rusage_info_v6),
+                "::",
+                stringify!(ri_cpu_time_qos_background)
+            )
+        );
+    }
+    test_field_ri_cpu_time_qos_background();
+    fn test_field_ri_cpu_time_qos_utility() {
+        assert_eq!(
+            unsafe {
+                let uninit = ::std::mem::MaybeUninit::<rusage_info_v6>::uninit();
+                let ptr = uninit.as_ptr();
+                ::std::ptr::addr_of!((*ptr).ri_cpu_time_qos_utility) as usize - ptr as usize
+            },
+            184usize,
+            concat!(
+                "Offset of field: ",
+                stringify!(rusage_info_v6),
+                "::",
+                stringify!(ri_cpu_time_qos_utility)
+            )
+        );
+    }
+    test_field_ri_cpu_time_qos_utility();
+    fn test_field_ri_cpu_time_qos_legacy() {
+        assert_eq!(
+            unsafe {
+                let uninit = ::std::mem::MaybeUninit::<rusage_info_v6>::uninit();
+                let ptr = uninit.as_ptr();
+                ::std::ptr::addr_of!((*ptr).ri_cpu_time_qos_legacy) as usize - ptr as usize
+            },
+            192usize,
+            concat!(
+                "Offset of field: ",
+                stringify!(rusage_info_v6),
+                "::",
+                stringify!(ri_cpu_time_qos_legacy)
+            )
+        );
+    }
+    test_field_ri_cpu_time_qos_legacy();
+    fn test_field_ri_cpu_time_qos_user_initiated() {
+        assert_eq!(
+            unsafe {
+                let uninit = ::std::mem::MaybeUninit::<rusage_info_v6>::uninit();
+                let ptr = uninit.as_ptr();
+                ::std::ptr::addr_of!((*ptr).ri_cpu_time_qos_user_initiated) as usize - ptr as usize
+            },
+            200usize,
+            concat!(
+                "Offset of field: ",
+                stringify!(rusage_info_v6),
+                "::",
+                stringify!(ri_cpu_time_qos_user_initiated)
+            )
+        );
+    }
+    test_field_ri_cpu_time_qos_user_initiated();
+    fn test_field_ri_cpu_time_qos_user_interactive() {
+        assert_eq!(
+            unsafe {
+                let uninit = ::std::mem::MaybeUninit::<rusage_info_v6>::uninit();
+                let ptr = uninit.as_ptr();
+                ::std::ptr::addr_of!((*ptr).ri_cpu_time_qos_user_interactive) as usize
+                    - ptr as usize
+            },
+            208usize,
+            concat!(
+                "Offset of field: ",
+                stringify!(rusage_info_v6),
+                "::",
+                stringify!(ri_cpu_time_qos_user_interactive)
+            )
+        );
+    }
+    test_field_ri_cpu_time_qos_user_interactive();
+    fn test_field_ri_billed_system_time() {
+        assert_eq!(
+            unsafe {
+                let uninit = ::std::mem::MaybeUninit::<rusage_info_v6>::uninit();
+                let ptr = uninit.as_ptr();
+                ::std::ptr::addr_of!((*ptr).ri_billed_system_time) as usize - ptr as usize
+            },
+            216usize,
+            concat!(
+                "Offset of field: ",
+                stringify!(rusage_info_v6),
+                "::",
+                stringify!(ri_billed_system_time)
+            )
+        );
+    }
+    test_field_ri_billed_system_time();
+    fn test_field_ri_serviced_system_time() {
+        assert_eq!(
+            unsafe {
+                let uninit = ::std::mem::MaybeUninit::<rusage_info_v6>::uninit();
+                let ptr = uninit.as_ptr();
+                ::std::ptr::addr_of!((*ptr).ri_serviced_system_time) as usize - ptr as usize
+            },
+            224usize,
+            concat!(
+                "Offset of field: ",
+                stringify!(rusage_info_v6),
+                "::",
+                stringify!(ri_serviced_system_time)
+            )
+        );
+    }
+    test_field_ri_serviced_system_time();
+    fn test_field_ri_logical_writes() {
+        assert_eq!(
+            unsafe {
+                let uninit = ::std::mem::MaybeUninit::<rusage_info_v6>::uninit();
+                let ptr = uninit.as_ptr();
+                ::std::ptr::addr_of!((*ptr).ri_logical_writes) as usize - ptr as usize
+            },
+            232usize,
+            concat!(
+                "Offset of field: ",
+                stringify!(rusage_info_v6),
+                "::",
+                stringify!(ri_logical_writes)
+            )
+        );
+    }
+    test_field_ri_logical_writes();
+    fn test_field_ri_lifetime_max_phys_footprint() {
+        assert_eq!(
+            unsafe {
+                let uninit = ::std::mem::MaybeUninit::<rusage_info_v6>::uninit();
+                let ptr = uninit.as_ptr();
+                ::std::ptr::addr_of!((*ptr).ri_lifetime_max_phys_footprint) as usize - ptr as usize
+            },
+            240usize,
+            concat!(
+                "Offset of field: ",
+                stringify!(rusage_info_v6),
+                "::",
+                stringify!(ri_lifetime_max_phys_footprint)
+            )
+        );
+    }
+    test_field_ri_lifetime_max_phys_footprint();
+    fn test_field_ri_instructions() {
+        assert_eq!(
+            unsafe {
+                let uninit = ::std::mem::MaybeUninit::<rusage_info_v6>::uninit();
+                let ptr = uninit.as_ptr();
+                ::std::ptr::addr_of!((*ptr).ri_instructions) as usize - ptr as usize
+            },
+            248usize,
+            concat!(
+                "Offset of field: ",
+                stringify!(rusage_info_v6),
+                "::",
+                stringify!(ri_instructions)
+            )
+        );
+    }
+    test_field_ri_instructions();
+    fn test_field_ri_cycles() {
+        assert_eq!(
+            unsafe {
+                let uninit = ::std::mem::MaybeUninit::<rusage_info_v6>::uninit();
+                let ptr = uninit.as_ptr();
+                ::std::ptr::addr_of!((*ptr).ri_cycles) as usize - ptr as usize
+            },
+            256usize,
+            concat!(
+                "Offset of field: ",
+                stringify!(rusage_info_v6),
+                "::",
+                stringify!(ri_cycles)
+            )
+        );
+    }
+    test_field_ri_cycles();
+    fn test_field_ri_billed_energy() {
+        assert_eq!(
+            unsafe {
+                let uninit = ::std::mem::MaybeUninit::<rusage_info_v6>::uninit();
+                let ptr = uninit.as_ptr();
+                ::std::ptr::addr_of!((*ptr).ri_billed_energy) as usize - ptr as usize
+            },
+            264usize,
+            concat!(
+                "Offset of field: ",
+                stringify!(rusage_info_v6),
+                "::",
+                stringify!(ri_billed_energy)
+            )
+        );
+    }
+    test_field_ri_billed_energy();
+    fn test_field_ri_serviced_energy() {
+        assert_eq!(
+            unsafe {
+                let uninit = ::std::mem::MaybeUninit::<rusage_info_v6>::uninit();
+                let ptr = uninit.as_ptr();
+                ::std::ptr::addr_of!((*ptr).ri_serviced_energy) as usize - ptr as usize
+            },
+            272usize,
+            concat!(
+                "Offset of field: ",
+                stringify!(rusage_info_v6),
+                "::",
+                stringify!(ri_serviced_energy)
+            )
+        );
+    }
+    test_field_ri_serviced_energy();
+    fn test_field_ri_interval_max_phys_footprint() {
+        assert_eq!(
+            unsafe {
+                let uninit = ::std::mem::MaybeUninit::<rusage_info_v6>::uninit();
+                let ptr = uninit.as_ptr();
+                ::std::ptr::addr_of!((*ptr).ri_interval_max_phys_footprint) as usize - ptr as usize
+            },
+            280usize,
+            concat!(
+                "Offset of field: ",
+                stringify!(rusage_info_v6),
+                "::",
+                stringify!(ri_interval_max_phys_footprint)
+            )
+        );
+    }
+    test_field_ri_interval_max_phys_footprint();
+    fn test_field_ri_runnable_time() {
+        assert_eq!(
+            unsafe {
+                let uninit = ::std::mem::MaybeUninit::<rusage_info_v6>::uninit();
+                let ptr = uninit.as_ptr();
+                ::std::ptr::addr_of!((*ptr).ri_runnable_time) as usize - ptr as usize
+            },
+            288usize,
+            concat!(
+                "Offset of field: ",
+                stringify!(rusage_info_v6),
+                "::",
+                stringify!(ri_runnable_time)
+            )
+        );
+    }
+    test_field_ri_runnable_time();
+    fn test_field_ri_flags() {
+        assert_eq!(
+            unsafe {
+                let uninit = ::std::mem::MaybeUninit::<rusage_info_v6>::uninit();
+                let ptr = uninit.as_ptr();
+                ::std::ptr::addr_of!((*ptr).ri_flags) as usize - ptr as usize
+            },
+            296usize,
+            concat!(
+                "Offset of field: ",
+                stringify!(rusage_info_v6),
+                "::",
+                stringify!(ri_flags)
+            )
+        );
+    }
+    test_field_ri_flags();
+    fn test_field_ri_user_ptime() {
+        assert_eq!(
+            unsafe {
+                let uninit = ::std::mem::MaybeUninit::<rusage_info_v6>::uninit();
+                let ptr = uninit.as_ptr();
+                ::std::ptr::addr_of!((*ptr).ri_user_ptime) as usize - ptr as usize
+            },
+            304usize,
+            concat!(
+                "Offset of field: ",
+                stringify!(rusage_info_v6),
+                "::",
+                stringify!(ri_user_ptime)
+            )
+        );
+    }
+    test_field_ri_user_ptime();
+    fn test_field_ri_system_ptime() {
+        assert_eq!(
+            unsafe {
+                let uninit = ::std::mem::MaybeUninit::<rusage_info_v6>::uninit();
+                let ptr = uninit.as_ptr();
+                ::std::ptr::addr_of!((*ptr).ri_system_ptime) as usize - ptr as usize
+            },
+            312usize,
+            concat!(
+                "Offset of field: ",
+                stringify!(rusage_info_v6),
+                "::",
+                stringify!(ri_system_ptime)
+            )
+        );
+    }
+    test_field_ri_system_ptime();
+    fn test_field_ri_pinstructions() {
+        assert_eq!(
+            unsafe {
+                let uninit = ::std::mem::MaybeUninit::<rusage_info_v6>::uninit();
+                let ptr = uninit.as_ptr();
+                ::std::ptr::addr_of!((*ptr).ri_pinstructions) as usize - ptr as usize
+            },
+            320usize,
+            concat!(
+                "Offset of field: ",
+                stringify!(rusage_info_v6),
+                "::",
+                stringify!(ri_pinstructions)
+            )
+        );
+    }
+    test_field_ri_pinstructions();
+    fn test_field_ri_pcycles() {
+        assert_eq!(
+            unsafe {
+                let uninit = ::std::mem::MaybeUninit::<rusage_info_v6>::uninit();
+                let ptr = uninit.as_ptr();
+                ::std::ptr::addr_of!((*ptr).ri_pcycles) as usize - ptr as usize
+            },
+            328usize,
+            concat!(
+                "Offset of field: ",
+                stringify!(rusage_info_v6),
+                "::",
+                stringify!(ri_pcycles)
+            )
+        );
+    }
+    test_field_ri_pcycles();
+    fn test_field_ri_energy_nj() {
+        assert_eq!(
+            unsafe {
+                let uninit = ::std::mem::MaybeUninit::<rusage_info_v6>::uninit();
+                let ptr = uninit.as_ptr();
+                ::std::ptr::addr_of!((*ptr).ri_energy_nj) as usize - ptr as usize
+            },
+            336usize,
+            concat!(
+                "Offset of field: ",
+                stringify!(rusage_info_v6),
+                "::",
+                stringify!(ri_energy_nj)
+            )
+        );
+    }
+    test_field_ri_energy_nj();
+    fn test_field_ri_penergy_nj() {
+        assert_eq!(
+            unsafe {
+                let uninit = ::std::mem::MaybeUninit::<rusage_info_v6>::uninit();
+                let ptr = uninit.as_ptr();
+                ::std::ptr::addr_of!((*ptr).ri_penergy_nj) as usize - ptr as usize
+            },
+            344usize,
+            concat!(
+                "Offset of field: ",
+                stringify!(rusage_info_v6),
+                "::",
+                stringify!(ri_penergy_nj)
+            )
+        );
+    }
+    test_field_ri_penergy_nj();
+    fn test_field_ri_reserved() {
+        assert_eq!(
+            unsafe {
+                let uninit = ::std::mem::MaybeUninit::<rusage_info_v6>::uninit();
+                let ptr = uninit.as_ptr();
+                ::std::ptr::addr_of!((*ptr).ri_reserved) as usize - ptr as usize
+            },
+            352usize,
+            concat!(
+                "Offset of field: ",
+                stringify!(rusage_info_v6),
+                "::",
+                stringify!(ri_reserved)
+            )
+        );
+    }
+    test_field_ri_reserved();
+}
+pub type rusage_info_current = rusage_info_v6;
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
 pub struct rlimit {
