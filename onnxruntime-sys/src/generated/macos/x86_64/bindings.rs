@@ -81,12 +81,6 @@ where
     }
 }
 pub const __API_TO_BE_DEPRECATED: u32 = 100000;
-pub const __API_TO_BE_DEPRECATED_MACOS: u32 = 100000;
-pub const __API_TO_BE_DEPRECATED_IOS: u32 = 100000;
-pub const __API_TO_BE_DEPRECATED_TVOS: u32 = 100000;
-pub const __API_TO_BE_DEPRECATED_WATCHOS: u32 = 100000;
-pub const __API_TO_BE_DEPRECATED_MACCATALYST: u32 = 100000;
-pub const __API_TO_BE_DEPRECATED_DRIVERKIT: u32 = 100000;
 pub const __MAC_10_0: u32 = 1000;
 pub const __MAC_10_1: u32 = 1010;
 pub const __MAC_10_2: u32 = 1020;
@@ -130,10 +124,6 @@ pub const __MAC_12_0: u32 = 120000;
 pub const __MAC_12_1: u32 = 120100;
 pub const __MAC_12_2: u32 = 120200;
 pub const __MAC_12_3: u32 = 120300;
-pub const __MAC_13_0: u32 = 130000;
-pub const __MAC_13_1: u32 = 130100;
-pub const __MAC_13_2: u32 = 130200;
-pub const __MAC_13_3: u32 = 130300;
 pub const __IPHONE_2_0: u32 = 20000;
 pub const __IPHONE_2_1: u32 = 20100;
 pub const __IPHONE_2_2: u32 = 20200;
@@ -194,11 +184,6 @@ pub const __IPHONE_15_1: u32 = 150100;
 pub const __IPHONE_15_2: u32 = 150200;
 pub const __IPHONE_15_3: u32 = 150300;
 pub const __IPHONE_15_4: u32 = 150400;
-pub const __IPHONE_16_0: u32 = 160000;
-pub const __IPHONE_16_1: u32 = 160100;
-pub const __IPHONE_16_2: u32 = 160200;
-pub const __IPHONE_16_3: u32 = 160300;
-pub const __IPHONE_16_4: u32 = 160400;
 pub const __TVOS_9_0: u32 = 90000;
 pub const __TVOS_9_1: u32 = 90100;
 pub const __TVOS_9_2: u32 = 90200;
@@ -232,11 +217,6 @@ pub const __TVOS_15_1: u32 = 150100;
 pub const __TVOS_15_2: u32 = 150200;
 pub const __TVOS_15_3: u32 = 150300;
 pub const __TVOS_15_4: u32 = 150400;
-pub const __TVOS_16_0: u32 = 160000;
-pub const __TVOS_16_1: u32 = 160100;
-pub const __TVOS_16_2: u32 = 160200;
-pub const __TVOS_16_3: u32 = 160300;
-pub const __TVOS_16_4: u32 = 160400;
 pub const __WATCHOS_1_0: u32 = 10000;
 pub const __WATCHOS_2_0: u32 = 20000;
 pub const __WATCHOS_2_1: u32 = 20100;
@@ -268,11 +248,6 @@ pub const __WATCHOS_8_1: u32 = 80100;
 pub const __WATCHOS_8_3: u32 = 80300;
 pub const __WATCHOS_8_4: u32 = 80400;
 pub const __WATCHOS_8_5: u32 = 80500;
-pub const __WATCHOS_9_0: u32 = 90000;
-pub const __WATCHOS_9_1: u32 = 90100;
-pub const __WATCHOS_9_2: u32 = 90200;
-pub const __WATCHOS_9_3: u32 = 90300;
-pub const __WATCHOS_9_4: u32 = 90400;
 pub const MAC_OS_X_VERSION_10_0: u32 = 1000;
 pub const MAC_OS_X_VERSION_10_1: u32 = 1010;
 pub const MAC_OS_X_VERSION_10_2: u32 = 1020;
@@ -307,11 +282,10 @@ pub const MAC_OS_X_VERSION_10_15_1: u32 = 101501;
 pub const MAC_OS_X_VERSION_10_16: u32 = 101600;
 pub const MAC_OS_VERSION_11_0: u32 = 110000;
 pub const MAC_OS_VERSION_12_0: u32 = 120000;
-pub const MAC_OS_VERSION_13_0: u32 = 130000;
 pub const __DRIVERKIT_19_0: u32 = 190000;
 pub const __DRIVERKIT_20_0: u32 = 200000;
 pub const __DRIVERKIT_21_0: u32 = 210000;
-pub const __MAC_OS_X_VERSION_MAX_ALLOWED: u32 = 130300;
+pub const __MAC_OS_X_VERSION_MAX_ALLOWED: u32 = 120300;
 pub const __ENABLE_LEGACY_MAC_AVAILABILITY: u32 = 1;
 pub const __DARWIN_ONLY_64_BIT_INO_T: u32 = 0;
 pub const __DARWIN_ONLY_UNIX_CONFORMANCE: u32 = 1;
@@ -523,8 +497,7 @@ pub const RUSAGE_INFO_V2: u32 = 2;
 pub const RUSAGE_INFO_V3: u32 = 3;
 pub const RUSAGE_INFO_V4: u32 = 4;
 pub const RUSAGE_INFO_V5: u32 = 5;
-pub const RUSAGE_INFO_V6: u32 = 6;
-pub const RUSAGE_INFO_CURRENT: u32 = 6;
+pub const RUSAGE_INFO_CURRENT: u32 = 5;
 pub const RU_PROC_RUNS_RESLIDE: u32 = 1;
 pub const RLIMIT_CPU: u32 = 0;
 pub const RLIMIT_FSIZE: u32 = 1;
@@ -558,7 +531,6 @@ pub const IOPOL_TYPE_VFS_IGNORE_CONTENT_PROTECTION: u32 = 6;
 pub const IOPOL_TYPE_VFS_IGNORE_PERMISSIONS: u32 = 7;
 pub const IOPOL_TYPE_VFS_SKIP_MTIME_UPDATE: u32 = 8;
 pub const IOPOL_TYPE_VFS_ALLOW_LOW_SPACE_WRITES: u32 = 9;
-pub const IOPOL_TYPE_VFS_DISALLOW_RW_FOR_O_EVTONLY: u32 = 10;
 pub const IOPOL_SCOPE_PROCESS: u32 = 0;
 pub const IOPOL_SCOPE_THREAD: u32 = 1;
 pub const IOPOL_SCOPE_DARWIN_BG: u32 = 2;
@@ -587,8 +559,6 @@ pub const IOPOL_VFS_SKIP_MTIME_UPDATE_OFF: u32 = 0;
 pub const IOPOL_VFS_SKIP_MTIME_UPDATE_ON: u32 = 1;
 pub const IOPOL_VFS_ALLOW_LOW_SPACE_WRITES_OFF: u32 = 0;
 pub const IOPOL_VFS_ALLOW_LOW_SPACE_WRITES_ON: u32 = 1;
-pub const IOPOL_VFS_DISALLOW_RW_FOR_O_EVTONLY_DEFAULT: u32 = 0;
-pub const IOPOL_VFS_DISALLOW_RW_FOR_O_EVTONLY_ON: u32 = 1;
 pub const WNOHANG: u32 = 1;
 pub const WUNTRACED: u32 = 2;
 pub const WCOREFLAG: u32 = 128;
@@ -614,7 +584,7 @@ pub const EXIT_SUCCESS: u32 = 0;
 pub const RAND_MAX: u32 = 2147483647;
 pub const _USE_FORTIFY_LEVEL: u32 = 2;
 pub const __HAS_FIXED_CHK_PROTOTYPES: u32 = 1;
-pub const ORT_API_VERSION: u32 = 12;
+pub const ORT_API_VERSION: u32 = 15;
 pub type __int8_t = ::std::os::raw::c_schar;
 pub type __uint8_t = ::std::os::raw::c_uchar;
 pub type __int16_t = ::std::os::raw::c_short;
@@ -14304,817 +14274,7 @@ fn bindgen_test_layout_rusage_info_v5() {
     }
     test_field_ri_flags();
 }
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct rusage_info_v6 {
-    pub ri_uuid: [u8; 16usize],
-    pub ri_user_time: u64,
-    pub ri_system_time: u64,
-    pub ri_pkg_idle_wkups: u64,
-    pub ri_interrupt_wkups: u64,
-    pub ri_pageins: u64,
-    pub ri_wired_size: u64,
-    pub ri_resident_size: u64,
-    pub ri_phys_footprint: u64,
-    pub ri_proc_start_abstime: u64,
-    pub ri_proc_exit_abstime: u64,
-    pub ri_child_user_time: u64,
-    pub ri_child_system_time: u64,
-    pub ri_child_pkg_idle_wkups: u64,
-    pub ri_child_interrupt_wkups: u64,
-    pub ri_child_pageins: u64,
-    pub ri_child_elapsed_abstime: u64,
-    pub ri_diskio_bytesread: u64,
-    pub ri_diskio_byteswritten: u64,
-    pub ri_cpu_time_qos_default: u64,
-    pub ri_cpu_time_qos_maintenance: u64,
-    pub ri_cpu_time_qos_background: u64,
-    pub ri_cpu_time_qos_utility: u64,
-    pub ri_cpu_time_qos_legacy: u64,
-    pub ri_cpu_time_qos_user_initiated: u64,
-    pub ri_cpu_time_qos_user_interactive: u64,
-    pub ri_billed_system_time: u64,
-    pub ri_serviced_system_time: u64,
-    pub ri_logical_writes: u64,
-    pub ri_lifetime_max_phys_footprint: u64,
-    pub ri_instructions: u64,
-    pub ri_cycles: u64,
-    pub ri_billed_energy: u64,
-    pub ri_serviced_energy: u64,
-    pub ri_interval_max_phys_footprint: u64,
-    pub ri_runnable_time: u64,
-    pub ri_flags: u64,
-    pub ri_user_ptime: u64,
-    pub ri_system_ptime: u64,
-    pub ri_pinstructions: u64,
-    pub ri_pcycles: u64,
-    pub ri_energy_nj: u64,
-    pub ri_penergy_nj: u64,
-    pub ri_reserved: [u64; 14usize],
-}
-#[test]
-fn bindgen_test_layout_rusage_info_v6() {
-    assert_eq!(
-        ::std::mem::size_of::<rusage_info_v6>(),
-        464usize,
-        concat!("Size of: ", stringify!(rusage_info_v6))
-    );
-    assert_eq!(
-        ::std::mem::align_of::<rusage_info_v6>(),
-        8usize,
-        concat!("Alignment of ", stringify!(rusage_info_v6))
-    );
-    fn test_field_ri_uuid() {
-        assert_eq!(
-            unsafe {
-                let uninit = ::std::mem::MaybeUninit::<rusage_info_v6>::uninit();
-                let ptr = uninit.as_ptr();
-                ::std::ptr::addr_of!((*ptr).ri_uuid) as usize - ptr as usize
-            },
-            0usize,
-            concat!(
-                "Offset of field: ",
-                stringify!(rusage_info_v6),
-                "::",
-                stringify!(ri_uuid)
-            )
-        );
-    }
-    test_field_ri_uuid();
-    fn test_field_ri_user_time() {
-        assert_eq!(
-            unsafe {
-                let uninit = ::std::mem::MaybeUninit::<rusage_info_v6>::uninit();
-                let ptr = uninit.as_ptr();
-                ::std::ptr::addr_of!((*ptr).ri_user_time) as usize - ptr as usize
-            },
-            16usize,
-            concat!(
-                "Offset of field: ",
-                stringify!(rusage_info_v6),
-                "::",
-                stringify!(ri_user_time)
-            )
-        );
-    }
-    test_field_ri_user_time();
-    fn test_field_ri_system_time() {
-        assert_eq!(
-            unsafe {
-                let uninit = ::std::mem::MaybeUninit::<rusage_info_v6>::uninit();
-                let ptr = uninit.as_ptr();
-                ::std::ptr::addr_of!((*ptr).ri_system_time) as usize - ptr as usize
-            },
-            24usize,
-            concat!(
-                "Offset of field: ",
-                stringify!(rusage_info_v6),
-                "::",
-                stringify!(ri_system_time)
-            )
-        );
-    }
-    test_field_ri_system_time();
-    fn test_field_ri_pkg_idle_wkups() {
-        assert_eq!(
-            unsafe {
-                let uninit = ::std::mem::MaybeUninit::<rusage_info_v6>::uninit();
-                let ptr = uninit.as_ptr();
-                ::std::ptr::addr_of!((*ptr).ri_pkg_idle_wkups) as usize - ptr as usize
-            },
-            32usize,
-            concat!(
-                "Offset of field: ",
-                stringify!(rusage_info_v6),
-                "::",
-                stringify!(ri_pkg_idle_wkups)
-            )
-        );
-    }
-    test_field_ri_pkg_idle_wkups();
-    fn test_field_ri_interrupt_wkups() {
-        assert_eq!(
-            unsafe {
-                let uninit = ::std::mem::MaybeUninit::<rusage_info_v6>::uninit();
-                let ptr = uninit.as_ptr();
-                ::std::ptr::addr_of!((*ptr).ri_interrupt_wkups) as usize - ptr as usize
-            },
-            40usize,
-            concat!(
-                "Offset of field: ",
-                stringify!(rusage_info_v6),
-                "::",
-                stringify!(ri_interrupt_wkups)
-            )
-        );
-    }
-    test_field_ri_interrupt_wkups();
-    fn test_field_ri_pageins() {
-        assert_eq!(
-            unsafe {
-                let uninit = ::std::mem::MaybeUninit::<rusage_info_v6>::uninit();
-                let ptr = uninit.as_ptr();
-                ::std::ptr::addr_of!((*ptr).ri_pageins) as usize - ptr as usize
-            },
-            48usize,
-            concat!(
-                "Offset of field: ",
-                stringify!(rusage_info_v6),
-                "::",
-                stringify!(ri_pageins)
-            )
-        );
-    }
-    test_field_ri_pageins();
-    fn test_field_ri_wired_size() {
-        assert_eq!(
-            unsafe {
-                let uninit = ::std::mem::MaybeUninit::<rusage_info_v6>::uninit();
-                let ptr = uninit.as_ptr();
-                ::std::ptr::addr_of!((*ptr).ri_wired_size) as usize - ptr as usize
-            },
-            56usize,
-            concat!(
-                "Offset of field: ",
-                stringify!(rusage_info_v6),
-                "::",
-                stringify!(ri_wired_size)
-            )
-        );
-    }
-    test_field_ri_wired_size();
-    fn test_field_ri_resident_size() {
-        assert_eq!(
-            unsafe {
-                let uninit = ::std::mem::MaybeUninit::<rusage_info_v6>::uninit();
-                let ptr = uninit.as_ptr();
-                ::std::ptr::addr_of!((*ptr).ri_resident_size) as usize - ptr as usize
-            },
-            64usize,
-            concat!(
-                "Offset of field: ",
-                stringify!(rusage_info_v6),
-                "::",
-                stringify!(ri_resident_size)
-            )
-        );
-    }
-    test_field_ri_resident_size();
-    fn test_field_ri_phys_footprint() {
-        assert_eq!(
-            unsafe {
-                let uninit = ::std::mem::MaybeUninit::<rusage_info_v6>::uninit();
-                let ptr = uninit.as_ptr();
-                ::std::ptr::addr_of!((*ptr).ri_phys_footprint) as usize - ptr as usize
-            },
-            72usize,
-            concat!(
-                "Offset of field: ",
-                stringify!(rusage_info_v6),
-                "::",
-                stringify!(ri_phys_footprint)
-            )
-        );
-    }
-    test_field_ri_phys_footprint();
-    fn test_field_ri_proc_start_abstime() {
-        assert_eq!(
-            unsafe {
-                let uninit = ::std::mem::MaybeUninit::<rusage_info_v6>::uninit();
-                let ptr = uninit.as_ptr();
-                ::std::ptr::addr_of!((*ptr).ri_proc_start_abstime) as usize - ptr as usize
-            },
-            80usize,
-            concat!(
-                "Offset of field: ",
-                stringify!(rusage_info_v6),
-                "::",
-                stringify!(ri_proc_start_abstime)
-            )
-        );
-    }
-    test_field_ri_proc_start_abstime();
-    fn test_field_ri_proc_exit_abstime() {
-        assert_eq!(
-            unsafe {
-                let uninit = ::std::mem::MaybeUninit::<rusage_info_v6>::uninit();
-                let ptr = uninit.as_ptr();
-                ::std::ptr::addr_of!((*ptr).ri_proc_exit_abstime) as usize - ptr as usize
-            },
-            88usize,
-            concat!(
-                "Offset of field: ",
-                stringify!(rusage_info_v6),
-                "::",
-                stringify!(ri_proc_exit_abstime)
-            )
-        );
-    }
-    test_field_ri_proc_exit_abstime();
-    fn test_field_ri_child_user_time() {
-        assert_eq!(
-            unsafe {
-                let uninit = ::std::mem::MaybeUninit::<rusage_info_v6>::uninit();
-                let ptr = uninit.as_ptr();
-                ::std::ptr::addr_of!((*ptr).ri_child_user_time) as usize - ptr as usize
-            },
-            96usize,
-            concat!(
-                "Offset of field: ",
-                stringify!(rusage_info_v6),
-                "::",
-                stringify!(ri_child_user_time)
-            )
-        );
-    }
-    test_field_ri_child_user_time();
-    fn test_field_ri_child_system_time() {
-        assert_eq!(
-            unsafe {
-                let uninit = ::std::mem::MaybeUninit::<rusage_info_v6>::uninit();
-                let ptr = uninit.as_ptr();
-                ::std::ptr::addr_of!((*ptr).ri_child_system_time) as usize - ptr as usize
-            },
-            104usize,
-            concat!(
-                "Offset of field: ",
-                stringify!(rusage_info_v6),
-                "::",
-                stringify!(ri_child_system_time)
-            )
-        );
-    }
-    test_field_ri_child_system_time();
-    fn test_field_ri_child_pkg_idle_wkups() {
-        assert_eq!(
-            unsafe {
-                let uninit = ::std::mem::MaybeUninit::<rusage_info_v6>::uninit();
-                let ptr = uninit.as_ptr();
-                ::std::ptr::addr_of!((*ptr).ri_child_pkg_idle_wkups) as usize - ptr as usize
-            },
-            112usize,
-            concat!(
-                "Offset of field: ",
-                stringify!(rusage_info_v6),
-                "::",
-                stringify!(ri_child_pkg_idle_wkups)
-            )
-        );
-    }
-    test_field_ri_child_pkg_idle_wkups();
-    fn test_field_ri_child_interrupt_wkups() {
-        assert_eq!(
-            unsafe {
-                let uninit = ::std::mem::MaybeUninit::<rusage_info_v6>::uninit();
-                let ptr = uninit.as_ptr();
-                ::std::ptr::addr_of!((*ptr).ri_child_interrupt_wkups) as usize - ptr as usize
-            },
-            120usize,
-            concat!(
-                "Offset of field: ",
-                stringify!(rusage_info_v6),
-                "::",
-                stringify!(ri_child_interrupt_wkups)
-            )
-        );
-    }
-    test_field_ri_child_interrupt_wkups();
-    fn test_field_ri_child_pageins() {
-        assert_eq!(
-            unsafe {
-                let uninit = ::std::mem::MaybeUninit::<rusage_info_v6>::uninit();
-                let ptr = uninit.as_ptr();
-                ::std::ptr::addr_of!((*ptr).ri_child_pageins) as usize - ptr as usize
-            },
-            128usize,
-            concat!(
-                "Offset of field: ",
-                stringify!(rusage_info_v6),
-                "::",
-                stringify!(ri_child_pageins)
-            )
-        );
-    }
-    test_field_ri_child_pageins();
-    fn test_field_ri_child_elapsed_abstime() {
-        assert_eq!(
-            unsafe {
-                let uninit = ::std::mem::MaybeUninit::<rusage_info_v6>::uninit();
-                let ptr = uninit.as_ptr();
-                ::std::ptr::addr_of!((*ptr).ri_child_elapsed_abstime) as usize - ptr as usize
-            },
-            136usize,
-            concat!(
-                "Offset of field: ",
-                stringify!(rusage_info_v6),
-                "::",
-                stringify!(ri_child_elapsed_abstime)
-            )
-        );
-    }
-    test_field_ri_child_elapsed_abstime();
-    fn test_field_ri_diskio_bytesread() {
-        assert_eq!(
-            unsafe {
-                let uninit = ::std::mem::MaybeUninit::<rusage_info_v6>::uninit();
-                let ptr = uninit.as_ptr();
-                ::std::ptr::addr_of!((*ptr).ri_diskio_bytesread) as usize - ptr as usize
-            },
-            144usize,
-            concat!(
-                "Offset of field: ",
-                stringify!(rusage_info_v6),
-                "::",
-                stringify!(ri_diskio_bytesread)
-            )
-        );
-    }
-    test_field_ri_diskio_bytesread();
-    fn test_field_ri_diskio_byteswritten() {
-        assert_eq!(
-            unsafe {
-                let uninit = ::std::mem::MaybeUninit::<rusage_info_v6>::uninit();
-                let ptr = uninit.as_ptr();
-                ::std::ptr::addr_of!((*ptr).ri_diskio_byteswritten) as usize - ptr as usize
-            },
-            152usize,
-            concat!(
-                "Offset of field: ",
-                stringify!(rusage_info_v6),
-                "::",
-                stringify!(ri_diskio_byteswritten)
-            )
-        );
-    }
-    test_field_ri_diskio_byteswritten();
-    fn test_field_ri_cpu_time_qos_default() {
-        assert_eq!(
-            unsafe {
-                let uninit = ::std::mem::MaybeUninit::<rusage_info_v6>::uninit();
-                let ptr = uninit.as_ptr();
-                ::std::ptr::addr_of!((*ptr).ri_cpu_time_qos_default) as usize - ptr as usize
-            },
-            160usize,
-            concat!(
-                "Offset of field: ",
-                stringify!(rusage_info_v6),
-                "::",
-                stringify!(ri_cpu_time_qos_default)
-            )
-        );
-    }
-    test_field_ri_cpu_time_qos_default();
-    fn test_field_ri_cpu_time_qos_maintenance() {
-        assert_eq!(
-            unsafe {
-                let uninit = ::std::mem::MaybeUninit::<rusage_info_v6>::uninit();
-                let ptr = uninit.as_ptr();
-                ::std::ptr::addr_of!((*ptr).ri_cpu_time_qos_maintenance) as usize - ptr as usize
-            },
-            168usize,
-            concat!(
-                "Offset of field: ",
-                stringify!(rusage_info_v6),
-                "::",
-                stringify!(ri_cpu_time_qos_maintenance)
-            )
-        );
-    }
-    test_field_ri_cpu_time_qos_maintenance();
-    fn test_field_ri_cpu_time_qos_background() {
-        assert_eq!(
-            unsafe {
-                let uninit = ::std::mem::MaybeUninit::<rusage_info_v6>::uninit();
-                let ptr = uninit.as_ptr();
-                ::std::ptr::addr_of!((*ptr).ri_cpu_time_qos_background) as usize - ptr as usize
-            },
-            176usize,
-            concat!(
-                "Offset of field: ",
-                stringify!(rusage_info_v6),
-                "::",
-                stringify!(ri_cpu_time_qos_background)
-            )
-        );
-    }
-    test_field_ri_cpu_time_qos_background();
-    fn test_field_ri_cpu_time_qos_utility() {
-        assert_eq!(
-            unsafe {
-                let uninit = ::std::mem::MaybeUninit::<rusage_info_v6>::uninit();
-                let ptr = uninit.as_ptr();
-                ::std::ptr::addr_of!((*ptr).ri_cpu_time_qos_utility) as usize - ptr as usize
-            },
-            184usize,
-            concat!(
-                "Offset of field: ",
-                stringify!(rusage_info_v6),
-                "::",
-                stringify!(ri_cpu_time_qos_utility)
-            )
-        );
-    }
-    test_field_ri_cpu_time_qos_utility();
-    fn test_field_ri_cpu_time_qos_legacy() {
-        assert_eq!(
-            unsafe {
-                let uninit = ::std::mem::MaybeUninit::<rusage_info_v6>::uninit();
-                let ptr = uninit.as_ptr();
-                ::std::ptr::addr_of!((*ptr).ri_cpu_time_qos_legacy) as usize - ptr as usize
-            },
-            192usize,
-            concat!(
-                "Offset of field: ",
-                stringify!(rusage_info_v6),
-                "::",
-                stringify!(ri_cpu_time_qos_legacy)
-            )
-        );
-    }
-    test_field_ri_cpu_time_qos_legacy();
-    fn test_field_ri_cpu_time_qos_user_initiated() {
-        assert_eq!(
-            unsafe {
-                let uninit = ::std::mem::MaybeUninit::<rusage_info_v6>::uninit();
-                let ptr = uninit.as_ptr();
-                ::std::ptr::addr_of!((*ptr).ri_cpu_time_qos_user_initiated) as usize - ptr as usize
-            },
-            200usize,
-            concat!(
-                "Offset of field: ",
-                stringify!(rusage_info_v6),
-                "::",
-                stringify!(ri_cpu_time_qos_user_initiated)
-            )
-        );
-    }
-    test_field_ri_cpu_time_qos_user_initiated();
-    fn test_field_ri_cpu_time_qos_user_interactive() {
-        assert_eq!(
-            unsafe {
-                let uninit = ::std::mem::MaybeUninit::<rusage_info_v6>::uninit();
-                let ptr = uninit.as_ptr();
-                ::std::ptr::addr_of!((*ptr).ri_cpu_time_qos_user_interactive) as usize
-                    - ptr as usize
-            },
-            208usize,
-            concat!(
-                "Offset of field: ",
-                stringify!(rusage_info_v6),
-                "::",
-                stringify!(ri_cpu_time_qos_user_interactive)
-            )
-        );
-    }
-    test_field_ri_cpu_time_qos_user_interactive();
-    fn test_field_ri_billed_system_time() {
-        assert_eq!(
-            unsafe {
-                let uninit = ::std::mem::MaybeUninit::<rusage_info_v6>::uninit();
-                let ptr = uninit.as_ptr();
-                ::std::ptr::addr_of!((*ptr).ri_billed_system_time) as usize - ptr as usize
-            },
-            216usize,
-            concat!(
-                "Offset of field: ",
-                stringify!(rusage_info_v6),
-                "::",
-                stringify!(ri_billed_system_time)
-            )
-        );
-    }
-    test_field_ri_billed_system_time();
-    fn test_field_ri_serviced_system_time() {
-        assert_eq!(
-            unsafe {
-                let uninit = ::std::mem::MaybeUninit::<rusage_info_v6>::uninit();
-                let ptr = uninit.as_ptr();
-                ::std::ptr::addr_of!((*ptr).ri_serviced_system_time) as usize - ptr as usize
-            },
-            224usize,
-            concat!(
-                "Offset of field: ",
-                stringify!(rusage_info_v6),
-                "::",
-                stringify!(ri_serviced_system_time)
-            )
-        );
-    }
-    test_field_ri_serviced_system_time();
-    fn test_field_ri_logical_writes() {
-        assert_eq!(
-            unsafe {
-                let uninit = ::std::mem::MaybeUninit::<rusage_info_v6>::uninit();
-                let ptr = uninit.as_ptr();
-                ::std::ptr::addr_of!((*ptr).ri_logical_writes) as usize - ptr as usize
-            },
-            232usize,
-            concat!(
-                "Offset of field: ",
-                stringify!(rusage_info_v6),
-                "::",
-                stringify!(ri_logical_writes)
-            )
-        );
-    }
-    test_field_ri_logical_writes();
-    fn test_field_ri_lifetime_max_phys_footprint() {
-        assert_eq!(
-            unsafe {
-                let uninit = ::std::mem::MaybeUninit::<rusage_info_v6>::uninit();
-                let ptr = uninit.as_ptr();
-                ::std::ptr::addr_of!((*ptr).ri_lifetime_max_phys_footprint) as usize - ptr as usize
-            },
-            240usize,
-            concat!(
-                "Offset of field: ",
-                stringify!(rusage_info_v6),
-                "::",
-                stringify!(ri_lifetime_max_phys_footprint)
-            )
-        );
-    }
-    test_field_ri_lifetime_max_phys_footprint();
-    fn test_field_ri_instructions() {
-        assert_eq!(
-            unsafe {
-                let uninit = ::std::mem::MaybeUninit::<rusage_info_v6>::uninit();
-                let ptr = uninit.as_ptr();
-                ::std::ptr::addr_of!((*ptr).ri_instructions) as usize - ptr as usize
-            },
-            248usize,
-            concat!(
-                "Offset of field: ",
-                stringify!(rusage_info_v6),
-                "::",
-                stringify!(ri_instructions)
-            )
-        );
-    }
-    test_field_ri_instructions();
-    fn test_field_ri_cycles() {
-        assert_eq!(
-            unsafe {
-                let uninit = ::std::mem::MaybeUninit::<rusage_info_v6>::uninit();
-                let ptr = uninit.as_ptr();
-                ::std::ptr::addr_of!((*ptr).ri_cycles) as usize - ptr as usize
-            },
-            256usize,
-            concat!(
-                "Offset of field: ",
-                stringify!(rusage_info_v6),
-                "::",
-                stringify!(ri_cycles)
-            )
-        );
-    }
-    test_field_ri_cycles();
-    fn test_field_ri_billed_energy() {
-        assert_eq!(
-            unsafe {
-                let uninit = ::std::mem::MaybeUninit::<rusage_info_v6>::uninit();
-                let ptr = uninit.as_ptr();
-                ::std::ptr::addr_of!((*ptr).ri_billed_energy) as usize - ptr as usize
-            },
-            264usize,
-            concat!(
-                "Offset of field: ",
-                stringify!(rusage_info_v6),
-                "::",
-                stringify!(ri_billed_energy)
-            )
-        );
-    }
-    test_field_ri_billed_energy();
-    fn test_field_ri_serviced_energy() {
-        assert_eq!(
-            unsafe {
-                let uninit = ::std::mem::MaybeUninit::<rusage_info_v6>::uninit();
-                let ptr = uninit.as_ptr();
-                ::std::ptr::addr_of!((*ptr).ri_serviced_energy) as usize - ptr as usize
-            },
-            272usize,
-            concat!(
-                "Offset of field: ",
-                stringify!(rusage_info_v6),
-                "::",
-                stringify!(ri_serviced_energy)
-            )
-        );
-    }
-    test_field_ri_serviced_energy();
-    fn test_field_ri_interval_max_phys_footprint() {
-        assert_eq!(
-            unsafe {
-                let uninit = ::std::mem::MaybeUninit::<rusage_info_v6>::uninit();
-                let ptr = uninit.as_ptr();
-                ::std::ptr::addr_of!((*ptr).ri_interval_max_phys_footprint) as usize - ptr as usize
-            },
-            280usize,
-            concat!(
-                "Offset of field: ",
-                stringify!(rusage_info_v6),
-                "::",
-                stringify!(ri_interval_max_phys_footprint)
-            )
-        );
-    }
-    test_field_ri_interval_max_phys_footprint();
-    fn test_field_ri_runnable_time() {
-        assert_eq!(
-            unsafe {
-                let uninit = ::std::mem::MaybeUninit::<rusage_info_v6>::uninit();
-                let ptr = uninit.as_ptr();
-                ::std::ptr::addr_of!((*ptr).ri_runnable_time) as usize - ptr as usize
-            },
-            288usize,
-            concat!(
-                "Offset of field: ",
-                stringify!(rusage_info_v6),
-                "::",
-                stringify!(ri_runnable_time)
-            )
-        );
-    }
-    test_field_ri_runnable_time();
-    fn test_field_ri_flags() {
-        assert_eq!(
-            unsafe {
-                let uninit = ::std::mem::MaybeUninit::<rusage_info_v6>::uninit();
-                let ptr = uninit.as_ptr();
-                ::std::ptr::addr_of!((*ptr).ri_flags) as usize - ptr as usize
-            },
-            296usize,
-            concat!(
-                "Offset of field: ",
-                stringify!(rusage_info_v6),
-                "::",
-                stringify!(ri_flags)
-            )
-        );
-    }
-    test_field_ri_flags();
-    fn test_field_ri_user_ptime() {
-        assert_eq!(
-            unsafe {
-                let uninit = ::std::mem::MaybeUninit::<rusage_info_v6>::uninit();
-                let ptr = uninit.as_ptr();
-                ::std::ptr::addr_of!((*ptr).ri_user_ptime) as usize - ptr as usize
-            },
-            304usize,
-            concat!(
-                "Offset of field: ",
-                stringify!(rusage_info_v6),
-                "::",
-                stringify!(ri_user_ptime)
-            )
-        );
-    }
-    test_field_ri_user_ptime();
-    fn test_field_ri_system_ptime() {
-        assert_eq!(
-            unsafe {
-                let uninit = ::std::mem::MaybeUninit::<rusage_info_v6>::uninit();
-                let ptr = uninit.as_ptr();
-                ::std::ptr::addr_of!((*ptr).ri_system_ptime) as usize - ptr as usize
-            },
-            312usize,
-            concat!(
-                "Offset of field: ",
-                stringify!(rusage_info_v6),
-                "::",
-                stringify!(ri_system_ptime)
-            )
-        );
-    }
-    test_field_ri_system_ptime();
-    fn test_field_ri_pinstructions() {
-        assert_eq!(
-            unsafe {
-                let uninit = ::std::mem::MaybeUninit::<rusage_info_v6>::uninit();
-                let ptr = uninit.as_ptr();
-                ::std::ptr::addr_of!((*ptr).ri_pinstructions) as usize - ptr as usize
-            },
-            320usize,
-            concat!(
-                "Offset of field: ",
-                stringify!(rusage_info_v6),
-                "::",
-                stringify!(ri_pinstructions)
-            )
-        );
-    }
-    test_field_ri_pinstructions();
-    fn test_field_ri_pcycles() {
-        assert_eq!(
-            unsafe {
-                let uninit = ::std::mem::MaybeUninit::<rusage_info_v6>::uninit();
-                let ptr = uninit.as_ptr();
-                ::std::ptr::addr_of!((*ptr).ri_pcycles) as usize - ptr as usize
-            },
-            328usize,
-            concat!(
-                "Offset of field: ",
-                stringify!(rusage_info_v6),
-                "::",
-                stringify!(ri_pcycles)
-            )
-        );
-    }
-    test_field_ri_pcycles();
-    fn test_field_ri_energy_nj() {
-        assert_eq!(
-            unsafe {
-                let uninit = ::std::mem::MaybeUninit::<rusage_info_v6>::uninit();
-                let ptr = uninit.as_ptr();
-                ::std::ptr::addr_of!((*ptr).ri_energy_nj) as usize - ptr as usize
-            },
-            336usize,
-            concat!(
-                "Offset of field: ",
-                stringify!(rusage_info_v6),
-                "::",
-                stringify!(ri_energy_nj)
-            )
-        );
-    }
-    test_field_ri_energy_nj();
-    fn test_field_ri_penergy_nj() {
-        assert_eq!(
-            unsafe {
-                let uninit = ::std::mem::MaybeUninit::<rusage_info_v6>::uninit();
-                let ptr = uninit.as_ptr();
-                ::std::ptr::addr_of!((*ptr).ri_penergy_nj) as usize - ptr as usize
-            },
-            344usize,
-            concat!(
-                "Offset of field: ",
-                stringify!(rusage_info_v6),
-                "::",
-                stringify!(ri_penergy_nj)
-            )
-        );
-    }
-    test_field_ri_penergy_nj();
-    fn test_field_ri_reserved() {
-        assert_eq!(
-            unsafe {
-                let uninit = ::std::mem::MaybeUninit::<rusage_info_v6>::uninit();
-                let ptr = uninit.as_ptr();
-                ::std::ptr::addr_of!((*ptr).ri_reserved) as usize - ptr as usize
-            },
-            352usize,
-            concat!(
-                "Offset of field: ",
-                stringify!(rusage_info_v6),
-                "::",
-                stringify!(ri_reserved)
-            )
-        );
-    }
-    test_field_ri_reserved();
-}
-pub type rusage_info_current = rusage_info_v6;
+pub type rusage_info_current = rusage_info_v5;
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
 pub struct rlimit {
@@ -16753,22 +15913,27 @@ pub struct OrtTensorTypeAndShapeInfo {
 }
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
-pub struct OrtSessionOptions {
-    _unused: [u8; 0],
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
-pub struct OrtCustomOpDomain {
-    _unused: [u8; 0],
-}
-#[repr(C)]
-#[derive(Debug, Copy, Clone)]
 pub struct OrtMapTypeInfo {
     _unused: [u8; 0],
 }
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
 pub struct OrtSequenceTypeInfo {
+    _unused: [u8; 0],
+}
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct OrtOptionalTypeInfo {
+    _unused: [u8; 0],
+}
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct OrtSessionOptions {
+    _unused: [u8; 0],
+}
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct OrtCustomOpDomain {
     _unused: [u8; 0],
 }
 #[repr(C)]
@@ -16808,12 +15973,27 @@ pub struct OrtCUDAProviderOptionsV2 {
 }
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
+pub struct OrtCANNProviderOptions {
+    _unused: [u8; 0],
+}
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct OrtDnnlProviderOptions {
+    _unused: [u8; 0],
+}
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
 pub struct OrtOp {
     _unused: [u8; 0],
 }
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
 pub struct OrtOpAttr {
+    _unused: [u8; 0],
+}
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct OrtLogger {
     _unused: [u8; 0],
 }
 pub type OrtStatusPtr = *mut OrtStatus;
@@ -16934,8 +16114,8 @@ pub type OrtLoggingFunction = ::std::option::Option<
 #[repr(u32)]
 #[doc = " \\brief Graph optimization level"]
 #[doc = ""]
-#[doc = " Refer to https://www.onnxruntime.ai/docs/resources/graph-optimizations.html"]
-#[doc = " for an in-depth understanding of Graph Optimizations"]
+#[doc = " Refer to https://www.onnxruntime.ai/docs/performance/graph-optimizations.html#graph-optimization-levels"]
+#[doc = " for an in-depth understanding of the Graph Optimization Levels."]
 #[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub enum GraphOptimizationLevel {
     ORT_DISABLE_ALL = 0,
@@ -16994,6 +16174,14 @@ pub enum OrtMemType {
     OrtMemTypeDefault = 0,
 }
 #[repr(u32)]
+#[doc = " \\brief This mimics OrtDevice type constants so they can be returned in the API"]
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
+pub enum OrtMemoryInfoDeviceType {
+    OrtMemoryInfoDeviceType_CPU = 0,
+    OrtMemoryInfoDeviceType_GPU = 1,
+    OrtMemoryInfoDeviceType_FPGA = 2,
+}
+#[repr(u32)]
 #[doc = " \\brief Algorithm to use for cuDNN Convolution Op"]
 #[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub enum OrtCudnnConvAlgoSearch {
@@ -17039,12 +16227,20 @@ pub struct OrtCUDAProviderOptions {
     pub user_compute_stream: *mut ::std::os::raw::c_void,
     #[doc = " \\brief CUDA memory arena configuration parameters"]
     pub default_memory_arena_cfg: *mut OrtArenaCfg,
+    #[doc = " \\brief Enable TunableOp for using."]
+    #[doc = "   Set it to 1/0 to enable/disable TunableOp. Otherwise, it is disabled by default."]
+    #[doc = "   This option can be overriden by environment variable ORT_CUDA_TUNABLE_OP_ENABLE."]
+    pub tunable_op_enable: ::std::os::raw::c_int,
+    #[doc = " \\brief Enable TunableOp for tuning."]
+    #[doc = "   Set it to 1/0 to enable/disable TunableOp tuning. Otherwise, it is disabled by default."]
+    #[doc = "   This option can be overriden by environment variable ORT_CUDA_TUNABLE_OP_TUNING_ENABLE."]
+    pub tunable_op_tuning_enable: ::std::os::raw::c_int,
 }
 #[test]
 fn bindgen_test_layout_OrtCUDAProviderOptions() {
     assert_eq!(
         ::std::mem::size_of::<OrtCUDAProviderOptions>(),
-        48usize,
+        56usize,
         concat!("Size of: ", stringify!(OrtCUDAProviderOptions))
     );
     assert_eq!(
@@ -17188,6 +16384,40 @@ fn bindgen_test_layout_OrtCUDAProviderOptions() {
         );
     }
     test_field_default_memory_arena_cfg();
+    fn test_field_tunable_op_enable() {
+        assert_eq!(
+            unsafe {
+                let uninit = ::std::mem::MaybeUninit::<OrtCUDAProviderOptions>::uninit();
+                let ptr = uninit.as_ptr();
+                ::std::ptr::addr_of!((*ptr).tunable_op_enable) as usize - ptr as usize
+            },
+            48usize,
+            concat!(
+                "Offset of field: ",
+                stringify!(OrtCUDAProviderOptions),
+                "::",
+                stringify!(tunable_op_enable)
+            )
+        );
+    }
+    test_field_tunable_op_enable();
+    fn test_field_tunable_op_tuning_enable() {
+        assert_eq!(
+            unsafe {
+                let uninit = ::std::mem::MaybeUninit::<OrtCUDAProviderOptions>::uninit();
+                let ptr = uninit.as_ptr();
+                ::std::ptr::addr_of!((*ptr).tunable_op_tuning_enable) as usize - ptr as usize
+            },
+            52usize,
+            concat!(
+                "Offset of field: ",
+                stringify!(OrtCUDAProviderOptions),
+                "::",
+                stringify!(tunable_op_tuning_enable)
+            )
+        );
+    }
+    test_field_tunable_op_tuning_enable();
 }
 #[doc = " \\brief ROCM Provider Options"]
 #[doc = ""]
@@ -17226,12 +16456,20 @@ pub struct OrtROCMProviderOptions {
     pub user_compute_stream: *mut ::std::os::raw::c_void,
     #[doc = " \\brief ROCM memory arena configuration parameters"]
     pub default_memory_arena_cfg: *mut OrtArenaCfg,
+    #[doc = " \\brief Enable TunableOp for using."]
+    #[doc = "   Set it to 1/0 to enable/disable TunableOp. Otherwise, it is disabled by default."]
+    #[doc = "   This option can be overriden by environment variable ORT_ROCM_TUNABLE_OP_ENABLE."]
+    pub tunable_op_enable: ::std::os::raw::c_int,
+    #[doc = " \\brief Enable TunableOp for tuning."]
+    #[doc = "   Set it to 1/0 to enable/disable TunableOp tuning. Otherwise, it is disabled by default."]
+    #[doc = "   This option can be overriden by environment variable ORT_ROCM_TUNABLE_OP_TUNING_ENABLE."]
+    pub tunable_op_tuning_enable: ::std::os::raw::c_int,
 }
 #[test]
 fn bindgen_test_layout_OrtROCMProviderOptions() {
     assert_eq!(
         ::std::mem::size_of::<OrtROCMProviderOptions>(),
-        48usize,
+        56usize,
         concat!("Size of: ", stringify!(OrtROCMProviderOptions))
     );
     assert_eq!(
@@ -17375,6 +16613,40 @@ fn bindgen_test_layout_OrtROCMProviderOptions() {
         );
     }
     test_field_default_memory_arena_cfg();
+    fn test_field_tunable_op_enable() {
+        assert_eq!(
+            unsafe {
+                let uninit = ::std::mem::MaybeUninit::<OrtROCMProviderOptions>::uninit();
+                let ptr = uninit.as_ptr();
+                ::std::ptr::addr_of!((*ptr).tunable_op_enable) as usize - ptr as usize
+            },
+            48usize,
+            concat!(
+                "Offset of field: ",
+                stringify!(OrtROCMProviderOptions),
+                "::",
+                stringify!(tunable_op_enable)
+            )
+        );
+    }
+    test_field_tunable_op_enable();
+    fn test_field_tunable_op_tuning_enable() {
+        assert_eq!(
+            unsafe {
+                let uninit = ::std::mem::MaybeUninit::<OrtROCMProviderOptions>::uninit();
+                let ptr = uninit.as_ptr();
+                ::std::ptr::addr_of!((*ptr).tunable_op_tuning_enable) as usize - ptr as usize
+            },
+            52usize,
+            concat!(
+                "Offset of field: ",
+                stringify!(OrtROCMProviderOptions),
+                "::",
+                stringify!(tunable_op_tuning_enable)
+            )
+        );
+    }
+    test_field_tunable_op_tuning_enable();
 }
 #[doc = " \\brief TensorRT Provider Options"]
 #[doc = ""]
@@ -17805,16 +17077,14 @@ fn bindgen_test_layout_OrtMIGraphXProviderOptions() {
 pub struct OrtOpenVINOProviderOptions {
     #[doc = " \\brief Device type string"]
     #[doc = ""]
-    #[doc = " Valid settings are one of: \"CPU_FP32\", \"GPU_FP32\", \"GPU_FP16\", \"MYRIAD_FP16\", \"VAD-M_FP16\" or \"VAD-F_FP32\""]
+    #[doc = " Valid settings are one of: \"CPU_FP32\", \"CPU_FP16\", \"GPU_FP32\", \"GPU_FP16\""]
     pub device_type: *const ::std::os::raw::c_char,
     #[doc = "< 0 = disabled, nonzero = enabled"]
     pub enable_vpu_fast_compile: ::std::os::raw::c_uchar,
     pub device_id: *const ::std::os::raw::c_char,
     #[doc = "< 0 = Use default number of threads"]
     pub num_of_threads: usize,
-    #[doc = "< 0 = disabled, nonzero = enabled"]
-    pub use_compiled_network: ::std::os::raw::c_uchar,
-    pub blob_dump_path: *const ::std::os::raw::c_char,
+    pub cache_dir: *const ::std::os::raw::c_char,
     pub context: *mut ::std::os::raw::c_void,
     #[doc = "< 0 = disabled, nonzero = enabled"]
     pub enable_opencl_throttling: ::std::os::raw::c_uchar,
@@ -17825,7 +17095,7 @@ pub struct OrtOpenVINOProviderOptions {
 fn bindgen_test_layout_OrtOpenVINOProviderOptions() {
     assert_eq!(
         ::std::mem::size_of::<OrtOpenVINOProviderOptions>(),
-        64usize,
+        56usize,
         concat!("Size of: ", stringify!(OrtOpenVINOProviderOptions))
     );
     assert_eq!(
@@ -17901,40 +17171,23 @@ fn bindgen_test_layout_OrtOpenVINOProviderOptions() {
         );
     }
     test_field_num_of_threads();
-    fn test_field_use_compiled_network() {
+    fn test_field_cache_dir() {
         assert_eq!(
             unsafe {
                 let uninit = ::std::mem::MaybeUninit::<OrtOpenVINOProviderOptions>::uninit();
                 let ptr = uninit.as_ptr();
-                ::std::ptr::addr_of!((*ptr).use_compiled_network) as usize - ptr as usize
+                ::std::ptr::addr_of!((*ptr).cache_dir) as usize - ptr as usize
             },
             32usize,
             concat!(
                 "Offset of field: ",
                 stringify!(OrtOpenVINOProviderOptions),
                 "::",
-                stringify!(use_compiled_network)
+                stringify!(cache_dir)
             )
         );
     }
-    test_field_use_compiled_network();
-    fn test_field_blob_dump_path() {
-        assert_eq!(
-            unsafe {
-                let uninit = ::std::mem::MaybeUninit::<OrtOpenVINOProviderOptions>::uninit();
-                let ptr = uninit.as_ptr();
-                ::std::ptr::addr_of!((*ptr).blob_dump_path) as usize - ptr as usize
-            },
-            40usize,
-            concat!(
-                "Offset of field: ",
-                stringify!(OrtOpenVINOProviderOptions),
-                "::",
-                stringify!(blob_dump_path)
-            )
-        );
-    }
-    test_field_blob_dump_path();
+    test_field_cache_dir();
     fn test_field_context() {
         assert_eq!(
             unsafe {
@@ -17942,7 +17195,7 @@ fn bindgen_test_layout_OrtOpenVINOProviderOptions() {
                 let ptr = uninit.as_ptr();
                 ::std::ptr::addr_of!((*ptr).context) as usize - ptr as usize
             },
-            48usize,
+            40usize,
             concat!(
                 "Offset of field: ",
                 stringify!(OrtOpenVINOProviderOptions),
@@ -17959,7 +17212,7 @@ fn bindgen_test_layout_OrtOpenVINOProviderOptions() {
                 let ptr = uninit.as_ptr();
                 ::std::ptr::addr_of!((*ptr).enable_opencl_throttling) as usize - ptr as usize
             },
-            56usize,
+            48usize,
             concat!(
                 "Offset of field: ",
                 stringify!(OrtOpenVINOProviderOptions),
@@ -17976,7 +17229,7 @@ fn bindgen_test_layout_OrtOpenVINOProviderOptions() {
                 let ptr = uninit.as_ptr();
                 ::std::ptr::addr_of!((*ptr).enable_dynamic_shapes) as usize - ptr as usize
             },
-            57usize,
+            49usize,
             concat!(
                 "Offset of field: ",
                 stringify!(OrtOpenVINOProviderOptions),
@@ -17986,6 +17239,11 @@ fn bindgen_test_layout_OrtOpenVINOProviderOptions() {
         );
     }
     test_field_enable_dynamic_shapes();
+}
+#[repr(C)]
+#[derive(Debug, Copy, Clone)]
+pub struct OrtTrainingApi {
+    _unused: [u8; 0],
 }
 #[doc = " \\brief The helper interface to get the right version of OrtApi"]
 #[doc = ""]
@@ -17998,8 +17256,13 @@ pub struct OrtApiBase {
     #[doc = " \\param[in] version Must be ::ORT_API_VERSION"]
     #[doc = " \\return The ::OrtApi for the version requested, nullptr will be returned if this version is unsupported, for example when using a runtime"]
     #[doc = "   older than the version created with this header file."]
+    #[doc = ""]
+    #[doc = " One can call GetVersionString() to get the version of the Onnxruntime library for logging"]
+    #[doc = " and error reporting purposes."]
     pub GetApi: ::std::option::Option<unsafe extern "C" fn(version: u32) -> *const OrtApi>,
-    #[doc = "< Returns a null terminated string of the version of the Onnxruntime library (eg: \"1.8.1\")"]
+    #[doc = " \\brief Returns a null terminated string of the version of the Onnxruntime library (eg: \"1.8.1\")"]
+    #[doc = ""]
+    #[doc = "  \\return UTF-8 encoded version string. Do not deallocate the returned buffer."]
     pub GetVersionString:
         ::std::option::Option<unsafe extern "C" fn() -> *const ::std::os::raw::c_char>,
 }
@@ -18115,6 +17378,9 @@ pub type OrtCustomCreateThreadFn = ::std::option::Option<
 #[doc = " Argument ort_custom_thread_handle is the value returned by OrtCustomCreateThreadFn"]
 pub type OrtCustomJoinThreadFn =
     ::std::option::Option<unsafe extern "C" fn(ort_custom_thread_handle: OrtCustomThreadHandle)>;
+pub type RegisterCustomOpsFn = ::std::option::Option<
+    unsafe extern "C" fn(options: *mut OrtSessionOptions, api: *const OrtApiBase) -> *mut OrtStatus,
+>;
 #[doc = " \\brief The C API"]
 #[doc = ""]
 #[doc = " All C API functions are defined inside this structure as pointers to functions."]
@@ -19389,12 +18655,250 @@ pub struct OrtApi {
         ) -> OrtStatusPtr,
     >,
     pub ReleaseKernelInfo: ::std::option::Option<unsafe extern "C" fn(input: *mut OrtKernelInfo)>,
+    #[doc = " \\name Ort Training"]
+    #[doc = " @{"]
+    #[doc = "** \\brief Gets the Training C Api struct"]
+    #[doc = "*"]
+    #[doc = "* Call this function to access the ::OrtTrainingApi structure that holds pointers to functions that enable"]
+    #[doc = "* training with onnxruntime."]
+    #[doc = "* \\note A NULL pointer will be returned and no error message will be printed if the training api"]
+    #[doc = "* is not supported with this build. A NULL pointer will be returned and an error message will be"]
+    #[doc = "* printed if the provided version is unsupported, for example when using a runtime older than the"]
+    #[doc = "* version created with this header file."]
+    #[doc = "*"]
+    #[doc = "* \\param[in] version Must be ::ORT_API_VERSION"]
+    #[doc = "* \\return The ::OrtTrainingApi struct for the version requested."]
+    #[doc = "*"]
+    #[doc = "* \\since Version 1.13"]
+    #[doc = "*/"]
+    pub GetTrainingApi:
+        ::std::option::Option<unsafe extern "C" fn(version: u32) -> *const OrtTrainingApi>,
+    pub SessionOptionsAppendExecutionProvider_CANN: ::std::option::Option<
+        unsafe extern "C" fn(
+            options: *mut OrtSessionOptions,
+            cann_options: *const OrtCANNProviderOptions,
+        ) -> OrtStatusPtr,
+    >,
+    pub CreateCANNProviderOptions: ::std::option::Option<
+        unsafe extern "C" fn(out: *mut *mut OrtCANNProviderOptions) -> OrtStatusPtr,
+    >,
+    pub UpdateCANNProviderOptions: ::std::option::Option<
+        unsafe extern "C" fn(
+            cann_options: *mut OrtCANNProviderOptions,
+            provider_options_keys: *const *const ::std::os::raw::c_char,
+            provider_options_values: *const *const ::std::os::raw::c_char,
+            num_keys: usize,
+        ) -> OrtStatusPtr,
+    >,
+    pub GetCANNProviderOptionsAsString: ::std::option::Option<
+        unsafe extern "C" fn(
+            cann_options: *const OrtCANNProviderOptions,
+            allocator: *mut OrtAllocator,
+            ptr: *mut *mut ::std::os::raw::c_char,
+        ) -> OrtStatusPtr,
+    >,
+    #[doc = " \\brief Release an OrtCANNProviderOptions"]
+    #[doc = ""]
+    #[doc = " \\param[in] the pointer of OrtCANNProviderOptions which will been deleted"]
+    #[doc = ""]
+    #[doc = " \\since Version 1.13."]
+    pub ReleaseCANNProviderOptions:
+        ::std::option::Option<unsafe extern "C" fn(input: *mut OrtCANNProviderOptions)>,
+    pub MemoryInfoGetDeviceType: ::std::option::Option<
+        unsafe extern "C" fn(ptr: *const OrtMemoryInfo, out: *mut OrtMemoryInfoDeviceType),
+    >,
+    pub UpdateEnvWithCustomLogLevel: ::std::option::Option<
+        unsafe extern "C" fn(
+            ort_env: *mut OrtEnv,
+            log_severity_level: OrtLoggingLevel,
+        ) -> OrtStatusPtr,
+    >,
+    pub SetGlobalIntraOpThreadAffinity: ::std::option::Option<
+        unsafe extern "C" fn(
+            tp_options: *mut OrtThreadingOptions,
+            affinity_string: *const ::std::os::raw::c_char,
+        ) -> OrtStatusPtr,
+    >,
+    pub RegisterCustomOpsLibrary_V2: ::std::option::Option<
+        unsafe extern "C" fn(
+            options: *mut OrtSessionOptions,
+            library_name: *const ::std::os::raw::c_char,
+        ) -> OrtStatusPtr,
+    >,
+    pub RegisterCustomOpsUsingFunction: ::std::option::Option<
+        unsafe extern "C" fn(
+            options: *mut OrtSessionOptions,
+            registration_func_name: *const ::std::os::raw::c_char,
+        ) -> OrtStatusPtr,
+    >,
+    pub KernelInfo_GetInputCount: ::std::option::Option<
+        unsafe extern "C" fn(info: *const OrtKernelInfo, out: *mut usize) -> OrtStatusPtr,
+    >,
+    pub KernelInfo_GetOutputCount: ::std::option::Option<
+        unsafe extern "C" fn(info: *const OrtKernelInfo, out: *mut usize) -> OrtStatusPtr,
+    >,
+    pub KernelInfo_GetInputName: ::std::option::Option<
+        unsafe extern "C" fn(
+            info: *const OrtKernelInfo,
+            index: usize,
+            out: *mut ::std::os::raw::c_char,
+            size: *mut usize,
+        ) -> OrtStatusPtr,
+    >,
+    pub KernelInfo_GetOutputName: ::std::option::Option<
+        unsafe extern "C" fn(
+            info: *const OrtKernelInfo,
+            index: usize,
+            out: *mut ::std::os::raw::c_char,
+            size: *mut usize,
+        ) -> OrtStatusPtr,
+    >,
+    pub KernelInfo_GetInputTypeInfo: ::std::option::Option<
+        unsafe extern "C" fn(
+            info: *const OrtKernelInfo,
+            index: usize,
+            type_info: *mut *mut OrtTypeInfo,
+        ) -> OrtStatusPtr,
+    >,
+    pub KernelInfo_GetOutputTypeInfo: ::std::option::Option<
+        unsafe extern "C" fn(
+            info: *const OrtKernelInfo,
+            index: usize,
+            type_info: *mut *mut OrtTypeInfo,
+        ) -> OrtStatusPtr,
+    >,
+    pub KernelInfoGetAttribute_tensor: ::std::option::Option<
+        unsafe extern "C" fn(
+            info: *const OrtKernelInfo,
+            name: *const ::std::os::raw::c_char,
+            allocator: *mut OrtAllocator,
+            out: *mut *mut OrtValue,
+        ) -> OrtStatusPtr,
+    >,
+    pub HasSessionConfigEntry: ::std::option::Option<
+        unsafe extern "C" fn(
+            options: *const OrtSessionOptions,
+            config_key: *const ::std::os::raw::c_char,
+            out: *mut ::std::os::raw::c_int,
+        ) -> OrtStatusPtr,
+    >,
+    pub GetSessionConfigEntry: ::std::option::Option<
+        unsafe extern "C" fn(
+            options: *const OrtSessionOptions,
+            config_key: *const ::std::os::raw::c_char,
+            config_value: *mut ::std::os::raw::c_char,
+            size: *mut usize,
+        ) -> OrtStatusPtr,
+    >,
+    pub SessionOptionsAppendExecutionProvider_Dnnl: ::std::option::Option<
+        unsafe extern "C" fn(
+            options: *mut OrtSessionOptions,
+            dnnl_options: *const OrtDnnlProviderOptions,
+        ) -> OrtStatusPtr,
+    >,
+    pub CreateDnnlProviderOptions: ::std::option::Option<
+        unsafe extern "C" fn(out: *mut *mut OrtDnnlProviderOptions) -> OrtStatusPtr,
+    >,
+    pub UpdateDnnlProviderOptions: ::std::option::Option<
+        unsafe extern "C" fn(
+            dnnl_options: *mut OrtDnnlProviderOptions,
+            provider_options_keys: *const *const ::std::os::raw::c_char,
+            provider_options_values: *const *const ::std::os::raw::c_char,
+            num_keys: usize,
+        ) -> OrtStatusPtr,
+    >,
+    pub GetDnnlProviderOptionsAsString: ::std::option::Option<
+        unsafe extern "C" fn(
+            dnnl_options: *const OrtDnnlProviderOptions,
+            allocator: *mut OrtAllocator,
+            ptr: *mut *mut ::std::os::raw::c_char,
+        ) -> OrtStatusPtr,
+    >,
+    #[doc = " \\brief Release an ::OrtDnnlProviderOptions"]
+    #[doc = ""]
+    #[doc = " \\since Version 1.15."]
+    pub ReleaseDnnlProviderOptions:
+        ::std::option::Option<unsafe extern "C" fn(input: *mut OrtDnnlProviderOptions)>,
+    pub KernelInfo_GetNodeName: ::std::option::Option<
+        unsafe extern "C" fn(
+            info: *const OrtKernelInfo,
+            out: *mut ::std::os::raw::c_char,
+            size: *mut usize,
+        ) -> OrtStatusPtr,
+    >,
+    pub KernelInfo_GetLogger: ::std::option::Option<
+        unsafe extern "C" fn(
+            info: *const OrtKernelInfo,
+            logger: *mut *const OrtLogger,
+        ) -> OrtStatusPtr,
+    >,
+    pub KernelContext_GetLogger: ::std::option::Option<
+        unsafe extern "C" fn(
+            context: *const OrtKernelContext,
+            logger: *mut *const OrtLogger,
+        ) -> OrtStatusPtr,
+    >,
+    pub Logger_LogMessage: ::std::option::Option<
+        unsafe extern "C" fn(
+            logger: *const OrtLogger,
+            log_severity_level: OrtLoggingLevel,
+            message: *const ::std::os::raw::c_char,
+            file_path: *const ::std::os::raw::c_char,
+            line_number: ::std::os::raw::c_int,
+            func_name: *const ::std::os::raw::c_char,
+        ) -> OrtStatusPtr,
+    >,
+    pub Logger_GetLoggingSeverityLevel: ::std::option::Option<
+        unsafe extern "C" fn(logger: *const OrtLogger, out: *mut OrtLoggingLevel) -> OrtStatusPtr,
+    >,
+    pub KernelInfoGetConstantInput_tensor: ::std::option::Option<
+        unsafe extern "C" fn(
+            info: *const OrtKernelInfo,
+            index: usize,
+            is_constant: *mut ::std::os::raw::c_int,
+            out: *mut *const OrtValue,
+        ) -> OrtStatusPtr,
+    >,
+    pub CastTypeInfoToOptionalTypeInfo: ::std::option::Option<
+        unsafe extern "C" fn(
+            type_info: *const OrtTypeInfo,
+            out: *mut *const OrtOptionalTypeInfo,
+        ) -> OrtStatusPtr,
+    >,
+    pub GetOptionalContainedTypeInfo: ::std::option::Option<
+        unsafe extern "C" fn(
+            optional_type_info: *const OrtOptionalTypeInfo,
+            out: *mut *mut OrtTypeInfo,
+        ) -> OrtStatusPtr,
+    >,
+    pub GetResizedStringTensorElementBuffer: ::std::option::Option<
+        unsafe extern "C" fn(
+            value: *mut OrtValue,
+            index: usize,
+            length_in_bytes: usize,
+            buffer: *mut *mut ::std::os::raw::c_char,
+        ) -> OrtStatusPtr,
+    >,
+    pub KernelContext_GetAllocator: ::std::option::Option<
+        unsafe extern "C" fn(
+            context: *const OrtKernelContext,
+            mem_info: *const OrtMemoryInfo,
+            out: *mut *mut OrtAllocator,
+        ) -> OrtStatusPtr,
+    >,
+    #[doc = " \\brief Returns a null terminated string of the build info including git info and cxx flags"]
+    #[doc = ""]
+    #[doc = " \\return UTF-8 encoded version string. Do not deallocate the returned buffer."]
+    #[doc = ""]
+    #[doc = " \\since Version 1.15."]
+    pub GetBuildInfoString:
+        ::std::option::Option<unsafe extern "C" fn() -> *const ::std::os::raw::c_char>,
 }
 #[test]
 fn bindgen_test_layout_OrtApi() {
     assert_eq!(
         ::std::mem::size_of::<OrtApi>(),
-        1752usize,
+        2040usize,
         concat!("Size of: ", stringify!(OrtApi))
     );
     assert_eq!(
@@ -23160,12 +22664,629 @@ fn bindgen_test_layout_OrtApi() {
         );
     }
     test_field_ReleaseKernelInfo();
+    fn test_field_GetTrainingApi() {
+        assert_eq!(
+            unsafe {
+                let uninit = ::std::mem::MaybeUninit::<OrtApi>::uninit();
+                let ptr = uninit.as_ptr();
+                ::std::ptr::addr_of!((*ptr).GetTrainingApi) as usize - ptr as usize
+            },
+            1752usize,
+            concat!(
+                "Offset of field: ",
+                stringify!(OrtApi),
+                "::",
+                stringify!(GetTrainingApi)
+            )
+        );
+    }
+    test_field_GetTrainingApi();
+    fn test_field_SessionOptionsAppendExecutionProvider_CANN() {
+        assert_eq!(
+            unsafe {
+                let uninit = ::std::mem::MaybeUninit::<OrtApi>::uninit();
+                let ptr = uninit.as_ptr();
+                ::std::ptr::addr_of!((*ptr).SessionOptionsAppendExecutionProvider_CANN) as usize
+                    - ptr as usize
+            },
+            1760usize,
+            concat!(
+                "Offset of field: ",
+                stringify!(OrtApi),
+                "::",
+                stringify!(SessionOptionsAppendExecutionProvider_CANN)
+            )
+        );
+    }
+    test_field_SessionOptionsAppendExecutionProvider_CANN();
+    fn test_field_CreateCANNProviderOptions() {
+        assert_eq!(
+            unsafe {
+                let uninit = ::std::mem::MaybeUninit::<OrtApi>::uninit();
+                let ptr = uninit.as_ptr();
+                ::std::ptr::addr_of!((*ptr).CreateCANNProviderOptions) as usize - ptr as usize
+            },
+            1768usize,
+            concat!(
+                "Offset of field: ",
+                stringify!(OrtApi),
+                "::",
+                stringify!(CreateCANNProviderOptions)
+            )
+        );
+    }
+    test_field_CreateCANNProviderOptions();
+    fn test_field_UpdateCANNProviderOptions() {
+        assert_eq!(
+            unsafe {
+                let uninit = ::std::mem::MaybeUninit::<OrtApi>::uninit();
+                let ptr = uninit.as_ptr();
+                ::std::ptr::addr_of!((*ptr).UpdateCANNProviderOptions) as usize - ptr as usize
+            },
+            1776usize,
+            concat!(
+                "Offset of field: ",
+                stringify!(OrtApi),
+                "::",
+                stringify!(UpdateCANNProviderOptions)
+            )
+        );
+    }
+    test_field_UpdateCANNProviderOptions();
+    fn test_field_GetCANNProviderOptionsAsString() {
+        assert_eq!(
+            unsafe {
+                let uninit = ::std::mem::MaybeUninit::<OrtApi>::uninit();
+                let ptr = uninit.as_ptr();
+                ::std::ptr::addr_of!((*ptr).GetCANNProviderOptionsAsString) as usize - ptr as usize
+            },
+            1784usize,
+            concat!(
+                "Offset of field: ",
+                stringify!(OrtApi),
+                "::",
+                stringify!(GetCANNProviderOptionsAsString)
+            )
+        );
+    }
+    test_field_GetCANNProviderOptionsAsString();
+    fn test_field_ReleaseCANNProviderOptions() {
+        assert_eq!(
+            unsafe {
+                let uninit = ::std::mem::MaybeUninit::<OrtApi>::uninit();
+                let ptr = uninit.as_ptr();
+                ::std::ptr::addr_of!((*ptr).ReleaseCANNProviderOptions) as usize - ptr as usize
+            },
+            1792usize,
+            concat!(
+                "Offset of field: ",
+                stringify!(OrtApi),
+                "::",
+                stringify!(ReleaseCANNProviderOptions)
+            )
+        );
+    }
+    test_field_ReleaseCANNProviderOptions();
+    fn test_field_MemoryInfoGetDeviceType() {
+        assert_eq!(
+            unsafe {
+                let uninit = ::std::mem::MaybeUninit::<OrtApi>::uninit();
+                let ptr = uninit.as_ptr();
+                ::std::ptr::addr_of!((*ptr).MemoryInfoGetDeviceType) as usize - ptr as usize
+            },
+            1800usize,
+            concat!(
+                "Offset of field: ",
+                stringify!(OrtApi),
+                "::",
+                stringify!(MemoryInfoGetDeviceType)
+            )
+        );
+    }
+    test_field_MemoryInfoGetDeviceType();
+    fn test_field_UpdateEnvWithCustomLogLevel() {
+        assert_eq!(
+            unsafe {
+                let uninit = ::std::mem::MaybeUninit::<OrtApi>::uninit();
+                let ptr = uninit.as_ptr();
+                ::std::ptr::addr_of!((*ptr).UpdateEnvWithCustomLogLevel) as usize - ptr as usize
+            },
+            1808usize,
+            concat!(
+                "Offset of field: ",
+                stringify!(OrtApi),
+                "::",
+                stringify!(UpdateEnvWithCustomLogLevel)
+            )
+        );
+    }
+    test_field_UpdateEnvWithCustomLogLevel();
+    fn test_field_SetGlobalIntraOpThreadAffinity() {
+        assert_eq!(
+            unsafe {
+                let uninit = ::std::mem::MaybeUninit::<OrtApi>::uninit();
+                let ptr = uninit.as_ptr();
+                ::std::ptr::addr_of!((*ptr).SetGlobalIntraOpThreadAffinity) as usize - ptr as usize
+            },
+            1816usize,
+            concat!(
+                "Offset of field: ",
+                stringify!(OrtApi),
+                "::",
+                stringify!(SetGlobalIntraOpThreadAffinity)
+            )
+        );
+    }
+    test_field_SetGlobalIntraOpThreadAffinity();
+    fn test_field_RegisterCustomOpsLibrary_V2() {
+        assert_eq!(
+            unsafe {
+                let uninit = ::std::mem::MaybeUninit::<OrtApi>::uninit();
+                let ptr = uninit.as_ptr();
+                ::std::ptr::addr_of!((*ptr).RegisterCustomOpsLibrary_V2) as usize - ptr as usize
+            },
+            1824usize,
+            concat!(
+                "Offset of field: ",
+                stringify!(OrtApi),
+                "::",
+                stringify!(RegisterCustomOpsLibrary_V2)
+            )
+        );
+    }
+    test_field_RegisterCustomOpsLibrary_V2();
+    fn test_field_RegisterCustomOpsUsingFunction() {
+        assert_eq!(
+            unsafe {
+                let uninit = ::std::mem::MaybeUninit::<OrtApi>::uninit();
+                let ptr = uninit.as_ptr();
+                ::std::ptr::addr_of!((*ptr).RegisterCustomOpsUsingFunction) as usize - ptr as usize
+            },
+            1832usize,
+            concat!(
+                "Offset of field: ",
+                stringify!(OrtApi),
+                "::",
+                stringify!(RegisterCustomOpsUsingFunction)
+            )
+        );
+    }
+    test_field_RegisterCustomOpsUsingFunction();
+    fn test_field_KernelInfo_GetInputCount() {
+        assert_eq!(
+            unsafe {
+                let uninit = ::std::mem::MaybeUninit::<OrtApi>::uninit();
+                let ptr = uninit.as_ptr();
+                ::std::ptr::addr_of!((*ptr).KernelInfo_GetInputCount) as usize - ptr as usize
+            },
+            1840usize,
+            concat!(
+                "Offset of field: ",
+                stringify!(OrtApi),
+                "::",
+                stringify!(KernelInfo_GetInputCount)
+            )
+        );
+    }
+    test_field_KernelInfo_GetInputCount();
+    fn test_field_KernelInfo_GetOutputCount() {
+        assert_eq!(
+            unsafe {
+                let uninit = ::std::mem::MaybeUninit::<OrtApi>::uninit();
+                let ptr = uninit.as_ptr();
+                ::std::ptr::addr_of!((*ptr).KernelInfo_GetOutputCount) as usize - ptr as usize
+            },
+            1848usize,
+            concat!(
+                "Offset of field: ",
+                stringify!(OrtApi),
+                "::",
+                stringify!(KernelInfo_GetOutputCount)
+            )
+        );
+    }
+    test_field_KernelInfo_GetOutputCount();
+    fn test_field_KernelInfo_GetInputName() {
+        assert_eq!(
+            unsafe {
+                let uninit = ::std::mem::MaybeUninit::<OrtApi>::uninit();
+                let ptr = uninit.as_ptr();
+                ::std::ptr::addr_of!((*ptr).KernelInfo_GetInputName) as usize - ptr as usize
+            },
+            1856usize,
+            concat!(
+                "Offset of field: ",
+                stringify!(OrtApi),
+                "::",
+                stringify!(KernelInfo_GetInputName)
+            )
+        );
+    }
+    test_field_KernelInfo_GetInputName();
+    fn test_field_KernelInfo_GetOutputName() {
+        assert_eq!(
+            unsafe {
+                let uninit = ::std::mem::MaybeUninit::<OrtApi>::uninit();
+                let ptr = uninit.as_ptr();
+                ::std::ptr::addr_of!((*ptr).KernelInfo_GetOutputName) as usize - ptr as usize
+            },
+            1864usize,
+            concat!(
+                "Offset of field: ",
+                stringify!(OrtApi),
+                "::",
+                stringify!(KernelInfo_GetOutputName)
+            )
+        );
+    }
+    test_field_KernelInfo_GetOutputName();
+    fn test_field_KernelInfo_GetInputTypeInfo() {
+        assert_eq!(
+            unsafe {
+                let uninit = ::std::mem::MaybeUninit::<OrtApi>::uninit();
+                let ptr = uninit.as_ptr();
+                ::std::ptr::addr_of!((*ptr).KernelInfo_GetInputTypeInfo) as usize - ptr as usize
+            },
+            1872usize,
+            concat!(
+                "Offset of field: ",
+                stringify!(OrtApi),
+                "::",
+                stringify!(KernelInfo_GetInputTypeInfo)
+            )
+        );
+    }
+    test_field_KernelInfo_GetInputTypeInfo();
+    fn test_field_KernelInfo_GetOutputTypeInfo() {
+        assert_eq!(
+            unsafe {
+                let uninit = ::std::mem::MaybeUninit::<OrtApi>::uninit();
+                let ptr = uninit.as_ptr();
+                ::std::ptr::addr_of!((*ptr).KernelInfo_GetOutputTypeInfo) as usize - ptr as usize
+            },
+            1880usize,
+            concat!(
+                "Offset of field: ",
+                stringify!(OrtApi),
+                "::",
+                stringify!(KernelInfo_GetOutputTypeInfo)
+            )
+        );
+    }
+    test_field_KernelInfo_GetOutputTypeInfo();
+    fn test_field_KernelInfoGetAttribute_tensor() {
+        assert_eq!(
+            unsafe {
+                let uninit = ::std::mem::MaybeUninit::<OrtApi>::uninit();
+                let ptr = uninit.as_ptr();
+                ::std::ptr::addr_of!((*ptr).KernelInfoGetAttribute_tensor) as usize - ptr as usize
+            },
+            1888usize,
+            concat!(
+                "Offset of field: ",
+                stringify!(OrtApi),
+                "::",
+                stringify!(KernelInfoGetAttribute_tensor)
+            )
+        );
+    }
+    test_field_KernelInfoGetAttribute_tensor();
+    fn test_field_HasSessionConfigEntry() {
+        assert_eq!(
+            unsafe {
+                let uninit = ::std::mem::MaybeUninit::<OrtApi>::uninit();
+                let ptr = uninit.as_ptr();
+                ::std::ptr::addr_of!((*ptr).HasSessionConfigEntry) as usize - ptr as usize
+            },
+            1896usize,
+            concat!(
+                "Offset of field: ",
+                stringify!(OrtApi),
+                "::",
+                stringify!(HasSessionConfigEntry)
+            )
+        );
+    }
+    test_field_HasSessionConfigEntry();
+    fn test_field_GetSessionConfigEntry() {
+        assert_eq!(
+            unsafe {
+                let uninit = ::std::mem::MaybeUninit::<OrtApi>::uninit();
+                let ptr = uninit.as_ptr();
+                ::std::ptr::addr_of!((*ptr).GetSessionConfigEntry) as usize - ptr as usize
+            },
+            1904usize,
+            concat!(
+                "Offset of field: ",
+                stringify!(OrtApi),
+                "::",
+                stringify!(GetSessionConfigEntry)
+            )
+        );
+    }
+    test_field_GetSessionConfigEntry();
+    fn test_field_SessionOptionsAppendExecutionProvider_Dnnl() {
+        assert_eq!(
+            unsafe {
+                let uninit = ::std::mem::MaybeUninit::<OrtApi>::uninit();
+                let ptr = uninit.as_ptr();
+                ::std::ptr::addr_of!((*ptr).SessionOptionsAppendExecutionProvider_Dnnl) as usize
+                    - ptr as usize
+            },
+            1912usize,
+            concat!(
+                "Offset of field: ",
+                stringify!(OrtApi),
+                "::",
+                stringify!(SessionOptionsAppendExecutionProvider_Dnnl)
+            )
+        );
+    }
+    test_field_SessionOptionsAppendExecutionProvider_Dnnl();
+    fn test_field_CreateDnnlProviderOptions() {
+        assert_eq!(
+            unsafe {
+                let uninit = ::std::mem::MaybeUninit::<OrtApi>::uninit();
+                let ptr = uninit.as_ptr();
+                ::std::ptr::addr_of!((*ptr).CreateDnnlProviderOptions) as usize - ptr as usize
+            },
+            1920usize,
+            concat!(
+                "Offset of field: ",
+                stringify!(OrtApi),
+                "::",
+                stringify!(CreateDnnlProviderOptions)
+            )
+        );
+    }
+    test_field_CreateDnnlProviderOptions();
+    fn test_field_UpdateDnnlProviderOptions() {
+        assert_eq!(
+            unsafe {
+                let uninit = ::std::mem::MaybeUninit::<OrtApi>::uninit();
+                let ptr = uninit.as_ptr();
+                ::std::ptr::addr_of!((*ptr).UpdateDnnlProviderOptions) as usize - ptr as usize
+            },
+            1928usize,
+            concat!(
+                "Offset of field: ",
+                stringify!(OrtApi),
+                "::",
+                stringify!(UpdateDnnlProviderOptions)
+            )
+        );
+    }
+    test_field_UpdateDnnlProviderOptions();
+    fn test_field_GetDnnlProviderOptionsAsString() {
+        assert_eq!(
+            unsafe {
+                let uninit = ::std::mem::MaybeUninit::<OrtApi>::uninit();
+                let ptr = uninit.as_ptr();
+                ::std::ptr::addr_of!((*ptr).GetDnnlProviderOptionsAsString) as usize - ptr as usize
+            },
+            1936usize,
+            concat!(
+                "Offset of field: ",
+                stringify!(OrtApi),
+                "::",
+                stringify!(GetDnnlProviderOptionsAsString)
+            )
+        );
+    }
+    test_field_GetDnnlProviderOptionsAsString();
+    fn test_field_ReleaseDnnlProviderOptions() {
+        assert_eq!(
+            unsafe {
+                let uninit = ::std::mem::MaybeUninit::<OrtApi>::uninit();
+                let ptr = uninit.as_ptr();
+                ::std::ptr::addr_of!((*ptr).ReleaseDnnlProviderOptions) as usize - ptr as usize
+            },
+            1944usize,
+            concat!(
+                "Offset of field: ",
+                stringify!(OrtApi),
+                "::",
+                stringify!(ReleaseDnnlProviderOptions)
+            )
+        );
+    }
+    test_field_ReleaseDnnlProviderOptions();
+    fn test_field_KernelInfo_GetNodeName() {
+        assert_eq!(
+            unsafe {
+                let uninit = ::std::mem::MaybeUninit::<OrtApi>::uninit();
+                let ptr = uninit.as_ptr();
+                ::std::ptr::addr_of!((*ptr).KernelInfo_GetNodeName) as usize - ptr as usize
+            },
+            1952usize,
+            concat!(
+                "Offset of field: ",
+                stringify!(OrtApi),
+                "::",
+                stringify!(KernelInfo_GetNodeName)
+            )
+        );
+    }
+    test_field_KernelInfo_GetNodeName();
+    fn test_field_KernelInfo_GetLogger() {
+        assert_eq!(
+            unsafe {
+                let uninit = ::std::mem::MaybeUninit::<OrtApi>::uninit();
+                let ptr = uninit.as_ptr();
+                ::std::ptr::addr_of!((*ptr).KernelInfo_GetLogger) as usize - ptr as usize
+            },
+            1960usize,
+            concat!(
+                "Offset of field: ",
+                stringify!(OrtApi),
+                "::",
+                stringify!(KernelInfo_GetLogger)
+            )
+        );
+    }
+    test_field_KernelInfo_GetLogger();
+    fn test_field_KernelContext_GetLogger() {
+        assert_eq!(
+            unsafe {
+                let uninit = ::std::mem::MaybeUninit::<OrtApi>::uninit();
+                let ptr = uninit.as_ptr();
+                ::std::ptr::addr_of!((*ptr).KernelContext_GetLogger) as usize - ptr as usize
+            },
+            1968usize,
+            concat!(
+                "Offset of field: ",
+                stringify!(OrtApi),
+                "::",
+                stringify!(KernelContext_GetLogger)
+            )
+        );
+    }
+    test_field_KernelContext_GetLogger();
+    fn test_field_Logger_LogMessage() {
+        assert_eq!(
+            unsafe {
+                let uninit = ::std::mem::MaybeUninit::<OrtApi>::uninit();
+                let ptr = uninit.as_ptr();
+                ::std::ptr::addr_of!((*ptr).Logger_LogMessage) as usize - ptr as usize
+            },
+            1976usize,
+            concat!(
+                "Offset of field: ",
+                stringify!(OrtApi),
+                "::",
+                stringify!(Logger_LogMessage)
+            )
+        );
+    }
+    test_field_Logger_LogMessage();
+    fn test_field_Logger_GetLoggingSeverityLevel() {
+        assert_eq!(
+            unsafe {
+                let uninit = ::std::mem::MaybeUninit::<OrtApi>::uninit();
+                let ptr = uninit.as_ptr();
+                ::std::ptr::addr_of!((*ptr).Logger_GetLoggingSeverityLevel) as usize - ptr as usize
+            },
+            1984usize,
+            concat!(
+                "Offset of field: ",
+                stringify!(OrtApi),
+                "::",
+                stringify!(Logger_GetLoggingSeverityLevel)
+            )
+        );
+    }
+    test_field_Logger_GetLoggingSeverityLevel();
+    fn test_field_KernelInfoGetConstantInput_tensor() {
+        assert_eq!(
+            unsafe {
+                let uninit = ::std::mem::MaybeUninit::<OrtApi>::uninit();
+                let ptr = uninit.as_ptr();
+                ::std::ptr::addr_of!((*ptr).KernelInfoGetConstantInput_tensor) as usize
+                    - ptr as usize
+            },
+            1992usize,
+            concat!(
+                "Offset of field: ",
+                stringify!(OrtApi),
+                "::",
+                stringify!(KernelInfoGetConstantInput_tensor)
+            )
+        );
+    }
+    test_field_KernelInfoGetConstantInput_tensor();
+    fn test_field_CastTypeInfoToOptionalTypeInfo() {
+        assert_eq!(
+            unsafe {
+                let uninit = ::std::mem::MaybeUninit::<OrtApi>::uninit();
+                let ptr = uninit.as_ptr();
+                ::std::ptr::addr_of!((*ptr).CastTypeInfoToOptionalTypeInfo) as usize - ptr as usize
+            },
+            2000usize,
+            concat!(
+                "Offset of field: ",
+                stringify!(OrtApi),
+                "::",
+                stringify!(CastTypeInfoToOptionalTypeInfo)
+            )
+        );
+    }
+    test_field_CastTypeInfoToOptionalTypeInfo();
+    fn test_field_GetOptionalContainedTypeInfo() {
+        assert_eq!(
+            unsafe {
+                let uninit = ::std::mem::MaybeUninit::<OrtApi>::uninit();
+                let ptr = uninit.as_ptr();
+                ::std::ptr::addr_of!((*ptr).GetOptionalContainedTypeInfo) as usize - ptr as usize
+            },
+            2008usize,
+            concat!(
+                "Offset of field: ",
+                stringify!(OrtApi),
+                "::",
+                stringify!(GetOptionalContainedTypeInfo)
+            )
+        );
+    }
+    test_field_GetOptionalContainedTypeInfo();
+    fn test_field_GetResizedStringTensorElementBuffer() {
+        assert_eq!(
+            unsafe {
+                let uninit = ::std::mem::MaybeUninit::<OrtApi>::uninit();
+                let ptr = uninit.as_ptr();
+                ::std::ptr::addr_of!((*ptr).GetResizedStringTensorElementBuffer) as usize
+                    - ptr as usize
+            },
+            2016usize,
+            concat!(
+                "Offset of field: ",
+                stringify!(OrtApi),
+                "::",
+                stringify!(GetResizedStringTensorElementBuffer)
+            )
+        );
+    }
+    test_field_GetResizedStringTensorElementBuffer();
+    fn test_field_KernelContext_GetAllocator() {
+        assert_eq!(
+            unsafe {
+                let uninit = ::std::mem::MaybeUninit::<OrtApi>::uninit();
+                let ptr = uninit.as_ptr();
+                ::std::ptr::addr_of!((*ptr).KernelContext_GetAllocator) as usize - ptr as usize
+            },
+            2024usize,
+            concat!(
+                "Offset of field: ",
+                stringify!(OrtApi),
+                "::",
+                stringify!(KernelContext_GetAllocator)
+            )
+        );
+    }
+    test_field_KernelContext_GetAllocator();
+    fn test_field_GetBuildInfoString() {
+        assert_eq!(
+            unsafe {
+                let uninit = ::std::mem::MaybeUninit::<OrtApi>::uninit();
+                let ptr = uninit.as_ptr();
+                ::std::ptr::addr_of!((*ptr).GetBuildInfoString) as usize - ptr as usize
+            },
+            2032usize,
+            concat!(
+                "Offset of field: ",
+                stringify!(OrtApi),
+                "::",
+                stringify!(GetBuildInfoString)
+            )
+        );
+    }
+    test_field_GetBuildInfoString();
 }
 #[repr(u32)]
 #[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
 pub enum OrtCustomOpInputOutputCharacteristic {
     INPUT_OUTPUT_REQUIRED = 0,
     INPUT_OUTPUT_OPTIONAL = 1,
+    INPUT_OUTPUT_VARIADIC = 2,
 }
 #[repr(C)]
 #[derive(Debug, Copy, Clone)]
@@ -23214,12 +23335,27 @@ pub struct OrtCustomOp {
             index: usize,
         ) -> OrtCustomOpInputOutputCharacteristic,
     >,
+    pub GetInputMemoryType: ::std::option::Option<
+        unsafe extern "C" fn(op: *const OrtCustomOp, index: usize) -> OrtMemType,
+    >,
+    pub GetVariadicInputMinArity: ::std::option::Option<
+        unsafe extern "C" fn(op: *const OrtCustomOp) -> ::std::os::raw::c_int,
+    >,
+    pub GetVariadicInputHomogeneity: ::std::option::Option<
+        unsafe extern "C" fn(op: *const OrtCustomOp) -> ::std::os::raw::c_int,
+    >,
+    pub GetVariadicOutputMinArity: ::std::option::Option<
+        unsafe extern "C" fn(op: *const OrtCustomOp) -> ::std::os::raw::c_int,
+    >,
+    pub GetVariadicOutputHomogeneity: ::std::option::Option<
+        unsafe extern "C" fn(op: *const OrtCustomOp) -> ::std::os::raw::c_int,
+    >,
 }
 #[test]
 fn bindgen_test_layout_OrtCustomOp() {
     assert_eq!(
         ::std::mem::size_of::<OrtCustomOp>(),
-        96usize,
+        136usize,
         concat!("Size of: ", stringify!(OrtCustomOp))
     );
     assert_eq!(
@@ -23431,6 +23567,91 @@ fn bindgen_test_layout_OrtCustomOp() {
         );
     }
     test_field_GetOutputCharacteristic();
+    fn test_field_GetInputMemoryType() {
+        assert_eq!(
+            unsafe {
+                let uninit = ::std::mem::MaybeUninit::<OrtCustomOp>::uninit();
+                let ptr = uninit.as_ptr();
+                ::std::ptr::addr_of!((*ptr).GetInputMemoryType) as usize - ptr as usize
+            },
+            96usize,
+            concat!(
+                "Offset of field: ",
+                stringify!(OrtCustomOp),
+                "::",
+                stringify!(GetInputMemoryType)
+            )
+        );
+    }
+    test_field_GetInputMemoryType();
+    fn test_field_GetVariadicInputMinArity() {
+        assert_eq!(
+            unsafe {
+                let uninit = ::std::mem::MaybeUninit::<OrtCustomOp>::uninit();
+                let ptr = uninit.as_ptr();
+                ::std::ptr::addr_of!((*ptr).GetVariadicInputMinArity) as usize - ptr as usize
+            },
+            104usize,
+            concat!(
+                "Offset of field: ",
+                stringify!(OrtCustomOp),
+                "::",
+                stringify!(GetVariadicInputMinArity)
+            )
+        );
+    }
+    test_field_GetVariadicInputMinArity();
+    fn test_field_GetVariadicInputHomogeneity() {
+        assert_eq!(
+            unsafe {
+                let uninit = ::std::mem::MaybeUninit::<OrtCustomOp>::uninit();
+                let ptr = uninit.as_ptr();
+                ::std::ptr::addr_of!((*ptr).GetVariadicInputHomogeneity) as usize - ptr as usize
+            },
+            112usize,
+            concat!(
+                "Offset of field: ",
+                stringify!(OrtCustomOp),
+                "::",
+                stringify!(GetVariadicInputHomogeneity)
+            )
+        );
+    }
+    test_field_GetVariadicInputHomogeneity();
+    fn test_field_GetVariadicOutputMinArity() {
+        assert_eq!(
+            unsafe {
+                let uninit = ::std::mem::MaybeUninit::<OrtCustomOp>::uninit();
+                let ptr = uninit.as_ptr();
+                ::std::ptr::addr_of!((*ptr).GetVariadicOutputMinArity) as usize - ptr as usize
+            },
+            120usize,
+            concat!(
+                "Offset of field: ",
+                stringify!(OrtCustomOp),
+                "::",
+                stringify!(GetVariadicOutputMinArity)
+            )
+        );
+    }
+    test_field_GetVariadicOutputMinArity();
+    fn test_field_GetVariadicOutputHomogeneity() {
+        assert_eq!(
+            unsafe {
+                let uninit = ::std::mem::MaybeUninit::<OrtCustomOp>::uninit();
+                let ptr = uninit.as_ptr();
+                ::std::ptr::addr_of!((*ptr).GetVariadicOutputHomogeneity) as usize - ptr as usize
+            },
+            128usize,
+            concat!(
+                "Offset of field: ",
+                stringify!(OrtCustomOp),
+                "::",
+                stringify!(GetVariadicOutputHomogeneity)
+            )
+        );
+    }
+    test_field_GetVariadicOutputHomogeneity();
 }
 extern "C" {
     pub fn OrtSessionOptionsAppendExecutionProvider_CUDA(
@@ -23442,6 +23663,12 @@ extern "C" {
     pub fn OrtSessionOptionsAppendExecutionProvider_MIGraphX(
         options: *mut OrtSessionOptions,
         device_id: ::std::os::raw::c_int,
+    ) -> OrtStatusPtr;
+}
+extern "C" {
+    pub fn OrtSessionOptionsAppendExecutionProvider_Dnnl(
+        options: *mut OrtSessionOptions,
+        use_arena: ::std::os::raw::c_int,
     ) -> OrtStatusPtr;
 }
 pub type __builtin_va_list = [__va_list_tag; 1usize];
