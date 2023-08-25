@@ -716,11 +716,11 @@ mod dangerous {
         status_to_result(status).map_err(OrtError::CastTypeInfoToTensorInfo)?;
         assert_not_null_pointer(tensor_info_ptr, "TensorInfo")?;
 
-        let mut type_sys = sys::ONNXTensorElementDataType::ONNX_TENSOR_ELEMENT_DATA_TYPE_UNDEFINED;
+        let mut type_sys = sys::ONNXTensorElementDataType_ONNX_TENSOR_ELEMENT_DATA_TYPE_UNDEFINED;
         let status =
             unsafe { g_ort().GetTensorElementType.unwrap()(tensor_info_ptr, &mut type_sys) };
         status_to_result(status).map_err(OrtError::TensorElementType)?;
-        (type_sys != sys::ONNXTensorElementDataType::ONNX_TENSOR_ELEMENT_DATA_TYPE_UNDEFINED)
+        (type_sys != sys::ONNXTensorElementDataType_ONNX_TENSOR_ELEMENT_DATA_TYPE_UNDEFINED)
             .then(|| ())
             .ok_or(OrtError::UndefinedTensorElementType)?;
         // This transmute should be safe since its value is read from GetTensorElementType which we must trust.

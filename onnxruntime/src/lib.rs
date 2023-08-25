@@ -241,11 +241,12 @@ mod onnxruntime {
             message: *const i8,
         ) {
             let log_level = match severity {
-                sys::OrtLoggingLevel::ORT_LOGGING_LEVEL_VERBOSE => Level::TRACE,
-                sys::OrtLoggingLevel::ORT_LOGGING_LEVEL_INFO => Level::DEBUG,
-                sys::OrtLoggingLevel::ORT_LOGGING_LEVEL_WARNING => Level::INFO,
-                sys::OrtLoggingLevel::ORT_LOGGING_LEVEL_ERROR => Level::WARN,
-                sys::OrtLoggingLevel::ORT_LOGGING_LEVEL_FATAL => Level::ERROR,
+                sys::OrtLoggingLevel_ORT_LOGGING_LEVEL_VERBOSE => Level::TRACE,
+                sys::OrtLoggingLevel_ORT_LOGGING_LEVEL_INFO => Level::DEBUG,
+                sys::OrtLoggingLevel_ORT_LOGGING_LEVEL_WARNING => Level::INFO,
+                sys::OrtLoggingLevel_ORT_LOGGING_LEVEL_ERROR => Level::WARN,
+                sys::OrtLoggingLevel_ORT_LOGGING_LEVEL_FATAL => Level::ERROR,
+                _ => Level::ERROR,
             };
 
             assert_ne!(category, std::ptr::null());
@@ -291,25 +292,25 @@ mod onnxruntime {
 #[cfg_attr(windows, repr(i32))]
 pub enum LoggingLevel {
     /// Verbose log level
-    Verbose = sys::OrtLoggingLevel::ORT_LOGGING_LEVEL_VERBOSE as OnnxEnumInt,
+    Verbose = sys::OrtLoggingLevel_ORT_LOGGING_LEVEL_VERBOSE as OnnxEnumInt,
     /// Info log level
-    Info = sys::OrtLoggingLevel::ORT_LOGGING_LEVEL_INFO as OnnxEnumInt,
+    Info = sys::OrtLoggingLevel_ORT_LOGGING_LEVEL_INFO as OnnxEnumInt,
     /// Warning log level
-    Warning = sys::OrtLoggingLevel::ORT_LOGGING_LEVEL_WARNING as OnnxEnumInt,
+    Warning = sys::OrtLoggingLevel_ORT_LOGGING_LEVEL_WARNING as OnnxEnumInt,
     /// Error log level
-    Error = sys::OrtLoggingLevel::ORT_LOGGING_LEVEL_ERROR as OnnxEnumInt,
+    Error = sys::OrtLoggingLevel_ORT_LOGGING_LEVEL_ERROR as OnnxEnumInt,
     /// Fatal log level
-    Fatal = sys::OrtLoggingLevel::ORT_LOGGING_LEVEL_FATAL as OnnxEnumInt,
+    Fatal = sys::OrtLoggingLevel_ORT_LOGGING_LEVEL_FATAL as OnnxEnumInt,
 }
 
 impl From<LoggingLevel> for sys::OrtLoggingLevel {
     fn from(val: LoggingLevel) -> Self {
         match val {
-            LoggingLevel::Verbose => sys::OrtLoggingLevel::ORT_LOGGING_LEVEL_VERBOSE,
-            LoggingLevel::Info => sys::OrtLoggingLevel::ORT_LOGGING_LEVEL_INFO,
-            LoggingLevel::Warning => sys::OrtLoggingLevel::ORT_LOGGING_LEVEL_WARNING,
-            LoggingLevel::Error => sys::OrtLoggingLevel::ORT_LOGGING_LEVEL_ERROR,
-            LoggingLevel::Fatal => sys::OrtLoggingLevel::ORT_LOGGING_LEVEL_FATAL,
+            LoggingLevel::Verbose => sys::OrtLoggingLevel_ORT_LOGGING_LEVEL_VERBOSE,
+            LoggingLevel::Info => sys::OrtLoggingLevel_ORT_LOGGING_LEVEL_INFO,
+            LoggingLevel::Warning => sys::OrtLoggingLevel_ORT_LOGGING_LEVEL_WARNING,
+            LoggingLevel::Error => sys::OrtLoggingLevel_ORT_LOGGING_LEVEL_ERROR,
+            LoggingLevel::Fatal => sys::OrtLoggingLevel_ORT_LOGGING_LEVEL_FATAL,
         }
     }
 }
@@ -323,23 +324,23 @@ impl From<LoggingLevel> for sys::OrtLoggingLevel {
 #[cfg_attr(windows, repr(i32))]
 pub enum GraphOptimizationLevel {
     /// Disable optimization
-    DisableAll = sys::GraphOptimizationLevel::ORT_DISABLE_ALL as OnnxEnumInt,
+    DisableAll = sys::GraphOptimizationLevel_ORT_DISABLE_ALL as OnnxEnumInt,
     /// Basic optimization
-    Basic = sys::GraphOptimizationLevel::ORT_ENABLE_BASIC as OnnxEnumInt,
+    Basic = sys::GraphOptimizationLevel_ORT_ENABLE_BASIC as OnnxEnumInt,
     /// Extended optimization
-    Extended = sys::GraphOptimizationLevel::ORT_ENABLE_EXTENDED as OnnxEnumInt,
+    Extended = sys::GraphOptimizationLevel_ORT_ENABLE_EXTENDED as OnnxEnumInt,
     /// Add optimization
-    All = sys::GraphOptimizationLevel::ORT_ENABLE_ALL as OnnxEnumInt,
+    All = sys::GraphOptimizationLevel_ORT_ENABLE_ALL as OnnxEnumInt,
 }
 
 impl From<GraphOptimizationLevel> for sys::GraphOptimizationLevel {
     fn from(val: GraphOptimizationLevel) -> Self {
         use GraphOptimizationLevel::*;
         match val {
-            DisableAll => sys::GraphOptimizationLevel::ORT_DISABLE_ALL,
-            Basic => sys::GraphOptimizationLevel::ORT_ENABLE_BASIC,
-            Extended => sys::GraphOptimizationLevel::ORT_ENABLE_EXTENDED,
-            All => sys::GraphOptimizationLevel::ORT_ENABLE_ALL,
+            DisableAll => sys::GraphOptimizationLevel_ORT_DISABLE_ALL,
+            Basic => sys::GraphOptimizationLevel_ORT_ENABLE_BASIC,
+            Extended => sys::GraphOptimizationLevel_ORT_ENABLE_EXTENDED,
+            All => sys::GraphOptimizationLevel_ORT_ENABLE_ALL,
         }
     }
 }
@@ -352,31 +353,31 @@ impl From<GraphOptimizationLevel> for sys::GraphOptimizationLevel {
 #[cfg_attr(windows, repr(i32))]
 pub enum TensorElementDataType {
     /// 32-bit floating point, equivalent to Rust's `f32`
-    Float = sys::ONNXTensorElementDataType::ONNX_TENSOR_ELEMENT_DATA_TYPE_FLOAT as OnnxEnumInt,
+    Float = sys::ONNXTensorElementDataType_ONNX_TENSOR_ELEMENT_DATA_TYPE_FLOAT as OnnxEnumInt,
     /// Unsigned 8-bit int, equivalent to Rust's `u8`
-    Uint8 = sys::ONNXTensorElementDataType::ONNX_TENSOR_ELEMENT_DATA_TYPE_UINT8 as OnnxEnumInt,
+    Uint8 = sys::ONNXTensorElementDataType_ONNX_TENSOR_ELEMENT_DATA_TYPE_UINT8 as OnnxEnumInt,
     /// Signed 8-bit int, equivalent to Rust's `i8`
-    Int8 = sys::ONNXTensorElementDataType::ONNX_TENSOR_ELEMENT_DATA_TYPE_INT8 as OnnxEnumInt,
+    Int8 = sys::ONNXTensorElementDataType_ONNX_TENSOR_ELEMENT_DATA_TYPE_INT8 as OnnxEnumInt,
     /// Unsigned 16-bit int, equivalent to Rust's `u16`
-    Uint16 = sys::ONNXTensorElementDataType::ONNX_TENSOR_ELEMENT_DATA_TYPE_UINT16 as OnnxEnumInt,
+    Uint16 = sys::ONNXTensorElementDataType_ONNX_TENSOR_ELEMENT_DATA_TYPE_UINT16 as OnnxEnumInt,
     /// Signed 16-bit int, equivalent to Rust's `i16`
-    Int16 = sys::ONNXTensorElementDataType::ONNX_TENSOR_ELEMENT_DATA_TYPE_INT16 as OnnxEnumInt,
+    Int16 = sys::ONNXTensorElementDataType_ONNX_TENSOR_ELEMENT_DATA_TYPE_INT16 as OnnxEnumInt,
     /// Signed 32-bit int, equivalent to Rust's `i32`
-    Int32 = sys::ONNXTensorElementDataType::ONNX_TENSOR_ELEMENT_DATA_TYPE_INT32 as OnnxEnumInt,
+    Int32 = sys::ONNXTensorElementDataType_ONNX_TENSOR_ELEMENT_DATA_TYPE_INT32 as OnnxEnumInt,
     /// Signed 64-bit int, equivalent to Rust's `i64`
-    Int64 = sys::ONNXTensorElementDataType::ONNX_TENSOR_ELEMENT_DATA_TYPE_INT64 as OnnxEnumInt,
+    Int64 = sys::ONNXTensorElementDataType_ONNX_TENSOR_ELEMENT_DATA_TYPE_INT64 as OnnxEnumInt,
     /// String, equivalent to Rust's `String`
-    String = sys::ONNXTensorElementDataType::ONNX_TENSOR_ELEMENT_DATA_TYPE_STRING as OnnxEnumInt,
+    String = sys::ONNXTensorElementDataType_ONNX_TENSOR_ELEMENT_DATA_TYPE_STRING as OnnxEnumInt,
     // /// Boolean, equivalent to Rust's `bool`
     // Bool = sys::ONNXTensorElementDataType::ONNX_TENSOR_ELEMENT_DATA_TYPE_BOOL as OnnxEnumInt,
     // /// 16-bit floating point, equivalent to Rust's `f16`
     // Float16 = sys::ONNXTensorElementDataType::ONNX_TENSOR_ELEMENT_DATA_TYPE_FLOAT16 as OnnxEnumInt,
     /// 64-bit floating point, equivalent to Rust's `f64`
-    Double = sys::ONNXTensorElementDataType::ONNX_TENSOR_ELEMENT_DATA_TYPE_DOUBLE as OnnxEnumInt,
+    Double = sys::ONNXTensorElementDataType_ONNX_TENSOR_ELEMENT_DATA_TYPE_DOUBLE as OnnxEnumInt,
     /// Unsigned 32-bit int, equivalent to Rust's `u32`
-    Uint32 = sys::ONNXTensorElementDataType::ONNX_TENSOR_ELEMENT_DATA_TYPE_UINT32 as OnnxEnumInt,
+    Uint32 = sys::ONNXTensorElementDataType_ONNX_TENSOR_ELEMENT_DATA_TYPE_UINT32 as OnnxEnumInt,
     /// Unsigned 64-bit int, equivalent to Rust's `u64`
-    Uint64 = sys::ONNXTensorElementDataType::ONNX_TENSOR_ELEMENT_DATA_TYPE_UINT64 as OnnxEnumInt,
+    Uint64 = sys::ONNXTensorElementDataType_ONNX_TENSOR_ELEMENT_DATA_TYPE_UINT64 as OnnxEnumInt,
     // /// Complex 64-bit floating point, equivalent to Rust's `???`
     // Complex64 = sys::ONNXTensorElementDataType::ONNX_TENSOR_ELEMENT_DATA_TYPE_COMPLEX64 as OnnxEnumInt,
     // /// Complex 128-bit floating point, equivalent to Rust's `???`
@@ -389,23 +390,23 @@ impl From<TensorElementDataType> for sys::ONNXTensorElementDataType {
     fn from(val: TensorElementDataType) -> Self {
         use TensorElementDataType::*;
         match val {
-            Float => sys::ONNXTensorElementDataType::ONNX_TENSOR_ELEMENT_DATA_TYPE_FLOAT,
-            Uint8 => sys::ONNXTensorElementDataType::ONNX_TENSOR_ELEMENT_DATA_TYPE_UINT8,
-            Int8 => sys::ONNXTensorElementDataType::ONNX_TENSOR_ELEMENT_DATA_TYPE_INT8,
-            Uint16 => sys::ONNXTensorElementDataType::ONNX_TENSOR_ELEMENT_DATA_TYPE_UINT16,
-            Int16 => sys::ONNXTensorElementDataType::ONNX_TENSOR_ELEMENT_DATA_TYPE_INT16,
-            Int32 => sys::ONNXTensorElementDataType::ONNX_TENSOR_ELEMENT_DATA_TYPE_INT32,
-            Int64 => sys::ONNXTensorElementDataType::ONNX_TENSOR_ELEMENT_DATA_TYPE_INT64,
-            String => sys::ONNXTensorElementDataType::ONNX_TENSOR_ELEMENT_DATA_TYPE_STRING,
+            Float => sys::ONNXTensorElementDataType_ONNX_TENSOR_ELEMENT_DATA_TYPE_FLOAT,
+            Uint8 => sys::ONNXTensorElementDataType_ONNX_TENSOR_ELEMENT_DATA_TYPE_UINT8,
+            Int8 => sys::ONNXTensorElementDataType_ONNX_TENSOR_ELEMENT_DATA_TYPE_INT8,
+            Uint16 => sys::ONNXTensorElementDataType_ONNX_TENSOR_ELEMENT_DATA_TYPE_UINT16,
+            Int16 => sys::ONNXTensorElementDataType_ONNX_TENSOR_ELEMENT_DATA_TYPE_INT16,
+            Int32 => sys::ONNXTensorElementDataType_ONNX_TENSOR_ELEMENT_DATA_TYPE_INT32,
+            Int64 => sys::ONNXTensorElementDataType_ONNX_TENSOR_ELEMENT_DATA_TYPE_INT64,
+            String => sys::ONNXTensorElementDataType_ONNX_TENSOR_ELEMENT_DATA_TYPE_STRING,
             // Bool => {
             //     sys::ONNXTensorElementDataType::ONNX_TENSOR_ELEMENT_DATA_TYPE_BOOL
             // }
             // Float16 => {
             //     sys::ONNXTensorElementDataType::ONNX_TENSOR_ELEMENT_DATA_TYPE_FLOAT16
             // }
-            Double => sys::ONNXTensorElementDataType::ONNX_TENSOR_ELEMENT_DATA_TYPE_DOUBLE,
-            Uint32 => sys::ONNXTensorElementDataType::ONNX_TENSOR_ELEMENT_DATA_TYPE_UINT32,
-            Uint64 => sys::ONNXTensorElementDataType::ONNX_TENSOR_ELEMENT_DATA_TYPE_UINT64,
+            Double => sys::ONNXTensorElementDataType_ONNX_TENSOR_ELEMENT_DATA_TYPE_DOUBLE,
+            Uint32 => sys::ONNXTensorElementDataType_ONNX_TENSOR_ELEMENT_DATA_TYPE_UINT32,
+            Uint64 => sys::ONNXTensorElementDataType_ONNX_TENSOR_ELEMENT_DATA_TYPE_UINT64,
             // Complex64 => {
             //     sys::ONNXTensorElementDataType::ONNX_TENSOR_ELEMENT_DATA_TYPE_COMPLEX64
             // }
@@ -498,9 +499,9 @@ impl<T: Utf8Data> TypeToTensorElementDataType for T {
 pub enum AllocatorType {
     // Invalid = sys::OrtAllocatorType::Invalid as i32,
     /// Device allocator
-    Device = sys::OrtAllocatorType::OrtDeviceAllocator as i32,
+    Device = sys::OrtAllocatorType_OrtDeviceAllocator as i32,
     /// Arena allocator
-    Arena = sys::OrtAllocatorType::OrtArenaAllocator as i32,
+    Arena = sys::OrtAllocatorType_OrtArenaAllocator as i32,
 }
 
 impl From<AllocatorType> for sys::OrtAllocatorType {
@@ -508,8 +509,8 @@ impl From<AllocatorType> for sys::OrtAllocatorType {
         use AllocatorType::*;
         match val {
             // Invalid => sys::OrtAllocatorType::Invalid,
-            Device => sys::OrtAllocatorType::OrtDeviceAllocator,
-            Arena => sys::OrtAllocatorType::OrtArenaAllocator,
+            Device => sys::OrtAllocatorType_OrtDeviceAllocator,
+            Arena => sys::OrtAllocatorType_OrtArenaAllocator,
         }
     }
 }
@@ -525,7 +526,7 @@ pub enum MemType {
     // CPUOutput = sys::OrtMemType::OrtMemTypeCPUOutput as i32,
     // CPU = sys::OrtMemType::OrtMemTypeCPU as i32,
     /// Default memory type
-    Default = sys::OrtMemType::OrtMemTypeDefault as i32,
+    Default = sys::OrtMemType_OrtMemTypeDefault as i32,
 }
 
 impl From<MemType> for sys::OrtMemType {
@@ -535,7 +536,7 @@ impl From<MemType> for sys::OrtMemType {
             // CPUInput => sys::OrtMemType::OrtMemTypeCPUInput,
             // CPUOutput => sys::OrtMemType::OrtMemTypeCPUOutput,
             // CPU => sys::OrtMemType::OrtMemTypeCPU,
-            Default => sys::OrtMemType::OrtMemTypeDefault,
+            Default => sys::OrtMemType_OrtMemTypeDefault,
         }
     }
 }
