@@ -38,7 +38,7 @@ fn run() -> Result<(), Error> {
         // NOTE: The example uses SqueezeNet 1.0 (ONNX version: 1.3, Opset version: 8),
         //       _not_ SqueezeNet 1.1 as downloaded by '.with_model_downloaded(ImageClassification::SqueezeNet)'
         //       Obtain it with:
-        //          curl -LO "https://github.com/onnx/models/raw/master/vision/classification/squeezenet/model/squeezenet1.0-8.onnx"
+        //          curl -LO "https://github.com/onnx/models/raw/main/vision/classification/squeezenet/model/squeezenet1.0-8.onnx"
         .with_model_from_file("squeezenet1.0-8.onnx")?;
 
     let input0_shape: Vec<usize> = session.inputs[0].dimensions().map(|d| d.unwrap()).collect();
