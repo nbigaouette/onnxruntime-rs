@@ -20,7 +20,7 @@ fn main() {
     let env_name = std::ffi::CString::new("test").unwrap();
     let status = unsafe {
         g_ort.as_ref().unwrap().CreateEnv.unwrap()(
-            OrtLoggingLevel::ORT_LOGGING_LEVEL_VERBOSE,
+            OrtLoggingLevel_ORT_LOGGING_LEVEL_VERBOSE,
             env_name.as_ptr(),
             &mut env_ptr,
         )
@@ -44,7 +44,7 @@ fn main() {
             .SetSessionGraphOptimizationLevel
             .unwrap()(
             session_options_ptr,
-            GraphOptimizationLevel::ORT_ENABLE_BASIC,
+            GraphOptimizationLevel_ORT_ENABLE_BASIC,
         )
     };
 
@@ -57,7 +57,7 @@ fn main() {
     // NOTE: Original C version loaded SqueezeNet 1.0 (ONNX version: 1.3, Opset version: 8,
     //       https://github.com/onnx/models/blob/master/vision/classification/squeezenet/model/squeezenet1.0-8.onnx)
     //       Download it:
-    //           curl -LO "https://github.com/onnx/models/raw/master/vision/classification/squeezenet/model/squeezenet1.0-8.onnx"
+    //           curl -LO "https://github.com/onnx/models/raw/main/vision/classification/squeezenet/model/squeezenet1.0-8.onnx"
     //       Reference: https://github.com/onnx/models/tree/master/vision/classification/squeezenet#model
     let model_path = std::ffi::OsString::from("squeezenet1.0-8.onnx");
 
@@ -159,14 +159,14 @@ fn main() {
         assert_ne!(tensor_info_ptr, std::ptr::null_mut());
 
         let mut type_: ONNXTensorElementDataType =
-            ONNXTensorElementDataType::ONNX_TENSOR_ELEMENT_DATA_TYPE_UNDEFINED;
+            ONNXTensorElementDataType_ONNX_TENSOR_ELEMENT_DATA_TYPE_UNDEFINED;
         let status = unsafe {
             g_ort.as_ref().unwrap().GetTensorElementType.unwrap()(tensor_info_ptr, &mut type_)
         };
         CheckStatus(g_ort, status).unwrap();
         assert_ne!(
             type_,
-            ONNXTensorElementDataType::ONNX_TENSOR_ELEMENT_DATA_TYPE_UNDEFINED
+            ONNXTensorElementDataType_ONNX_TENSOR_ELEMENT_DATA_TYPE_UNDEFINED
         );
 
         println!("Input {} : type={}", i, type_ as i32);
@@ -229,8 +229,8 @@ fn main() {
     let mut memory_info_ptr: *mut OrtMemoryInfo = std::ptr::null_mut();
     let status = unsafe {
         g_ort.as_ref().unwrap().CreateCpuMemoryInfo.unwrap()(
-            OrtAllocatorType::OrtArenaAllocator,
-            OrtMemType::OrtMemTypeDefault,
+            OrtAllocatorType_OrtArenaAllocator,
+            OrtMemType_OrtMemTypeDefault,
             &mut memory_info_ptr,
         )
     };
@@ -258,7 +258,7 @@ fn main() {
             input_tensor_size * std::mem::size_of::<f32>(),
             shape,
             4,
-            ONNXTensorElementDataType::ONNX_TENSOR_ELEMENT_DATA_TYPE_FLOAT,
+            ONNXTensorElementDataType_ONNX_TENSOR_ELEMENT_DATA_TYPE_FLOAT,
             input_tensor_ptr_ptr,
         )
     };

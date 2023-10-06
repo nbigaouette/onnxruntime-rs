@@ -5,5 +5,6 @@
 onnxruntime.git
 Cargo.lock
 **/synset.txt
-
+.vscode
+.vs
 /.idea

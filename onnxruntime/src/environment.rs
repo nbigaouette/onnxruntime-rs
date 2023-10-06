@@ -243,7 +243,7 @@ impl EnvBuilder {
 mod tests {
     use super::*;
     use std::sync::{RwLock, RwLockWriteGuard};
-    use test_env_log::test;
+    use test_log::test;
 
     impl G_ENV {
         fn is_initialized(&self) -> bool {
